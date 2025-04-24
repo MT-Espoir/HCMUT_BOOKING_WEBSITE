@@ -4,7 +4,9 @@ import BookingPage from './components/views/Confirmbookingpage/confirmbooking';
 import CheckingPage from './components/views/Checkingpage/checkingpage';
 import ChangeRoomPage from './components/views/Changeroompage/changeroom';
 import MyRoomPage from './components/views/myroom/myroom';
-import RoomSearchPage from './components/views/RoomSearchPage/RoomSearchPage';
+import RoomSelectionPage from './components/views/RoomSelectionPage/roomselection';
+// Import API service
+import apiService, { initializeMockData } from './services/api';
 
 // Import hình ảnh mẫu
 import roomMainImg from './components/assests/room-main.png';
@@ -84,6 +86,11 @@ function App() {
     }
   ];
 
+  // Initialize mock data for API service
+  useEffect(() => {
+    initializeMockData(roomsData);
+  }, []);
+
   // State để quản lý trang hiện tại và các tham số truyền giữa các trang
   const [currentPage, setCurrentPage] = useState('roomselection');
   const [pageParams, setPageParams] = useState({});
@@ -144,7 +151,7 @@ function App() {
     switch(currentPage) {
       case 'roomselection':
         return (
-          <RoomSearchPage 
+          <RoomSelectionPage 
             navigateTo={navigateTo} 
             roomsData={roomsData} 
             selectRoom={selectRoom}
@@ -187,7 +194,7 @@ function App() {
         );
       default:
         return (
-          <RoomSearchPage 
+          <RoomSelectionPage 
             navigateTo={navigateTo} 
             roomsData={roomsData} 
             selectRoom={selectRoom}
