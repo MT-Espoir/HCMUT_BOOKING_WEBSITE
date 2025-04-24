@@ -1,5 +1,5 @@
 import React from 'react';
-import './booking.css';
+import './confirmbooking.css';
 // Import hình ảnh và icons
 import logoIcon from '../../assests/logo.png';
 import userAvatar from '../../assests/avatar.jpg';

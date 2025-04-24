@@ -167,7 +167,7 @@
 
 .main-image {
   width: 100%;
-  height: 400px;
+  height: 300px;
   overflow: hidden;
 }
 
@@ -179,7 +179,7 @@
 
 .side-images {
   display: flex;
-  height: 120px;
+  height: 220px;
 }
 
 .side-images img {

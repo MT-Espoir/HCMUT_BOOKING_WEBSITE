@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import BookingPage from './components/views/Bookingpage/booking';
+import BookingPage from './components/views/Confirmbookingpage/confirmbooking';
 import CheckingPage from './components/views/Checkingpage/checkingpage';
 import ChangeRoomPage from './components/views/Changeroompage/changeroom';
 import MyRoomPage from './components/views/myroom/myroom';
