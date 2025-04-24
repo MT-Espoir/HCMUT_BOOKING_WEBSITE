@@ -5,6 +5,8 @@ import CheckingPage from './components/views/Checkingpage/checkingpage';
 import ChangeRoomPage from './components/views/Changeroompage/changeroom';
 import MyRoomPage from './components/views/myroom/myroom';
 import RoomSelectionPage from './components/views/RoomSelectionPage/roomselection';
+// Import API service
+import apiService, { initializeMockData } from './services/api';
 
 // Import hình ảnh mẫu
 import roomMainImg from './components/assests/room-main.png';
@@ -83,6 +85,11 @@ function App() {
       }
     }
   ];
+
+  // Initialize mock data for API service
+  useEffect(() => {
+    initializeMockData(roomsData);
+  }, []);
 
   // State để quản lý trang hiện tại và các tham số truyền giữa các trang
   const [currentPage, setCurrentPage] = useState('roomselection');
