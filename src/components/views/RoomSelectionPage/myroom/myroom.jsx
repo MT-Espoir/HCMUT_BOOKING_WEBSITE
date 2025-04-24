@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import './myroom.css';
-// Import hình ảnh và icons
-import logoIcon from '../../assests/logo.png';
-import userAvatar from '../../assests/avatar.jpg';
+
 import roomImage from '../../assests/room-main.png';
 import { FaBell, FaClock, FaTrashAlt, FaExchangeAlt, FaTimes, FaCheckCircle } from 'react-icons/fa';
+import Header from '../Shared/Header/Header';
 
 const MyRoomPage = ({ navigateTo }) => {
   // State cho xác nhận xóa hoặc hủy
@@ -91,32 +90,8 @@ const MyRoomPage = ({ navigateTo }) => {
   return (
     <div className="my-room-page">
       {/* Header Component */}
-      <header className="header">
-        <div className="logo-container">
-          <img src={logoIcon} alt="HCMUT Booking Room Logo" className="logo" />
-          <h1>HCMUT Booking Room</h1>
-        </div>
-        
-        <nav className="main-nav">
-          <ul>
-            <li><a href="#" onClick={() => navigateTo('booking')}>Home</a></li>
-            <li><a href="#">Discover</a></li>
-            <li><a href="#" className="active">My Rooms</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Contact</a></li>
-          </ul>
-        </nav>
-        
-        <div className="user-actions">
-          <div className="notification-icon">
-            <FaBell />
-            <span className="notification-badge">3</span>
-          </div>
-          <div className="avatar">
-            <img src={userAvatar} alt="User" />
-          </div>
-        </div>
-      </header>
+      <Header navigateTo={navigateTo} />
+
       
       {/* Main Content */}
       <main className="main-content">
