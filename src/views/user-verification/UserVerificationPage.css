@@ -1,0 +1,118 @@
+/* HCMUT Booking Room - User Verification Page Styles */
+
+/* Global styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Main page container */
+.user-verification-page {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: #333;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Main Content Styles */
+.main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+/* Page Title */
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* User List Styles */
+.user-list {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.user-list h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.user-item-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.user-item-link:hover .user-item {
+  background-color: #f3f4f6;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s;
+}
+
+.user-item:last-child {
+  border-bottom: none;
+}
+
+.user-icon {
+  font-size: 1.5rem;
+  color: #2563EB;
+}
+
+.user-details {
+  flex-grow: 1;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.user-email {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.user-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-icon {
+  font-size: 1.5rem;
+}
+
+.status-icon.verified {
+  color: #10b981;
+}
+
+.status-icon.not-verified {
+  color: #ef4444;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .user-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .user-status {
+    margin-top: 0.5rem;
+  }
+}

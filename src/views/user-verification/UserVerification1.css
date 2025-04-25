@@ -1,0 +1,188 @@
+/* HCMUT Booking Room - User Verification Detail Page Styles */
+
+/* Global styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Main page container */
+.user-verification-detail-page {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: #333;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Main Content Styles */
+.main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+/* Page Title */
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* User Details Section */
+.user-details {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.user-header h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.status-badge.verified {
+  background-color: #10b981;
+  color: white;
+}
+
+.status-badge.pending,
+.status-badge.rejected {
+  background-color: #facc15;
+  color: #1f2937;
+}
+
+.info-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-item label {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.info-item p {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+/* Booking List Styles */
+.booking-list h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.booking-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.booking-item:last-child {
+  border-bottom: none;
+}
+
+.booking-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.booking-details {
+  flex-grow: 1;
+}
+
+.booking-date,
+.booking-room,
+.booking-time,
+.booking-description {
+  margin-bottom: 0.5rem;
+}
+
+.booking-date {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.booking-room {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2563EB;
+}
+
+.booking-time {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.booking-description {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* Back Button */
+.back-btn {
+  display: block;
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem;
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.back-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .info-section {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-item {
+    flex-direction: column;
+  }
+
+  .booking-image {
+    width: 100%;
+    height: auto;
+  }
+}
