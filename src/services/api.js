@@ -14,6 +14,30 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
  * @param {Object} options - Fetch options
  * @returns {Promise<Object>} - API response
  */
+// src/services/api.js
+export async function loginAPI(account, password) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (account === 'asd' && password === '123') {
+        resolve({
+          token: 'mock-token-abc123',
+          user: {
+            name: 'Nguyễn Văn A',
+            email: 'student@hcmut.edu.vn',
+            role: 'student'
+          }
+        });
+      } else {
+        reject(new Error('Sai tài khoản hoặc mật khẩu!'));
+      }
+    }, 800); // giả lập delay gọi API
+  });
+}
+
+
+
+
+
 async function apiRequest(endpoint, options = {}) {
   try {
     // When backend is ready, uncomment the following code

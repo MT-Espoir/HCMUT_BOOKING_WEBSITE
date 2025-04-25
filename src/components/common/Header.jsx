@@ -5,40 +5,52 @@ import logoIcon from '../../assets/logo.png';
 import userAvatar from '../../assets/avatar.jpg';
 import { FaBell } from 'react-icons/fa';
 import NotificationPanel from './NotificationPanel';
+import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
-  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
+  const navigate = useNavigate();
+  const { user, logout, isAuthenticated } = useAuth();
 
-  const handleMyRooms = () => {
-    navigate('/myroom');
+  const handleLogout = () => {
+    logout();
   };
 
   return (
     <header className="header">
-      <div className="logo-container">
-        <img src={logoIcon} alt="HCMUT Booking Room Logo" className="logo" />
-        <h1>HCMUT Booking Room</h1>
-      </div>
+<div className="logo-container">
+  <img src={logoIcon} alt="HCMUT Logo" className="bk-logo" />
+  <div className="logo-text">
+    <span className="logo-title">HCMUT</span>
+    <span className="logo-subtitle">Booking room</span>
+  </div>
+</div>
 
       <nav className="main-nav">
         <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="#">Discover</Link></li>
-          <li><Link to="/myroom">MyRooms</Link></li>
+          <li><Link to="/home">Home</Link></li>
+          <li><Link to="/room-search">Tìm phòng</Link></li>
+          <li><Link to="/myroom">My Rooms</Link></li>
           <li><Link to="#">About</Link></li>
           <li><Link to="#">Contact</Link></li>
         </ul>
       </nav>
 
       <div className="user-actions">
-        <div className="notification-icon" onClick={() => setShowNotifications(!showNotifications)}>
-          <FaBell />
-          <span className="notification-badge">3</span>
-        </div>
-        <div className="avatar">
-          <img src={userAvatar} alt="User" />
-        </div>
+        {isAuthenticated && (
+          <>
+            <div className="notification-icon" onClick={() => setShowNotifications(!showNotifications)}>
+              <FaBell />
+              <span className="notification-badge">3</span>
+            </div>
+
+            <div className="user-info">
+              <img src={userAvatar} alt="User" className="avatar" />
+
+              <button onClick={handleLogout} className="logout-btn">Logout</button>
+            </div>
+          </>
+        )}
       </div>
 
       {showNotifications && <NotificationPanel />}
