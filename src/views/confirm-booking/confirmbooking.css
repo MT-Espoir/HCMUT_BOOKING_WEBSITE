@@ -151,6 +151,62 @@
   gap: 2rem;
 }
 
+/* Tab Container Styles */
+.tab-container {
+  margin-bottom: 2rem;
+}
+
+.tab-menu {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+
+.tab-menu button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.tab-menu button:hover {
+  color: #2563EB;
+}
+
+.tab-menu button.tab-active {
+  color: #2563EB;
+  font-weight: 600;
+}
+
+.tab-menu button.tab-active:after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #2563EB;
+  border-radius: 2px;
+}
+
+.tab-content {
+  margin-bottom: 1.5rem;
+}
+
+.overview-tab {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Room Details Styles */
 .room-details {
   background-color: white;
@@ -165,9 +221,15 @@
   width: 100%;
 }
 
+.image-gallery {
+  display: flex;
+  flex-direction: row;
+  height: 400px; /* Đảm bảo gallery có chiều cao cố định */
+}
+
 .main-image {
-  width: 100%;
-  height: 300px;
+  width: 60%;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -179,13 +241,23 @@
 
 .side-images {
   display: flex;
-  height: 220px;
+  flex-direction: column;
+  width: 40%;
+  height: 100%;
 }
 
 .side-images img {
-  flex: 1;
+  height: 50%;
+  width: 100%;
   object-fit: cover;
-  padding-right: 2px;
+  padding-left: 4px;
+  padding-bottom: 4px;
+}
+
+/* Room Layout Styles */
+.room-layout {
+  display: flex;
+  flex-direction: column; /* Mặc định là chiều dọc */
 }
 
 /* Room Info Styles */
@@ -345,6 +417,10 @@
   .amenities ul {
     grid-template-columns: 1fr 1fr;
   }
+  
+  .tab-menu {
+    justify-content: center;
+  }
 }
 
 @media (max-width: 768px) {
@@ -378,6 +454,11 @@
   .room-info h2 {
     font-size: 1.8rem;
   }
+  
+  .tab-menu button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -393,5 +474,15 @@
   
   .book-button {
     width: 100%;
+  }
+  
+  .tab-menu {
+    flex-wrap: wrap;
+  }
+  
+  .tab-menu button {
+    flex: 1;
+    min-width: 33.33%;
+    text-align: center;
   }
 }

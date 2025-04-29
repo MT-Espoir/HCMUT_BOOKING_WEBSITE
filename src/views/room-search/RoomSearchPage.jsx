@@ -15,19 +15,25 @@ const RoomSearchPage = () => {
       id: 1,
       name: 'Phòng B1-201',
       description: 'Tầng 2, toà B1',
-      amenities: 'Máy chiếu, bảng trắng, điều hòa',
+      amenities: ['Máy chiếu', 'Bảng trắng', 'Điều hòa', 'Wifi tốc độ cao', 'Bàn ghế hiện đại'],
       image: roomImage,
       branch: 2,
-      capacity: 100
+      capacity: 2,
+      size: 10,
+      features: ['Ánh sáng tự nhiên', 'Cách âm tốt', 'Không gian riêng tư', 'Thích hợp họp nhóm lớn'],
+      fullDescription: 'Phòng B1-201 (tầng 2) là không gian lý tưởng cho các cuộc họp lớn hoặc hội thảo. Phòng được trang bị đầy đủ tiện nghi hiện đại, ánh sáng tự nhiên, và không gian rộng rãi để đảm bảo hiệu quả công việc tối đa cho các nhóm lớn.'
     },
     {
       id: 2,
       name: 'Phòng B1-202',
       description: 'Tầng 2, toà B1',
-      amenities: 'Máy chiếu, bảng trắng',
+      amenities: ['Máy chiếu', 'Bảng trắng', 'Điều hòa', 'Wifi tốc độ cao', 'Bàn ghế linh hoạt'],
       image: roomImage,
       branch: 1,
-      capacity: 50
+      capacity: 2,
+      size: 10,
+      features: ['Ánh sáng tự nhiên', 'Thích hợp họp nhóm', 'Linh hoạt bố trí', 'Tiện nghi đầy đủ'],
+      fullDescription: 'Phòng B1-202 (tầng 2) là lựa chọn phù hợp cho các nhóm vừa và nhỏ. Với đầy đủ tiện nghi và thiết kế linh hoạt, phòng này phù hợp cho nhiều loại hoạt động khác nhau từ thảo luận nhóm đến seminar nhỏ.'
     }
   ];
 
@@ -53,8 +59,8 @@ const RoomSearchPage = () => {
   });
 
   const handleSelectRoom = (roomId) => {
-    // Lưu ID phòng được chọn nếu cần
-    navigate('/confirm-booking');
+    const selectedRoom = roomsData.find(room => room.id === roomId);
+    navigate('/confirm-booking', { state: { roomData: selectedRoom } });
   };
 
   const checkboxFilter = (category, options) => (
@@ -117,7 +123,7 @@ const RoomSearchPage = () => {
                   <div className="room-info">
                     <h4>{room.name}</h4>
                     <p>{room.description}</p>
-                    <p>{room.amenities}</p>
+                    <p>{room.amenities.join(', ')}</p>
                     <div className="room-actions">
                       <button className="change-btn" onClick={() => handleSelectRoom(room.id)}>Chọn</button>
                     </div>
