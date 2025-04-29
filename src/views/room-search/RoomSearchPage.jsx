@@ -1,39 +1,33 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './RoomSearchPage.css';
-import roomImage from '../../assets/room-main.png';
 import Header from '../../components/common/Header';
+import roomImage from '../../assets/room-main.png';
 import { FaSearch } from 'react-icons/fa';
 
 const RoomSearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState({ branch: [], capacity: [], timeRange: [], duration: [], amenities: [] });
-  const navigate = useNavigate();
 
-  const roomsData = [
+  const rooms = [
     {
       id: 1,
       name: 'Phòng B1-201',
-      description: 'Tầng 2, toà B1',
-      amenities: ['Máy chiếu', 'Bảng trắng', 'Điều hòa', 'Wifi tốc độ cao', 'Bàn ghế hiện đại'],
-      image: roomImage,
-      branch: 2,
-      capacity: 2,
-      size: 10,
-      features: ['Ánh sáng tự nhiên', 'Cách âm tốt', 'Không gian riêng tư', 'Thích hợp họp nhóm lớn'],
-      fullDescription: 'Phòng B1-201 (tầng 2) là không gian lý tưởng cho các cuộc họp lớn hoặc hội thảo. Phòng được trang bị đầy đủ tiện nghi hiện đại, ánh sáng tự nhiên, và không gian rộng rãi để đảm bảo hiệu quả công việc tối đa cho các nhóm lớn.'
+      location: 'Tọa lạc tầng 2 tòa B1',
+      amenities: 'Tiện nghi: máy chiếu, bảng trắng, điều hòa',
+      image: roomImage
     },
     {
       id: 2,
       name: 'Phòng B1-202',
-      description: 'Tầng 2, toà B1',
-      amenities: ['Máy chiếu', 'Bảng trắng', 'Điều hòa', 'Wifi tốc độ cao', 'Bàn ghế linh hoạt'],
-      image: roomImage,
-      branch: 1,
-      capacity: 2,
-      size: 10,
-      features: ['Ánh sáng tự nhiên', 'Thích hợp họp nhóm', 'Linh hoạt bố trí', 'Tiện nghi đầy đủ'],
-      fullDescription: 'Phòng B1-202 (tầng 2) là lựa chọn phù hợp cho các nhóm vừa và nhỏ. Với đầy đủ tiện nghi và thiết kế linh hoạt, phòng này phù hợp cho nhiều loại hoạt động khác nhau từ thảo luận nhóm đến seminar nhỏ.'
+      location: 'Tọa lạc tầng 2 tòa B1',
+      amenities: 'Tiện nghi: máy chiếu, bảng trắng, điều hòa, âm thanh',
+      image: roomImage
+    },
+    {
+      id: 3,
+      name: 'Phòng B1-301',
+      location: 'Tọa lạc tầng 3 tòa B1',
+      amenities: 'Tiện nghi: bảng trắng, điều hòa',
+      image: roomImage
     }
   ];
 
@@ -41,99 +35,77 @@ const RoomSearchPage = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleFilterChange = (category, value) => {
-    setFilters(prev => {
-      const updated = { ...prev };
-      updated[category] = updated[category].includes(value)
-        ? updated[category].filter(item => item !== value)
-        : [...updated[category], value];
-      return updated;
-    });
-  };
-
-  const filteredRooms = roomsData.filter(room => {
-    if (searchQuery && !room.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    if (filters.branch.length > 0 && !filters.branch.includes(room.branch)) return false;
-    if (filters.capacity.length > 0 && !filters.capacity.includes(String(room.capacity))) return false;
-    return true;
-  });
-
-  const handleSelectRoom = (roomId) => {
-    const selectedRoom = roomsData.find(room => room.id === roomId);
-    navigate('/confirm-booking', { state: { roomData: selectedRoom } });
-  };
-
-  const checkboxFilter = (category, options) => (
-    <div className="filter-group">
-      <h4>{category}</h4>
-      {options.map(opt => (
-        <label className="filter-option" key={opt.value}>
-          <input
-            type="checkbox"
-            onChange={() => handleFilterChange(opt.key, opt.value)}
-            checked={filters[opt.key].includes(opt.value)}
-          />
-          <span>{opt.label}</span>
-        </label>
-      ))}
-    </div>
+  const filteredRooms = rooms.filter((room) =>
+    room.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="change-room-page">
+    <div className="room-search-layout">
       <Header />
 
-      <main className="main-content">
-        <h2>Tìm kiếm phòng</h2>
-
-        <div className="search-container">
-          <div className="search-box">
-            <FaSearch className="search-icon" />
+      <div className="room-search-wrapper">
+        {/* Sidebar */}
+        <aside className="filter-sidebar">
+          <div className="search-bar">
             <input
               type="text"
-              placeholder="Tên phòng..."
+              placeholder="Search by room name"
               value={searchQuery}
               onChange={handleSearchChange}
-              className="search-input"
             />
           </div>
-        </div>
 
-        <div className="content-container">
-          <div className="filter-panel">
-            <h3>Bộ lọc</h3>
-            {checkboxFilter('Cơ sở', [
-              { key: 'branch', value: 1, label: '1 người' },
-              { key: 'branch', value: 2, label: '2 người' },
-            ])}
-            {checkboxFilter('Sức chứa', [
-              { key: 'capacity', value: '50', label: '50 người' },
-              { key: 'capacity', value: '100', label: '100 người' },
-            ])}
+          <h4>Filter by</h4>
+
+          <div className="filter-group">
+            <h5>Cơ sở</h5>
+            <label><input type="checkbox" /> 1 người</label>
+            <label><input type="checkbox" /> 2 người</label>
           </div>
 
-          <div className="room-list">
-            <h3>Danh sách phòng</h3>
-            <div className="rooms-container">
-              {filteredRooms.map(room => (
-                <div className="room-card" key={room.id}>
-                  <div className="room-image">
-                    <img src={room.image} alt={room.name} />
-                  </div>
-                  <div className="room-info">
-                    <h4>{room.name}</h4>
-                    <p>{room.description}</p>
-                    <p>{room.amenities.join(', ')}</p>
-                    <div className="room-actions">
-                      <button className="change-btn" onClick={() => handleSelectRoom(room.id)}>Chọn</button>
-                    </div>
-                  </div>
+          <div className="filter-group">
+            <h5>Khoảng giờ</h5>
+            {['7h - 9h', '9h - 11h', '11h - 13h', '13h - 15h', '15h - 17h'].map((t, i) => (
+              <label key={i}><input type="checkbox" /> {t}</label>
+            ))}
+          </div>
+
+          <div className="filter-group">
+            <h5>Sức chứa tối đa</h5>
+            {[50, 100, 150, 200, 250].map((c) => (
+              <label key={c}><input type="checkbox" /> {c}</label>
+            ))}
+          </div>
+
+          <div className="filter-group">
+            <h5>Thời gian sử dụng</h5>
+            {['1 tiếng', '2 tiếng', '3 tiếng', '4 tiếng'].map((d, i) => (
+              <label key={i}><input type="checkbox" /> {d}</label>
+            ))}
+          </div>
+          
+        </aside>
+
+        {/* Main content */}
+        <section className="room-listing">
+          <h2>Phòng khả dụng để đặt </h2>
+          <p>{filteredRooms.length} kết quả được tìm thấy</p>
+
+          <div className="room-grid">
+            {filteredRooms.map((room) => (
+              <div key={room.id} className="room-card-modern">
+                <img src={room.image} alt={room.name} />
+                <div className="card-body">
+                  <h4>{room.name}</h4>
+                  <p>{room.location}</p>
+                  <p>{room.amenities}</p>
+                  <button className="btn-primary">Đặt</button>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-        </div>
-      </main>
+        </section>
+      </div>
     </div>
   );
 };
