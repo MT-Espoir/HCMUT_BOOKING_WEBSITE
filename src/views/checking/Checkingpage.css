@@ -8,7 +8,7 @@
 }
 
 /* Main page container */
-.checking-page {
+.C-checking-page {
   font-family: 'Inter', 'Roboto', sans-serif;
   color: #333;
   background-color: #f8f9fa;
@@ -16,7 +16,7 @@
 }
 
 /* Header Styles - tái sử dụng từ trang booking */
-.header {
+.C-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -26,29 +26,29 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.logo-container {
+.C-logo-container {
   display: flex;
   align-items: center;
 }
 
-.logo {
+.C-logo {
   width: 40px;
   height: 40px;
   margin-right: 1rem;
 }
 
-.logo-container h1 {
+.C-logo-container h1 {
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-.main-nav ul {
+.C-main-nav ul {
   display: flex;
   list-style: none;
   gap: 2rem;
 }
 
-.main-nav a {
+.C-main-nav a {
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   font-weight: 500;
@@ -57,12 +57,12 @@
   position: relative;
 }
 
-.main-nav a:hover,
-.main-nav a.active {
+.C-main-nav a:hover,
+.C-main-nav a.active {
   color: white;
 }
 
-.main-nav a.active:after {
+.C-main-nav a.active:after {
   content: '';
   position: absolute;
   bottom: -6px;
@@ -73,19 +73,19 @@
   border-radius: 2px;
 }
 
-.user-actions {
+.C-user-actions {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
 
-.notification-icon {
+.C-notification-icon {
   position: relative;
   font-size: 1.2rem;
   cursor: pointer;
 }
 
-.notification-badge {
+.C-notification-badge {
   position: absolute;
   top: -8px;
   right: -8px;
@@ -100,7 +100,7 @@
   justify-content: center;
 }
 
-.avatar {
+.C-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -109,21 +109,21 @@
   border: 2px solid white;
 }
 
-.avatar img {
+.C-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 /* Main Content Styles */
-.main-content {
+.C-main-content {
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 2rem;
 }
 
 /* Checkout Container */
-.checkout-container {
+.C-checkout-container {
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -131,7 +131,7 @@
   padding: 2rem;
 }
 
-.checkout-title {
+.C-checkout-title {
   font-size: 2rem;
   font-weight: 700;
   color: #1f2937;
@@ -139,7 +139,7 @@
 }
 
 /* Room Info Bar */
-.room-info-bar {
+.C-room-info-bar {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -150,45 +150,45 @@
   margin-bottom: 2rem;
 }
 
-.info-icon {
+.C-info-icon {
   color: #2563EB;
 }
 
 /* Checkout Content */
-.checkout-content {
+.C-checkout-content {
   display: flex;
   gap: 2rem;
 }
 
-.booking-form-container {
+.C-booking-form-container {
   flex: 2;
 }
 
-.booking-form-container h3 {
+.C-booking-form-container h3 {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
   color: #1f2937;
 }
 
 /* Form Styles */
-.booking-form {
+.C-booking-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.form-group {
+.C-form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.form-group label {
+.C-form-group label {
   font-weight: 500;
   color: #4b5563;
 }
 
-.form-group input {
+.C-form-group input {
   padding: 0.75rem;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
@@ -196,28 +196,28 @@
   transition: border-color 0.3s;
 }
 
-.form-group input:focus {
+.C-form-group input:focus {
   outline: none;
   border-color: #2563EB;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.form-group input.error {
+.C-form-group input.C-error {
   border-color: #ef4444;
 }
 
-.error-message {
+.C-error-message {
   color: #ef4444;
   font-size: 0.875rem;
 }
 
-.form-actions {
+.C-form-actions {
   display: flex;
   justify-content: space-between;
   margin-top: 1.5rem;
 }
 
-.back-button {
+.C-back-button {
   padding: 0.75rem 1.5rem;
   background-color: white;
   color: #6b7280;
@@ -228,12 +228,12 @@
   transition: all 0.3s;
 }
 
-.back-button:hover {
+.C-back-button:hover {
   background-color: #f9fafb;
   color: #4b5563;
 }
 
-.complete-booking-button {
+.C-complete-booking-button {
   padding: 0.75rem 1.5rem;
   background-color: #2563EB;
   color: white;
@@ -244,12 +244,12 @@
   transition: background-color 0.3s;
 }
 
-.complete-booking-button:hover {
+.C-complete-booking-button:hover {
   background-color: #1e4fd0;
 }
 
 /* Room Summary */
-.room-summary {
+.C-room-summary {
   flex: 1;
   background-color: #f9fafb;
   border-radius: 8px;
@@ -257,7 +257,7 @@
   height: fit-content;
 }
 
-.room-image {
+.C-room-image {
   width: 100%;
   height: 180px;
   border-radius: 6px;
@@ -265,87 +265,87 @@
   margin-bottom: 1rem;
 }
 
-.room-image img {
+.C-room-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.room-summary h3 {
+.C-room-summary h3 {
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1rem;
 }
 
-.booking-details {
+.C-booking-details {
   border-top: 1px solid #e5e7eb;
   border-bottom: 1px solid #e5e7eb;
   padding: 1rem 0;
   margin-bottom: 1rem;
 }
 
-.booking-detail {
+.C-booking-detail {
   display: flex;
   flex-direction: column;
   margin-bottom: 0.75rem;
 }
 
-.detail-label {
+.C-detail-label {
   font-weight: 500;
   color: #4b5563;
   font-size: 0.875rem;
 }
 
-.detail-value {
+.C-detail-value {
   color: #1f2937;
 }
 
-.booking-duration {
+.C-booking-duration {
   display: flex;
   justify-content: flex-end;
   font-weight: 600;
   color: #2563EB;
 }
 
-.room-amenities {
+.C-room-amenities {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.amenity {
+.C-amenity {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.amenity-icon {
+.C-amenity-icon {
   color: #2563EB;
 }
 
 /* Responsive Styles */
 @media (max-width: 768px) {
-  .header {
+  .C-header {
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
   }
   
-  .main-nav ul {
+  .C-main-nav ul {
     gap: 1rem;
   }
   
-  .checkout-content {
+  .C-checkout-content {
     flex-direction: column;
   }
   
-  .form-actions {
+  .C-form-actions {
     flex-direction: column-reverse;
     gap: 1rem;
   }
   
-  .back-button,
-  .complete-booking-button {
+  .C-back-button,
+  .C-complete-booking-button {
     width: 100%;
   }
 }

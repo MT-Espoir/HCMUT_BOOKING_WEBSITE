@@ -67,67 +67,67 @@ const CheckingPage = () => {
   };
 
   return (
-    <div className="checking-page">
+    <div className="C-checking-page">
       <Header />
 
-      <main className="main-content">
-        <div className="checkout-container">
-          <h2 className="checkout-title">Secure your reservation</h2>
+      <main className="C-main-content">
+        <div className="C-checkout-container">
+          <h2 className="C-checkout-title">Secure your reservation</h2>
 
-          <div className="room-info-bar">
-            <FaInfoCircle className="info-icon" />
+          <div className="C-room-info-bar">
+            <FaInfoCircle className="C-info-icon" />
             <p>{roomData.name}, Cỡ: {roomData.capacity} người - {roomData.size} m²</p>
           </div>
 
-          <div className="checkout-content">
-            <div className="booking-form-container">
+          <div className="C-checkout-content">
+            <div className="C-booking-form-container">
               <h3>Thông tin đặt phòng</h3>
-              <form className="booking-form" onSubmit={handleSubmit}>
-                <div className="form-group">
+              <form className="C-booking-form" onSubmit={handleSubmit}>
+                <div className="C-form-group">
                   <label htmlFor="firstName">Tên</label>
-                  <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} className={errors.firstName ? 'error' : ''} />
-                  {errors.firstName && <span className="error-message">{errors.firstName}</span>}
+                  <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} className={errors.firstName ? 'C-error' : ''} />
+                  {errors.firstName && <span className="C-error-message">{errors.firstName}</span>}
                 </div>
 
-                <div className="form-group">
+                <div className="C-form-group">
                   <label htmlFor="lastName">Họ</label>
-                  <input type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} className={errors.lastName ? 'error' : ''} />
-                  {errors.lastName && <span className="error-message">{errors.lastName}</span>}
+                  <input type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} className={errors.lastName ? 'C-error' : ''} />
+                  {errors.lastName && <span className="C-error-message">{errors.lastName}</span>}
                 </div>
 
-                <div className="form-group">
+                <div className="C-form-group">
                   <label htmlFor="email">Mail</label>
-                  <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className={errors.email ? 'error' : ''} />
-                  {errors.email && <span className="error-message">{errors.email}</span>}
+                  <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className={errors.email ? 'C-error' : ''} />
+                  {errors.email && <span className="C-error-message">{errors.email}</span>}
                 </div>
 
-                <div className="form-group">
+                <div className="C-form-group">
                   <label htmlFor="studentId">MSSV (nếu có)</label>
                   <input type="text" id="studentId" name="studentId" value={formData.studentId} onChange={handleChange} />
                 </div>
 
-                <div className="form-actions">
-                  <button type="button" onClick={handleGoBack} className="back-button">Quay lại</button>
-                  <button type="submit" className="complete-booking-button">Complete Booking</button>
+                <div className="C-form-actions">
+                  <button type="button" onClick={handleGoBack} className="C-back-button">Quay lại</button>
+                  <button type="submit" className="C-complete-booking-button">Complete Booking</button>
                 </div>
               </form>
             </div>
 
-            <div className="room-summary">
-              <div className="room-image">
+            <div className="C-room-summary">
+              <div className="C-room-image">
                 <img src={roomData.image} alt={roomData.name} />
               </div>
               <h3>{roomData.name}</h3>
-              <div className="booking-details">
-                <div className="booking-detail">
-                  <span className="detail-label">Check-in:</span>
-                  <span className="detail-value">{roomData.checkIn}</span>
+              <div className="C-booking-details">
+                <div className="C-booking-detail">
+                  <span className="C-detail-label">Check-in:</span>
+                  <span className="C-detail-value">{roomData.checkIn}</span>
                 </div>
-                <div className="booking-detail">
-                  <span className="detail-label">Check-out:</span>
-                  <span className="detail-value">{roomData.checkOut}</span>
+                <div className="C-booking-detail">
+                  <span className="C-detail-label">Check-out:</span>
+                  <span className="C-detail-value">{roomData.checkOut}</span>
                 </div>
-                <div className="booking-duration">{roomData.duration}</div>
+                <div className="C-booking-duration">{roomData.duration}</div>
               </div>
             </div>
           </div>

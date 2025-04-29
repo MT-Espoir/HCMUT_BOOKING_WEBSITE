@@ -46,62 +46,62 @@ const Confirmbookingpage = () => {
   };
 
   return (
-    <div className="booking-page">
+    <div className="CB-booking-page">
       <Header />
 
-      <main className="main-content">
-        <div className="back-button-container">
-          <button className="back-button" onClick={handleBackToRoomSelection}>
+      <main className="CB-main-content">
+        <div className="CB-back-button-container">
+          <button className="CB-back-button" onClick={handleBackToRoomSelection}>
             <FaArrowLeft /> Quay lại trang chọn phòng
           </button>
         </div>
 
-        <div className="content-wrapper">
-          <section className="room-details">
-            <div className="room-images">
-              <div className="image-gallery">
-                <div className="main-image">
+        <div className="CB-content-wrapper">
+          <section className="CB-room-details">
+            <div className="CB-room-images">
+              <div className="CB-image-gallery">
+                <div className="CB-main-image">
                   <img src={roomData.image || roomMainImg} alt="Hình ảnh chính của phòng" />
                 </div>
-                <div className="side-images">
+                <div className="CB-side-images">
                   <img src={roomSide1Img} alt="Hình ảnh phụ 1 của phòng" />
                   <img src={roomSide2Img} alt="Hình ảnh phụ 2 của phòng" />
                 </div>
               </div>
             </div>
 
-            <div className="room-info">
+            <div className="CB-room-info">
               <h2>{roomData.name}</h2>
               
-              <div className="room-specs">
-                <div className="spec">
+              <div className="CB-room-specs">
+                <div className="CB-spec">
                   <h4>Sức chứa</h4>
                   <p><FaUser /> Cỡ: {roomData.capacity} người</p>
                 </div>
-                <div className="spec">
+                <div className="CB-spec">
                   <h4>Diện tích</h4>
                   <p><FaRulerCombined /> {roomData.size} m²</p>
                 </div>
               </div>
               
-              <div className="tab-container">
-                <div className="tab-menu">
+              <div className="CB-tab-container">
+                <div className="CB-tab-menu">
                   <button 
-                    className={activeTab === 'overview' ? 'tab-active' : ''} 
+                    className={activeTab === 'overview' ? 'CB-tab-active' : ''} 
                     onClick={() => setActiveTab('overview')}
                   >
                     Overview
                   </button>
                 </div>
                 
-                <div className="tab-content">
+                <div className="CB-tab-content">
                   {activeTab === 'overview' && (
-                    <div className="overview-tab">
-                      <p className="room-description">
+                    <div className="CB-overview-tab">
+                      <p className="CB-room-description">
                         {roomData.fullDescription}
                       </p>
                       
-                      <div className="amenities">
+                      <div className="CB-amenities">
                         <h4>Tiện ích</h4>
                         <ul>
                           {amenitiesList.map((amenity, index) => (
@@ -110,11 +110,11 @@ const Confirmbookingpage = () => {
                         </ul>
                       </div>
                       
-                      <div className="features">
+                      <div className="CB-features">
                         <h4>Đặc điểm</h4>
-                        <div className="feature-list">
+                        <div className="CB-feature-list">
                           {featuresList.map((feature, index) => (
-                            <span key={index} className="feature">{feature}</span>
+                            <span key={index} className="CB-feature">{feature}</span>
                           ))}
                         </div>
                       </div>
@@ -123,11 +123,11 @@ const Confirmbookingpage = () => {
                 </div>
               </div>
 
-              <div className="booking-action">
-                <button onClick={handleBookButton} className="book-button">
+              <div className="CB-booking-action">
+                <button onClick={handleBookButton} className="CB-book-button">
                   Đặt phòng
                 </button>
-                <p className="booking-notes"></p>
+                <p className="CB-booking-notes"></p>
               </div>
             </div>
           </section>

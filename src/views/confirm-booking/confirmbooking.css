@@ -8,7 +8,7 @@
 }
 
 /* Main page container */
-.booking-page {
+.CB-booking-page {
   font-family: 'Inter', 'Roboto', sans-serif;
   color: #333;
   background-color: #f8f9fa;
@@ -16,7 +16,7 @@
 }
 
 /* Header Styles */
-.header {
+.CB-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -26,29 +26,29 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.logo-container {
+.CB-logo-container {
   display: flex;
   align-items: center;
 }
 
-.logo {
+.CB-logo {
   width: 40px;
   height: 40px;
   margin-right: 1rem;
 }
 
-.logo-container h1 {
+.CB-logo-container h1 {
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-.main-nav ul {
+.CB-main-nav ul {
   display: flex;
   list-style: none;
   gap: 2rem;
 }
 
-.main-nav a {
+.CB-main-nav a {
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   font-weight: 500;
@@ -57,12 +57,12 @@
   position: relative;
 }
 
-.main-nav a:hover,
-.main-nav a.active {
+.CB-main-nav a:hover,
+.CB-main-nav a.active {
   color: white;
 }
 
-.main-nav a.active:after {
+.CB-main-nav a.active:after {
   content: '';
   position: absolute;
   bottom: -6px;
@@ -73,19 +73,19 @@
   border-radius: 2px;
 }
 
-.user-actions {
+.CB-user-actions {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
 
-.notification-icon {
+.CB-notification-icon {
   position: relative;
   font-size: 1.2rem;
   cursor: pointer;
 }
 
-.notification-badge {
+.CB-notification-badge {
   position: absolute;
   top: -8px;
   right: -8px;
@@ -100,7 +100,7 @@
   justify-content: center;
 }
 
-.avatar {
+.CB-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -109,25 +109,25 @@
   border: 2px solid white;
 }
 
-.avatar img {
+.CB-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 /* Main Content Styles */
-.main-content {
+.CB-main-content {
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 2rem;
 }
 
 /* Back Button Styles */
-.back-button-container {
+.CB-back-button-container {
   margin-bottom: 1.5rem;
 }
 
-.back-button {
+.CB-back-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -140,29 +140,29 @@
   transition: color 0.2s;
 }
 
-.back-button:hover {
+.CB-back-button:hover {
   color: #2563EB;
 }
 
 /* Content Wrapper */
-.content-wrapper {
+.CB-content-wrapper {
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
 
 /* Tab Container Styles */
-.tab-container {
+.CB-tab-container {
   margin-bottom: 2rem;
 }
 
-.tab-menu {
+.CB-tab-menu {
   display: flex;
   border-bottom: 1px solid #e5e7eb;
   margin-bottom: 1.5rem;
 }
 
-.tab-menu button {
+.CB-tab-menu button {
   background: none;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -174,16 +174,16 @@
   position: relative;
 }
 
-.tab-menu button:hover {
+.CB-tab-menu button:hover {
   color: #2563EB;
 }
 
-.tab-menu button.tab-active {
+.CB-tab-menu button.CB-tab-active {
   color: #2563EB;
   font-weight: 600;
 }
 
-.tab-menu button.tab-active:after {
+.CB-tab-menu button.CB-tab-active:after {
   content: '';
   position: absolute;
   bottom: -1px;
@@ -194,11 +194,11 @@
   border-radius: 2px;
 }
 
-.tab-content {
+.CB-tab-content {
   margin-bottom: 1.5rem;
 }
 
-.overview-tab {
+.CB-overview-tab {
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -208,7 +208,7 @@
 }
 
 /* Room Details Styles */
-.room-details {
+.CB-room-details {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -217,36 +217,36 @@
 }
 
 /* Room Images Styles */
-.room-images {
+.CB-room-images {
   width: 100%;
 }
 
-.image-gallery {
+.CB-image-gallery {
   display: flex;
   flex-direction: row;
   height: 400px; /* Đảm bảo gallery có chiều cao cố định */
 }
 
-.main-image {
+.CB-main-image {
   width: 60%;
   height: 100%;
   overflow: hidden;
 }
 
-.main-image img {
+.CB-main-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.side-images {
+.CB-side-images {
   display: flex;
   flex-direction: column;
   width: 40%;
   height: 100%;
 }
 
-.side-images img {
+.CB-side-images img {
   height: 50%;
   width: 100%;
   object-fit: cover;
@@ -255,24 +255,24 @@
 }
 
 /* Room Layout Styles */
-.room-layout {
+.CB-room-layout {
   display: flex;
   flex-direction: column; /* Mặc định là chiều dọc */
 }
 
 /* Room Info Styles */
-.room-info {
+.CB-room-info {
   padding: 2rem;
 }
 
-.room-info h2 {
+.CB-room-info h2 {
   font-size: 2.25rem;
   margin-bottom: 1rem;
   color: #1f2937;
   font-weight: 700;
 }
 
-.room-description {
+.CB-room-description {
   margin-bottom: 2rem;
   color: #4b5563;
   line-height: 1.7;
@@ -280,7 +280,7 @@
 }
 
 /* Room Specs Styles */
-.room-specs {
+.CB-room-specs {
   display: flex;
   justify-content: space-between;
   margin-bottom: 2rem;
@@ -289,36 +289,36 @@
   padding: 1.5rem;
 }
 
-.spec {
+.CB-spec {
   flex: 1;
   text-align: center;
 }
 
-.spec h4 {
+.CB-spec h4 {
   font-size: 1rem;
   color: #6b7280;
   margin-bottom: 0.5rem;
 }
 
-.spec p {
+.CB-spec p {
   font-weight: 600;
   color: #1f2937;
   font-size: 1.1rem;
 }
 
 /* Amenities Styles */
-.amenities {
+.CB-amenities {
   margin-bottom: 2rem;
 }
 
-.amenities h4 {
+.CB-amenities h4 {
   font-size: 1.2rem;
   margin-bottom: 1rem;
   color: #1f2937;
   font-weight: 600;
 }
 
-.amenities ul {
+.CB-amenities ul {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 0.7rem;
@@ -328,21 +328,21 @@
 }
 
 /* Features Styles */
-.features h4 {
+.CB-features h4 {
   font-size: 1.2rem;
   margin-bottom: 1rem;
   color: #1f2937;
   font-weight: 600;
 }
 
-.feature-list {
+.CB-feature-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-bottom: 2rem;
 }
 
-.feature {
+.CB-feature {
   background-color: #f0f7ff;
   border-radius: 20px;
   padding: 0.5rem 1rem;
@@ -352,13 +352,13 @@
 }
 
 /* Booking Action Styles */
-.booking-action {
+.CB-booking-action {
   margin: 2rem 0;
   display: flex;
   justify-content: center;
 }
 
-.book-button {
+.CB-book-button {
   background-color: #2563EB;
   color: white;
   border: none;
@@ -371,18 +371,18 @@
   box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
 }
 
-.book-button:hover {
+.CB-book-button:hover {
   background-color: #1d4ed8;
   transform: translateY(-2px);
   box-shadow: 0 6px 10px rgba(37, 99, 235, 0.3);
 }
 
-.book-button:active {
+.CB-book-button:active {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
 }
 
-.booking-notes {
+.CB-booking-notes {
   background-color: #f9fafb;
   border-radius: 8px;
   padding: 1rem;
@@ -394,7 +394,7 @@
 }
 
 /* Loading Container */
-.loading-container {
+.CB-loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -403,84 +403,84 @@
   gap: 1rem;
 }
 
-.loading-container p {
+.CB-loading-container p {
   font-size: 1.2rem;
   color: #6b7280;
 }
 
 /* Responsive Styles */
 @media (max-width: 992px) {
-  .room-details {
+  .CB-room-details {
     width: 100%;
   }
   
-  .amenities ul {
+  .CB-amenities ul {
     grid-template-columns: 1fr 1fr;
   }
   
-  .tab-menu {
+  .CB-tab-menu {
     justify-content: center;
   }
 }
 
 @media (max-width: 768px) {
-  .header {
+  .CB-header {
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
   }
   
-  .main-nav ul {
+  .CB-main-nav ul {
     gap: 1rem;
   }
   
-  .main-image {
+  .CB-main-image {
     height: 300px;
   }
   
-  .side-images {
+  .CB-side-images {
     height: 100px;
   }
   
-  .room-specs {
+  .CB-room-specs {
     flex-direction: column;
     gap: 1rem;
   }
   
-  .amenities ul {
+  .CB-amenities ul {
     grid-template-columns: 1fr;
   }
   
-  .room-info h2 {
+  .CB-room-info h2 {
     font-size: 1.8rem;
   }
   
-  .tab-menu button {
+  .CB-tab-menu button {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
   }
 }
 
 @media (max-width: 480px) {
-  .main-nav ul {
+  .CB-main-nav ul {
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.7rem 1.5rem;
   }
   
-  .room-info {
+  .CB-room-info {
     padding: 1.5rem;
   }
   
-  .book-button {
+  .CB-book-button {
     width: 100%;
   }
   
-  .tab-menu {
+  .CB-tab-menu {
     flex-wrap: wrap;
   }
   
-  .tab-menu button {
+  .CB-tab-menu button {
     flex: 1;
     min-width: 33.33%;
     text-align: center;
