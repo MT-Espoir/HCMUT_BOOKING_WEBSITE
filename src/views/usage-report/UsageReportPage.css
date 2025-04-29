@@ -1,0 +1,206 @@
+/* HCMUT Booking Room - Usage Report Page Styles */
+
+/* Global styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Main page container */
+.usage-report-page {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: #333;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Main Content Styles */
+.main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 2rem;
+}
+
+/* Report Filter Styles */
+.report-filter {
+  margin-bottom: 2rem;
+}
+
+.date-range {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.date-box {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.date-box label {
+  font-size: 0.9rem;
+  color: #4b5563;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.date-box input {
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2937;
+  background: none;
+  width: 100%;
+  pointer-events: none;
+}
+
+.room-info {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Report Content Styles */
+.report-content {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.user-list {
+  flex: 1;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.user-list h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.user-item:last-child {
+  border-bottom: none;
+}
+
+.user-icon {
+  font-size: 1.5rem;
+  color: #2563EB;
+}
+
+.user-details {
+  flex-grow: 1;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.user-email {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.booking-graph {
+  flex: 1;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.booking-graph h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1f2937;
+}
+
+.graph-placeholder {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  color: #4b5563;
+}
+
+/* Report Actions Styles */
+.report-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.download-btn {
+  background-color: #facc15;
+  color: #1f2937;
+}
+
+.download-btn:hover {
+  background-color: #eab308;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .date-range {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .date-box,
+  .room-info {
+    width: 100%;
+  }
+
+  .report-content {
+    flex-direction: column;
+  }
+
+  .report-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
