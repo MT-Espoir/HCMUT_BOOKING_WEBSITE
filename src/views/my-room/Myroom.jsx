@@ -51,46 +51,46 @@ const MyRoomPage = () => {
   };
 
   return (
-    <div className="my-room-page">
+    <div className="MR-my-room-page">
       <Header />
 
-      <main className="main-content">
-        <h2 className="page-title">Phòng của tôi</h2>
+      <main className="MR-main-content">
+        <h2 className="MR-page-title">Phòng của tôi</h2>
 
         {bookings.length > 0 ? (
-          <div className="bookings-list">
+          <div className="MR-bookings-list">
             {bookings.map(booking => (
-              <div className={`booking-card ${booking.status}`} key={booking.id}>
-                <div className="booking-image">
+              <div className={`MR-booking-card ${booking.status}`} key={booking.id}>
+                <div className="MR-booking-image">
                   <img src={booking.image} alt={booking.roomName} />
-                  <div className={`booking-status ${booking.status}`}>
+                  <div className={`MR-booking-status ${booking.status}`}>
                     {getStatusLabel(booking.status)}
                   </div>
                 </div>
 
-                <div className="booking-details">
+                <div className="MR-booking-details">
                   <div>
-                    <h3 className="room-name">{booking.roomName}</h3>
-                    <div className="booking-time">
+                    <h3 className="MR-room-name">{booking.roomName}</h3>
+                    <div className="MR-booking-time">
                       <p><strong>Check-in:</strong> {booking.checkIn}</p>
                       <p><strong>Check-out:</strong> {booking.checkOut}</p>
-                      <p className="duration"><FaClock className="duration-icon" /> {booking.duration}</p>
+                      <p className="MR-duration"><FaClock className="MR-duration-icon" /> {booking.duration}</p>
                     </div>
                   </div>
 
-                  <div className="booking-actions">
-                    {booking.status === 'upcoming' && (
+                  <div className="MR-booking-actions">
+                    {booking.status === 'MR-upcoming' && (
                       <>
-                        <button className="action-btn start-btn" onClick={handleStartBooking}>Bắt đầu</button>
-                        <button className="action-btn change-btn" onClick={() => handleChangeRoom(booking.id)}>Đổi phòng</button>
-                        <button className="action-btn cancel-btn" onClick={() => showConfirmation('cancel', booking.id)}>Hủy</button>
+                        <button className="MR-action-btn start-btn" onClick={handleStartBooking}>Bắt đầu</button>
+                        <button className="MR-action-btn change-btn" onClick={() => handleChangeRoom(booking.id)}>Đổi phòng</button>
+                        <button className="MR-action-btn cancel-btn" onClick={() => showConfirmation('cancel', booking.id)}>Hủy</button>
                       </>
                     )}
-                    {booking.status === 'past' && (
-                      <button className="action-btn completed-btn" disabled><FaCheckCircle /> Đã hoàn thành</button>
+                    {booking.status === 'MR-past' && (
+                      <button className="MR-action-btn completed-btn" disabled><FaCheckCircle /> Đã hoàn thành</button>
                     )}
-                    {booking.status === 'canceled' && (
-                      <button className="action-btn canceled-btn" disabled>Đã hủy</button>
+                    {booking.status === 'MR-canceled' && (
+                      <button className="MR-action-btn canceled-btn" disabled>Đã hủy</button>
                     )}
                   </div>
                 </div>
@@ -98,11 +98,11 @@ const MyRoomPage = () => {
             ))}
           </div>
         ) : (
-          <div className="empty-bookings">
-            <FaCalendarAlt className="empty-icon" />
+          <div className="MR-empty-bookings">
+            <FaCalendarAlt className="MR-empty-icon" />
             <h3>Bạn chưa có phòng nào</h3>
             <p>Hiện tại bạn chưa đặt phòng nào. Hãy tìm kiếm và đặt phòng để bắt đầu sử dụng dịch vụ.</p>
-            <button className="search-room-btn" onClick={handleSearchRoom}>
+            <button className="MR-search-room-btn" onClick={handleSearchRoom}>
               <FaSearch style={{ marginRight: '8px' }} /> Tìm phòng ngay
             </button>
           </div>
@@ -110,16 +110,16 @@ const MyRoomPage = () => {
       </main>
 
       {confirmAction.show && (
-        <div className="modal-overlay">
-          <div className="confirmation-modal">
-            <button className="close-modal" onClick={closeConfirmation}>
+        <div className="MR-modal-overlay">
+          <div className="MR-confirmation-modal">
+            <button className="MR-close-modal" onClick={closeConfirmation}>
               <FaTimes />
             </button>
             <h4>Xác nhận hủy phòng</h4>
             <p>Bạn có chắc chắn muốn hủy đặt phòng này? Hành động này không thể hoàn tác.</p>
-            <div className="modal-actions">
-              <button className="modal-btn cancel" onClick={closeConfirmation}>Quay lại</button>
-              <button className="modal-btn confirm" onClick={handleConfirmAction}>Xác nhận hủy</button>
+            <div className="MR-modal-actions">
+              <button className="MR-modal-btn cancel" onClick={closeConfirmation}>Quay lại</button>
+              <button className="MR-modal-btn confirm" onClick={handleConfirmAction}>Xác nhận hủy</button>
             </div>
           </div>
         </div>

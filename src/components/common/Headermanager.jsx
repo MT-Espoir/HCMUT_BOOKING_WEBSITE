@@ -1,17 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import './Header.css';
+import './Headermanager.css';
 import logoIcon from '../../assets/logo.png';
 import userAvatar from '../../assets/avatar.jpg';
-import { FaBell } from 'react-icons/fa';
-import NotificationPanel from './NotificationPanel';
+import { FaBell, FaChevronDown } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 
-const Header = () => {
-  const [showNotifications, setShowNotifications] = useState(false);
+const Headermanager = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); // Add useLocation hook to track current path
+  const location = useLocation(); // Thêm hook useLocation để theo dõi đường dẫn hiện tại
   const { user, logout, isAuthenticated } = useAuth();
   const userMenuRef = useRef(null);
 
@@ -19,19 +17,6 @@ const Header = () => {
     logout();
     setShowUserMenu(false);
     navigate('/');
-  };
-
-  const navigateToManager = () => {
-    setShowUserMenu(false);
-    navigate('/manager');
-  };
-
-  // Function to check if a link is active
-  const isActive = (path) => {
-    if (path === '/home' && location.pathname === '/') {
-      return true;
-    }
-    return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 
   // Close dropdown when clicking outside
@@ -48,30 +33,48 @@ const Header = () => {
     };
   }, []);
 
+  const managementLinks = [
+    { path: '/manager', title: 'Quản lý người dùng' },
+    { path: '/manager-system', title: 'Quản lý quyền hệ thống' },
+    { path: '/manager-device', title: 'Quản lý thiết bị' },
+    { path: '/user-verification', title: 'Xác thực người dùng' },
+    { path: '/usage-report', title: 'Báo cáo sử dụng' }
+  ];
+
+  // Hàm kiểm tra xem link có đang active không
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
   return (
-    <header className="header">
+    <header className="header-manager">
       <div className="logo-container">
         <img src={logoIcon} alt="HCMUT Logo" className="bk-logo" />
         <div className="logo-text">
           <span className="logo-title">HCMUT</span>
-          <span className="logo-subtitle">Booking room</span>
+          <span className="logo-subtitle">Admin Dashboard</span>
         </div>
       </div>
 
-      <nav className="main-nav">
+      <nav className="manager-nav">
         <ul>
-          <li><Link to="/home" className={isActive('/home') ? 'active' : ''}>Home</Link></li>
-          <li><Link to="/room-search" className={isActive('/room-search') ? 'active' : ''}>Tìm phòng</Link></li>
-          <li><Link to="/myroom" className={isActive('/myroom') ? 'active' : ''}>My Rooms</Link></li>
-          <li><Link to="/about" className={isActive('/about') ? 'active' : ''}>About</Link></li>
-          <li><Link to="/contact" className={isActive('/contact') ? 'active' : ''}>Contact</Link></li>
+          {managementLinks.map((link, index) => (
+            <li key={index}>
+              <Link 
+                to={link.path} 
+                className={isActive(link.path) ? 'active' : ''}
+              >
+                {link.title}
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
 
       <div className="user-actions">
         {isAuthenticated && (
           <>
-            <div className="notification-icon" onClick={() => setShowNotifications(!showNotifications)}>
+            <div className="notification-icon">
               <FaBell />
               <span className="notification-badge">3</span>
             </div>
@@ -84,14 +87,16 @@ const Header = () => {
                   className="avatar" 
                   onClick={() => setShowUserMenu(!showUserMenu)}
                 />
+                <span className="user-name">{user?.name || 'Admin'}</span>
+                <FaChevronDown className="dropdown-icon" onClick={() => setShowUserMenu(!showUserMenu)} />
                 
                 {showUserMenu && (
                   <div className="user-dropdown-menu">
-                    <div className="user-dropdown-item" onClick={navigateToManager}>
-                      Manager
+                    <div className="user-dropdown-item" onClick={() => navigate('/home')}>
+                      Về trang chủ
                     </div>
                     <div className="user-dropdown-item" onClick={handleLogout}>
-                      Logout
+                      Đăng xuất
                     </div>
                   </div>
                 )}
@@ -100,10 +105,8 @@ const Header = () => {
           </>
         )}
       </div>
-
-      {showNotifications && <NotificationPanel />}
     </header>
   );
 };
 
-export default Header;
+export default Headermanager;

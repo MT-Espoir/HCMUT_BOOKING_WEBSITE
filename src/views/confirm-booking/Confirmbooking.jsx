@@ -26,11 +26,21 @@ const Confirmbookingpage = () => {
     fullDescription: 'Phòng Poker (tầng trệt) là không gian lý tưởng cho các cuộc họp nhỏ hoặc làm việc nhóm. Phòng được trang bị đầy đủ tiện nghi hiện đại, ánh sáng tự nhiên, và không gian yên tĩnh để đảm bảo hiệu quả công việc tối đa.'
   };
 
+  // Chuyển đổi amenities từ chuỗi sang mảng nếu cần
+  const amenitiesList = typeof roomData.amenities === 'string' 
+    ? roomData.amenities.split(',').map(item => item.replace('Tiện nghi:', '').trim())
+    : roomData.amenitiesList || roomData.amenities || [];
+  
+  // Đảm bảo features luôn là một mảng
+  const featuresList = Array.isArray(roomData.features) 
+    ? roomData.features 
+    : [];
+
   const handleBookButton = () => {
     // Truyền dữ liệu phòng đến trang checking
     navigate('/checking', { state: { roomData } });
   };
-
+  
   const handleBackToRoomSelection = () => {
     navigate('/room-search');
   };
@@ -94,7 +104,7 @@ const Confirmbookingpage = () => {
                       <div className="amenities">
                         <h4>Tiện ích</h4>
                         <ul>
-                          {roomData.amenities.map((amenity, index) => (
+                          {amenitiesList.map((amenity, index) => (
                             <li key={index}>{amenity}</li>
                           ))}
                         </ul>
@@ -103,7 +113,7 @@ const Confirmbookingpage = () => {
                       <div className="features">
                         <h4>Đặc điểm</h4>
                         <div className="feature-list">
-                          {roomData.features.map((feature, index) => (
+                          {featuresList.map((feature, index) => (
                             <span key={index} className="feature">{feature}</span>
                           ))}
                         </div>

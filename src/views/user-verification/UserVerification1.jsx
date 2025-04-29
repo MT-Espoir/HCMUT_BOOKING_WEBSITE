@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './UserVerification1.css';
-import Header from '../../components/common/Header';
+import Headermanager from '../../components/common/Headermanager';
 
 const UserVerification1 = () => {
   const { userId } = useParams();
@@ -51,7 +51,7 @@ const UserVerification1 = () => {
 
   return (
     <div className="user-verification-detail-page">
-      <Header />
+      <Headermanager />
 
       <main className="main-content">
         <h2 className="page-title">Quản lý xác thực người dùng</h2>

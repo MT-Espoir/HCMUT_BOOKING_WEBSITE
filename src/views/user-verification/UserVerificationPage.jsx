@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './UserVerificationPage.css';
-import Header from '../../components/common/Header';
+import Headermanager from '../../components/common/Headermanager';
 import { FaUser, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 const UserVerificationPage = () => {
@@ -27,7 +27,7 @@ const UserVerificationPage = () => {
 
   return (
     <div className="user-verification-page">
-      <Header />
+      <Headermanager />
 
       <main className="main-content">
         <h2 className="page-title">Quản lý xác thực người dùng</h2>

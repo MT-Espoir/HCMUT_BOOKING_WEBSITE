@@ -8,7 +8,7 @@
 }
 
 /* Main page container */
-.my-room-page {
+.MR-my-room-page {
   font-family: 'Inter', 'Roboto', sans-serif;
   color: #333;
   background-color: #f8f9fa;
@@ -16,7 +16,7 @@
 }
 
 /* Header Styles - tái sử dụng từ các trang trước */
-.header {
+.MR-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -26,29 +26,29 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.logo-container {
+.MR-logo-container {
   display: flex;
   align-items: center;
 }
 
-.logo {
+.MR-logo {
   width: 40px;
   height: 40px;
   margin-right: 1rem;
 }
 
-.logo-container h1 {
+.MR-logo-container h1 {
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-.main-nav ul {
+.MR-main-nav ul {
   display: flex;
   list-style: none;
   gap: 2rem;
 }
 
-.main-nav a {
+.MR-main-nav a {
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   font-weight: 500;
@@ -57,12 +57,12 @@
   position: relative;
 }
 
-.main-nav a:hover,
-.main-nav a.active {
+.MR-main-nav a:hover,
+.MR-main-nav a.active {
   color: white;
 }
 
-.main-nav a.active:after {
+.MR-main-nav a.active:after {
   content: '';
   position: absolute;
   bottom: -6px;
@@ -73,19 +73,19 @@
   border-radius: 2px;
 }
 
-.user-actions {
+.MR-user-actions {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
 
-.notification-icon {
+.MR-notification-icon {
   position: relative;
   font-size: 1.2rem;
   cursor: pointer;
 }
 
-.notification-badge {
+.MR-notification-badge {
   position: absolute;
   top: -8px;
   right: -8px;
@@ -100,7 +100,7 @@
   justify-content: center;
 }
 
-.avatar {
+.MR-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -109,20 +109,20 @@
   border: 2px solid white;
 }
 
-.avatar img {
+.MR-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 /* Main Content Styles */
-.main-content {
+.MR-main-content {
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 2rem;
 }
 
-.page-title {
+.MR-page-title {
   font-size: 2.5rem;
   font-weight: 700;
   color: #1f2937;
@@ -131,7 +131,7 @@
   padding-bottom: 0.75rem;
 }
 
-.page-title:after {
+.MR-page-title:after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -143,13 +143,13 @@
 }
 
 /* Booking Card Styles */
-.bookings-list {
+.MR-bookings-list {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.booking-card {
+.MR-booking-card {
   display: flex;
   background-color: white;
   border-radius: 12px;
@@ -158,25 +158,25 @@
   transition: all 0.3s ease;
 }
 
-.booking-card:hover {
+.MR-booking-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Add subtle border color based on status */
-.booking-card.upcoming {
+.MR-booking-card.upcoming {
   border-left: 5px solid #3b82f6;
 }
 
-.booking-card.past {
+.MR-booking-card.past {
   border-left: 5px solid #10b981;
 }
 
-.booking-card.canceled {
+.MR-booking-card.canceled {
   border-left: 5px solid #ef4444;
 }
 
-.booking-image {
+.MR-booking-image {
   width: 280px;
   height: 310px;
   position: relative;
@@ -184,18 +184,18 @@
   overflow: hidden;
 }
 
-.booking-image img {
+.MR-booking-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.5s ease;
 }
 
-.booking-card:hover .booking-image img {
+.MR-booking-card:hover .MR-booking-image img {
   transform: scale(1.05);
 }
 
-.booking-status {
+.MR-booking-status {
   position: absolute;
   top: 12px;
   left: 12px;
@@ -209,19 +209,19 @@
   letter-spacing: 0.5px;
 }
 
-.booking-status.upcoming {
+.MR-booking-status.upcoming {
   background-color: #3b82f6;
 }
 
-.booking-status.past {
+.MR-booking-status.past {
   background-color: #10b981;
 }
 
-.booking-status.canceled {
+.MR-booking-status.canceled {
   background-color: #ef4444;
 }
 
-.booking-details {
+.MR-booking-details {
   flex-grow: 1;
   padding: 1.25rem;
   display: flex;
@@ -229,30 +229,30 @@
   justify-content: space-between;
 }
 
-.room-name {
+.MR-room-name {
   font-size: 1.75rem;
   font-weight: 700;
   margin-bottom: 1.25rem;
   color: #1f2937;
 }
 
-.booking-time {
+.MR-booking-time {
   margin-bottom: 1.5rem;
 }
 
-.booking-time p {
+.MR-booking-time p {
   margin-bottom: 0.75rem;
   color: #4b5563;
   font-size: 1.05rem;
 }
 
-.booking-time strong {
+.MR-booking-time strong {
   color: #1f2937;
   font-weight: 600;
   margin-right: 0.35rem;
 }
 
-.duration {
+.MR-duration {
   display: inline-flex;
   align-items: center;
   font-weight: 600;
@@ -263,17 +263,17 @@
   border-radius: 20px;
 }
 
-.duration-icon {
+.MR-duration-icon {
   margin-right: 0.5rem;
 }
 
-.booking-actions {
+.MR-booking-actions {
   display: flex;
   gap: 1rem;
   margin-top: 1.5rem;
 }
 
-.action-btn {
+.MR-action-btn {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
@@ -286,47 +286,47 @@
   justify-content: center;
 }
 
-.start-btn {
+.MR-start-btn {
   background-color: #2563EB;
   color: white;
 }
 
-.start-btn:hover {
+.MR-start-btn:hover {
   background-color: #1d4ed8;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
 }
 
-.start-btn:active {
+.MR-start-btn:active {
   transform: translateY(0);
 }
 
-.cancel-btn, .delete-btn {
+.MR-cancel-btn, .MR-delete-btn {
   background-color: #f9fafb;
   color: #ef4444;
   border: 1px solid #ef4444;
 }
 
-.cancel-btn:hover, .delete-btn:hover {
+.MR-cancel-btn:hover, .MR-delete-btn:hover {
   background-color: #fef2f2;
   color: #dc2626;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(239, 68, 68, 0.15);
 }
 
-.change-btn {
+.MR-change-btn {
   background-color: #f9fafb;
   color: #2563EB;
   border: 1px solid #2563EB;
 }
 
-.change-btn:hover {
+.MR-change-btn:hover {
   background-color: #f0f7ff;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(37, 99, 235, 0.15);
 }
 
-.canceled-btn {
+.MR-canceled-btn {
   background-color: #f3f4f6;
   color: #9ca3af;
   border: 1px solid #d1d5db;
@@ -334,7 +334,7 @@
 }
 
 /* Thêm style cho nút đã hoàn thành */
-.completed-btn {
+.MR-completed-btn {
   background-color: #f9fafb;
   color: #10b981;
   border: 1px solid #10b981;
@@ -343,12 +343,12 @@
   align-items: center;
 }
 
-.completed-btn svg {
+.MR-completed-btn svg {
   margin-right: 0.5rem;
 }
 
 /* Modal styles */
-.modal-overlay {
+.MR-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -362,7 +362,7 @@
   backdrop-filter: blur(4px);
 }
 
-.confirmation-modal {
+.MR-confirmation-modal {
   background-color: white;
   border-radius: 12px;
   padding: 2rem;
@@ -377,26 +377,26 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.confirmation-modal h4 {
+.MR-confirmation-modal h4 {
   font-size: 1.65rem;
   margin-bottom: 1.25rem;
   color: #1f2937;
 }
 
-.confirmation-modal p {
+.MR-confirmation-modal p {
   margin-bottom: 2rem;
   color: #4b5563;
   line-height: 1.5;
   font-size: 1.05rem;
 }
 
-.modal-actions {
+.MR-modal-actions {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
 }
 
-.modal-btn {
+.MR-modal-btn {
   padding: 0.75rem 1.75rem;
   border: none;
   border-radius: 8px;
@@ -406,32 +406,32 @@
   transition: all 0.2s ease;
 }
 
-.modal-btn.cancel {
+.MR-modal-btn.cancel {
   background-color: #f3f4f6;
   color: #4b5563;
   border: 1px solid #e5e7eb;
 }
 
-.modal-btn.cancel:hover {
+.MR-modal-btn.cancel:hover {
   background-color: #e5e7eb;
 }
 
-.modal-btn.confirm {
+.MR-modal-btn.confirm {
   background-color: #2563EB;
   color: white;
 }
 
-.modal-btn.confirm:hover {
+.MR-modal-btn.confirm:hover {
   background-color: #1d4ed8;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
 }
 
-.modal-btn.confirm:active {
+.MR-modal-btn.confirm:active {
   transform: translateY(0);
 }
 
-.close-modal {
+.MR-close-modal {
   position: absolute;
   top: 1.25rem;
   right: 1.25rem;
@@ -449,13 +449,13 @@
   border-radius: 50%;
 }
 
-.close-modal:hover {
+.MR-close-modal:hover {
   color: #4b5563;
   background-color: #f9fafb;
 }
 
 /* Empty state */
-.empty-bookings {
+.MR-empty-bookings {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -466,25 +466,25 @@
   text-align: center;
 }
 
-.empty-icon {
+.MR-empty-icon {
   font-size: 4rem;
   color: #e5e7eb;
   margin-bottom: 1.5rem;
 }
 
-.empty-bookings h3 {
+.MR-empty-bookings h3 {
   font-size: 1.75rem;
   color: #1f2937;
   margin-bottom: 1rem;
 }
 
-.empty-bookings p {
+.MR-empty-bookings p {
   color: #6b7280;
   margin-bottom: 2rem;
   max-width: 500px;
 }
 
-.search-room-btn {
+.MR-search-room-btn {
   padding: 0.75rem 2rem;
   background-color: #2563EB;
   color: white;
@@ -495,7 +495,7 @@
   transition: all 0.3s;
 }
 
-.search-room-btn:hover {
+.MR-search-room-btn:hover {
   background-color: #1d4ed8;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
@@ -503,89 +503,89 @@
 
 /* Responsive styles */
 @media (max-width: 992px) {
-  .booking-card {
+  .MR-booking-card {
     flex-direction: row;
   }
   
-  .booking-image {
+  .MR-booking-image {
     width: 220px;
     height: 180px;
   }
   
-  .room-name {
+  .MR-room-name {
     font-size: 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
-  .header {
+  .MR-header {
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
   }
   
-  .main-nav ul {
+  .MR-main-nav ul {
     gap: 1rem;
   }
   
-  .booking-card {
+  .MR-booking-card {
     flex-direction: column;
   }
   
-  .booking-image {
+  .MR-booking-image {
     width: 100%;
     height: 200px;
   }
   
-  .booking-actions {
+  .MR-booking-actions {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.75rem;
   }
   
-  .action-btn {
+  .MR-action-btn {
     flex: 1;
     min-width: 120px;
   }
   
-  .confirmation-modal {
+  .MR-confirmation-modal {
     width: 90%;
     max-width: 400px;
     padding: 1.5rem;
   }
   
-  .page-title {
+  .MR-page-title {
     font-size: 2rem;
   }
 }
 
 @media (max-width: 480px) {
-  .main-content {
+  .MR-main-content {
     padding: 0 1rem;
   }
   
-  .booking-actions {
+  .MR-booking-actions {
     flex-direction: column;
   }
   
-  .action-btn {
+  .MR-action-btn {
     width: 100%;
   }
   
-  .room-name {
+  .MR-room-name {
     font-size: 1.25rem;
   }
   
-  .booking-time p {
+  .MR-booking-time p {
     font-size: 0.95rem;
   }
   
-  .modal-actions {
+  .MR-modal-actions {
     flex-direction: column;
   }
   
-  .modal-btn {
+  .MR-modal-btn {
     width: 100%;
   }
 }

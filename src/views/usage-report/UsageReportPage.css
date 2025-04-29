@@ -8,54 +8,57 @@
 }
 
 /* Main page container */
-.usage-report-page {
+.URP-usage-report-page {
   font-family: 'Inter', 'Roboto', sans-serif;
   color: #333;
   background-color: #f8f9fa;
   min-height: 100vh;
+  /* Thêm padding-top để tránh nội dung bị header che khuất */
+  padding-top: 90px;
 }
 
 /* Main Content Styles */
-.main-content {
+.URP-main-content {
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 2rem;
 }
 
-.page-title {
+.URP-page-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #1f2937;
+  /* Đổi màu chữ sang xanh dương */
+  color: #2563EB;
   margin-bottom: 2rem;
 }
 
 /* Report Filter Styles */
-.report-filter {
+.URP-report-filter {
   margin-bottom: 2rem;
 }
 
-.date-range {
+.URP-date-range {
   display: flex;
   gap: 1rem;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.date-box {
+.URP-date-box {
   background-color: white;
   padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.date-box label {
+.URP-date-box label {
   font-size: 0.9rem;
   color: #4b5563;
   display: block;
   margin-bottom: 0.5rem;
 }
 
-.date-box input {
+.URP-date-box input {
   border: none;
   font-size: 1.2rem;
   font-weight: 600;
@@ -65,7 +68,7 @@
   pointer-events: none;
 }
 
-.room-info {
+.URP-room-info {
   background-color: white;
   padding: 1rem;
   border-radius: 8px;
@@ -76,14 +79,14 @@
 }
 
 /* Report Content Styles */
-.report-content {
+.URP-report-content {
   display: flex;
   gap: 2rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
 }
 
-.user-list {
+.URP-user-list {
   flex: 1;
   background-color: white;
   padding: 1.5rem;
@@ -91,14 +94,14 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.user-list h3 {
+.URP-user-list h3 {
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 1rem;
   color: #1f2937;
 }
 
-.user-item {
+.URP-user-item {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -106,30 +109,30 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.user-item:last-child {
+.URP-user-item:last-child {
   border-bottom: none;
 }
 
-.user-icon {
+.URP-user-icon {
   font-size: 1.5rem;
   color: #2563EB;
 }
 
-.user-details {
+.URP-user-details {
   flex-grow: 1;
 }
 
-.user-name {
+.URP-user-name {
   font-weight: 500;
   color: #1f2937;
 }
 
-.user-email {
+.URP-user-email {
   font-size: 0.9rem;
   color: #4b5563;
 }
 
-.booking-graph {
+.URP-booking-graph {
   flex: 1;
   background-color: white;
   padding: 1.5rem;
@@ -137,14 +140,14 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.booking-graph h3 {
+.URP-booking-graph h3 {
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 1rem;
   color: #1f2937;
 }
 
-.graph-placeholder {
+.URP-graph-placeholder {
   height: 200px;
   display: flex;
   align-items: center;
@@ -155,13 +158,13 @@
 }
 
 /* Report Actions Styles */
-.report-actions {
+.URP-report-actions {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
 }
 
-.action-btn {
+.URP-action-btn {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 6px;
@@ -170,37 +173,42 @@
   transition: background-color 0.3s;
 }
 
-.download-btn {
+.URP-download-btn {
   background-color: #facc15;
   color: #1f2937;
 }
 
-.download-btn:hover {
+.URP-download-btn:hover {
   background-color: #eab308;
 }
 
 /* Responsive Styles */
 @media (max-width: 768px) {
-  .date-range {
+  .URP-date-range {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .date-box,
-  .room-info {
+  .URP-date-box,
+  .URP-room-info {
     width: 100%;
   }
 
-  .report-content {
+  .URP-report-content {
     flex-direction: column;
   }
 
-  .report-actions {
+  .URP-report-actions {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .action-btn {
+  .URP-action-btn {
     width: 100%;
+  }
+  
+  /* Tăng khoảng cách trên đỉnh trang khi ở chế độ responsive */
+  .URP-usage-report-page {
+    padding-top: 120px;
   }
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './UsageReportPage.css';
-import Header from '../../components/common/Header';
+import Headermanager from '../../components/common/Headermanager';
 import { FaUser } from 'react-icons/fa';
 
 const UsageReportPage = () => {
@@ -18,15 +18,15 @@ const UsageReportPage = () => {
   };
 
   return (
-    <div className="usage-report-page">
-      <Header />
+    <div className="URP-usage-report-page">
+      <Headermanager />
 
-      <main className="main-content">
-        <h2 className="page-title">Báo cáo sử dụng</h2>
+      <main className="URP-main-content">
+        <h2 className="URP-page-title">Báo cáo sử dụng</h2>
 
-        <div className="report-filter">
-          <div className="date-range">
-            <div className="date-box">
+        <div className="URP-report-filter">
+          <div className="URP-date-range">
+            <div className="URP-date-box">
               <label>Từ ngày</label>
               <input
                 type="text"
@@ -35,7 +35,7 @@ const UsageReportPage = () => {
                 readOnly
               />
             </div>
-            <div className="date-box">
+            <div className="URP-date-box">
               <label>Đến ngày</label>
               <input
                 type="text"
@@ -44,38 +44,38 @@ const UsageReportPage = () => {
                 readOnly
               />
             </div>
-            <div className="room-info">{roomName}</div>
+            <div className="URP-room-info">{roomName}</div>
           </div>
         </div>
 
-        <div className="report-content">
-          <div className="user-list">
+        <div className="URP-report-content">
+          <div className="URP-user-list">
             <h3>Người đặt phòng</h3>
             {bookings.map(booking => (
-              <div className="user-item" key={booking.id}>
-                <FaUser className="user-icon" />
-                <div className="user-details">
-                  <p className="user-name">{booking.user}</p>
-                  <p className="user-email">{booking.email}</p>
+              <div className="URP-user-item" key={booking.id}>
+                <FaUser className="URP-user-icon" />
+                <div className="URP-user-details">
+                  <p className="URP-user-name">{booking.user}</p>
+                  <p className="URP-user-email">{booking.email}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="booking-graph">
+          <div className="URP-booking-graph">
             <h3>Số lượt đặt phòng</h3>
-            <div className="graph-placeholder">
+            <div className="URP-graph-placeholder">
               {/* Placeholder for the line graph */}
               <p>Line graph showing booking frequency from 05/03 to 12/03</p>
             </div>
           </div>
         </div>
 
-        <div className="report-actions">
-          <button className="action-btn download-btn pdf" onClick={() => handleDownload('PDF')}>
+        <div className="URP-report-actions">
+          <button className="URP-action-btn URP-download-btn pdf" onClick={() => handleDownload('PDF')}>
             Tải đơn (PDF)
           </button>
-          <button className="action-btn download-btn excel" onClick={() => handleDownload('Excel')}>
+          <button className="URP-action-btn URP-download-btn excel" onClick={() => handleDownload('Excel')}>
             Tải đơn (Excel)
           </button>
         </div>
