@@ -36,7 +36,7 @@ const Headermanager = () => {
   const managementLinks = [
     { path: '/manager', title: 'Quản lý người dùng' },
     { path: '/manager-system', title: 'Quản lý quyền hệ thống' },
-    { path: '/manager-device', title: 'Quản lý thiết bị' },
+    { path: '/manager-device/quanlythietbipage', title: 'Quản lý thiết bị' },
     { path: '/user-verification', title: 'Xác thực người dùng' },
     { path: '/usage-report', title: 'Báo cáo sử dụng' }
   ];

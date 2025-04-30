@@ -227,6 +227,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: relative; /* Thêm position relative */
 }
 
 .MR-room-name {
@@ -271,6 +272,9 @@
   display: flex;
   gap: 1rem;
   margin-top: 1.5rem;
+  position: absolute; /* Thay đổi vị trí thành absolute */
+  bottom: 1.25rem; /* Cách bottom 1.25rem */
+  right: 1.25rem; /* Cách right 1.25rem */
 }
 
 .MR-action-btn {
@@ -538,10 +542,12 @@
   }
   
   .MR-booking-actions {
+    position: static; /* Trên mobile thì đặt lại thành static */
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.75rem;
+    margin-top: 1.5rem;
   }
   
   .MR-action-btn {

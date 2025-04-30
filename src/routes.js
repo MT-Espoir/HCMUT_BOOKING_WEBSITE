@@ -14,6 +14,7 @@ import LoginPage from './views/auth/LoginPage';
 import PrivateRoute from './routes/PrivateRoute';
 import QuanLy from './views/manager/quanly.jsx';
 import QuanLyThietBi from './views/manager-device/quanlythietbi.jsx';
+import QuanLyThietBiPage from './views/manager-device/quanlythietbipage.jsx';
 import QuanLyQuyenHeThong from './views/manager-system/quanlyquyenhethong.jsx';
 import UsageReportPage from './views/usage-report/UsageReportPage';
 import UserVerificationPage from './views/user-verification/UserVerificationPage';
@@ -60,6 +61,22 @@ const AppRoutes = () => (
       element={
         <PrivateRoute redirectPath="/">
           <QuanLyThietBi />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/manager-device/quanlythietbi"
+      element={
+        <PrivateRoute redirectPath="/">
+          <QuanLyThietBi />
+        </PrivateRoute>
+      }
+    />
+    <Route
+      path="/manager-device/quanlythietbipage"
+      element={
+        <PrivateRoute redirectPath="/">
+          <QuanLyThietBiPage />
         </PrivateRoute>
       }
     />

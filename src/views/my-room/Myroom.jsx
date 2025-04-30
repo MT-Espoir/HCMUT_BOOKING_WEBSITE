@@ -79,17 +79,17 @@ const MyRoomPage = () => {
                   </div>
 
                   <div className="MR-booking-actions">
-                    {booking.status === 'MR-upcoming' && (
+                    {booking.status === 'upcoming' && (
                       <>
                         <button className="MR-action-btn start-btn" onClick={handleStartBooking}>Bắt đầu</button>
                         <button className="MR-action-btn change-btn" onClick={() => handleChangeRoom(booking.id)}>Đổi phòng</button>
                         <button className="MR-action-btn cancel-btn" onClick={() => showConfirmation('cancel', booking.id)}>Hủy</button>
                       </>
                     )}
-                    {booking.status === 'MR-past' && (
+                    {booking.status === 'past' && (
                       <button className="MR-action-btn completed-btn" disabled><FaCheckCircle /> Đã hoàn thành</button>
                     )}
-                    {booking.status === 'MR-canceled' && (
+                    {booking.status === 'canceled' && (
                       <button className="MR-action-btn canceled-btn" disabled>Đã hủy</button>
                     )}
                   </div>
