@@ -6,8 +6,9 @@ import { loginAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 const LoginPage = () => {
-  const [account, setAccount] = useState('');
-  const [password, setPassword] = useState('');
+  // Hardcode email và password
+  const [account, setAccount] = useState('admin1@gmail.com');
+  const [password, setPassword] = useState('123456789');
   const [error, setError] = useState('');
 
   const navigate = useNavigate();

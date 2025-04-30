@@ -1,5 +1,5 @@
 // Base API URL - change this when backend is available
-const API_BASE_URL = 'https://api.example.com/v1';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 /**
  * Helper function to simulate API delay
@@ -16,52 +16,105 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
  */
 // src/services/api.js
 export async function loginAPI(account, password) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (account === 'asd' && password === '123') {
-        resolve({
-          token: 'mock-token-abc123',
+  try {
+    console.log('Login attempt:', { email: account, password: "***" });
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        user: {
+          email: account,
+          password: password
+        } 
+      }),
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      const data = await response.json();
+      console.error('Login failed with status:', response.status);
+      throw new Error(data.error || 'Sai tài khoản hoặc mật khẩu!');
+    }
+    
+    const data = await response.json();
+    console.log('Login successful, token received');
+    
+    try {
+      // Fetch user profile with the token
+      const profileResponse = await fetch(`${API_BASE_URL}/user/profile`, {
+        headers: {
+          'Authorization': `Bearer ${data.token}`
+        }
+      });
+      
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        return {
+          token: data.token,
           user: {
-            name: 'Nguyễn Văn A',
-            email: 'student@hcmut.edu.vn',
-            role: 'student'
+            name: profileData.username,
+            email: profileData.email,
+            role: profileData.role,
+            mssv: profileData.mssv,
+            faculty: profileData.faculty
           }
-        });
-      } else {
-        reject(new Error('Sai tài khoản hoặc mật khẩu!'));
+        };
       }
-    }, 800); // giả lập delay gọi API
-  });
+    } catch (profileError) {
+      console.error('Failed to fetch user profile:', profileError);
+    }
+    
+    // Fallback if profile fetch fails
+    return {
+      token: data.token,
+      user: {
+        name: account,
+        email: account,
+        role: 'student'
+      }
+    };
+  } catch (error) {
+    console.error('Login failed:', error);
+    throw error;
+  }
 }
-
-
-
-
 
 async function apiRequest(endpoint, options = {}) {
   try {
-    // When backend is ready, uncomment the following code
-    // const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     // Add auth token if user is logged in
-    //     ...(localStorage.getItem('authToken') && {
-    //       'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-    //     }),
-    //   },
-    //   ...options,
-    // });
+    // Prepare URL and query parameters
+    let url = `${API_BASE_URL}${endpoint}`;
     
-    // if (!response.ok) {
-    //   const error = await response.json();
-    //   throw new Error(error.message || 'Something went wrong');
-    // }
+    // Add query parameters if provided
+    if (options.params) {
+      const queryParams = new URLSearchParams();
+      Object.entries(options.params).forEach(([key, value]) => {
+        queryParams.append(key, value);
+      });
+      url += `?${queryParams.toString()}`;
+      delete options.params;
+    }
+
+    const token = localStorage.getItem('token');
     
-    // return await response.json();
+    // Make the actual request
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        // Add auth token if available
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
+      ...options,
+    });
     
-    // For now, simulate API delay
-    await delay(500);
-    return { success: true, data: [] };
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Something went wrong');
+    }
+    
+    return data;
   } catch (error) {
     console.error('API request failed:', error);
     throw error;
@@ -79,15 +132,10 @@ async function apiRequest(endpoint, options = {}) {
  */
 export const getRooms = async (filters = {}) => {
   try {
-    // In the future, pass filters to API
-    // return await apiRequest('/rooms', { method: 'GET', params: filters });
-    
-    // For now, return mock data from App.js
-    await delay(500);
-    return { 
-      success: true,
-      data: window.mockRoomData || [] 
-    };
+    return await apiRequest('/room', { 
+      method: 'GET', 
+      params: filters 
+    });
   } catch (error) {
     console.error('Failed to fetch rooms:', error);
     throw error;
@@ -101,21 +149,9 @@ export const getRooms = async (filters = {}) => {
  */
 export const getRoomDetails = async (roomId) => {
   try {
-    // return await apiRequest(`/rooms/${roomId}`, { method: 'GET' });
-    
-    // For now, return mock data
-    await delay(300);
-    const mockData = window.mockRoomData || [];
-    const room = mockData.find(room => room.id === roomId);
-    
-    if (!room) {
-      throw new Error('Room not found');
-    }
-    
-    return {
-      success: true,
-      data: room
-    };
+    return await apiRequest(`/room/${roomId}`, { 
+      method: 'GET' 
+    });
   } catch (error) {
     console.error(`Failed to fetch room ${roomId}:`, error);
     throw error;
@@ -129,24 +165,10 @@ export const getRoomDetails = async (roomId) => {
  */
 export const searchRooms = async (query) => {
   try {
-    // return await apiRequest('/rooms/search', { 
-    //   method: 'GET', 
-    //   params: { query } 
-    // });
-    
-    // For now, search mock data
-    await delay(300);
-    const mockData = window.mockRoomData || [];
-    const results = mockData.filter(room => 
-      room.name.toLowerCase().includes(query.toLowerCase()) ||
-      room.location.toLowerCase().includes(query.toLowerCase()) ||
-      room.description.toLowerCase().includes(query.toLowerCase())
-    );
-    
-    return {
-      success: true,
-      data: results
-    };
+    return await apiRequest('/room/search', { 
+      method: 'GET', 
+      params: { query } 
+    });
   } catch (error) {
     console.error('Failed to search rooms:', error);
     throw error;
@@ -160,34 +182,10 @@ export const searchRooms = async (query) => {
  */
 export const filterRooms = async (filters) => {
   try {
-    // return await apiRequest('/rooms/filter', { 
-    //   method: 'POST', 
-    //   body: JSON.stringify(filters)
-    // });
-    
-    // For now, filter mock data
-    await delay(400);
-    const mockData = window.mockRoomData || [];
-    
-    const filteredRooms = mockData.filter(room => {
-      // Apply filters
-      if (filters.size && filters.size.length > 0 && !filters.size.includes(room.size)) {
-        return false;
-      }
-      if (filters.capacity && filters.capacity.length > 0) {
-        const capacities = filters.capacity.map(cap => parseInt(cap));
-        if (!capacities.some(cap => room.capacity >= cap)) {
-          return false;
-        }
-      }
-      // More filters can be added here
-      return true;
+    return await apiRequest('/room', { 
+      method: 'GET', 
+      params: filters 
     });
-    
-    return {
-      success: true,
-      data: filteredRooms
-    };
   } catch (error) {
     console.error('Failed to filter rooms:', error);
     throw error;
@@ -205,23 +203,10 @@ export const filterRooms = async (filters) => {
  */
 export const createBooking = async (bookingData) => {
   try {
-    // return await apiRequest('/bookings', { 
-    //   method: 'POST', 
-    //   body: JSON.stringify(bookingData)
-    // });
-    
-    // For now, simulate success
-    await delay(700);
-    
-    return {
-      success: true,
-      data: {
-        id: Math.floor(Math.random() * 1000),
-        ...bookingData,
-        status: 'upcoming',
-        createdAt: new Date().toISOString()
-      }
-    };
+    return await apiRequest('/booking', { 
+      method: 'POST', 
+      body: JSON.stringify(bookingData)
+    });
   } catch (error) {
     console.error('Failed to create booking:', error);
     throw error;
@@ -234,44 +219,7 @@ export const createBooking = async (bookingData) => {
  */
 export const getUserBookings = async () => {
   try {
-    // return await apiRequest('/bookings/user', { method: 'GET' });
-    
-    // For now, return mock data
-    await delay(600);
-    const mockBookings = [
-      {
-        id: 1,
-        roomId: 'B1',
-        roomName: 'Phòng B1',
-        checkIn: 'Sunday, April 24, 2025 - 09:00',
-        checkOut: 'Sunday, April 24, 2025 - 10:00',
-        duration: '1 tiếng',
-        status: 'upcoming'
-      },
-      {
-        id: 2,
-        roomId: 'B2',
-        roomName: 'Phòng B2',
-        checkIn: 'Monday, March 19, 2023 - 13:00',
-        checkOut: 'Monday, March 19, 2023 - 15:00',
-        duration: '2 tiếng',
-        status: 'past'
-      },
-      {
-        id: 3,
-        roomId: 'T3',
-        roomName: 'Phòng T3',
-        checkIn: 'Tuesday, February 15, 2023 - 10:00',
-        checkOut: 'Tuesday, February 15, 2023 - 11:30',
-        duration: '1.5 tiếng',
-        status: 'canceled'
-      }
-    ];
-    
-    return {
-      success: true,
-      data: mockBookings
-    };
+    return await apiRequest('/booking/user', { method: 'GET' });
   } catch (error) {
     console.error('Failed to fetch user bookings:', error);
     throw error;
@@ -285,41 +233,7 @@ export const getUserBookings = async () => {
  */
 export const getBookingDetails = async (bookingId) => {
   try {
-    // return await apiRequest(`/bookings/${bookingId}`, { method: 'GET' });
-    
-    // For now, find in mock data
-    await delay(300);
-    const mockBookings = [
-      {
-        id: 1,
-        roomId: 'B1',
-        roomName: 'Phòng B1',
-        checkIn: 'Sunday, April 24, 2025 - 09:00',
-        checkOut: 'Sunday, April 24, 2025 - 10:00',
-        duration: '1 tiếng',
-        status: 'upcoming'
-      },
-      {
-        id: 2,
-        roomId: 'B2',
-        roomName: 'Phòng B2',
-        checkIn: 'Monday, March 19, 2023 - 13:00',
-        checkOut: 'Monday, March 19, 2023 - 15:00',
-        duration: '2 tiếng',
-        status: 'past'
-      }
-    ];
-    
-    const booking = mockBookings.find(b => b.id === bookingId);
-    
-    if (!booking) {
-      throw new Error('Booking not found');
-    }
-    
-    return {
-      success: true,
-      data: booking
-    };
+    return await apiRequest(`/booking/${bookingId}`, { method: 'GET' });
   } catch (error) {
     console.error(`Failed to fetch booking ${bookingId}:`, error);
     throw error;
@@ -333,19 +247,7 @@ export const getBookingDetails = async (bookingId) => {
  */
 export const cancelBooking = async (bookingId) => {
   try {
-    // return await apiRequest(`/bookings/${bookingId}/cancel`, { method: 'POST' });
-    
-    // For now, simulate success
-    await delay(500);
-    
-    return {
-      success: true,
-      data: {
-        id: bookingId,
-        status: 'canceled',
-        canceledAt: new Date().toISOString()
-      }
-    };
+    return await apiRequest(`/booking/${bookingId}/cancel`, { method: 'POST' });
   } catch (error) {
     console.error(`Failed to cancel booking ${bookingId}:`, error);
     throw error;
@@ -360,22 +262,10 @@ export const cancelBooking = async (bookingId) => {
  */
 export const changeBookingRoom = async (bookingId, newRoomId) => {
   try {
-    // return await apiRequest(`/bookings/${bookingId}/change-room`, { 
-    //   method: 'POST',
-    //   body: JSON.stringify({ newRoomId })
-    // });
-    
-    // For now, simulate success
-    await delay(600);
-    
-    return {
-      success: true,
-      data: {
-        id: bookingId,
-        roomId: newRoomId,
-        updatedAt: new Date().toISOString()
-      }
-    };
+    return await apiRequest(`/booking/${bookingId}/change-room`, { 
+      method: 'POST',
+      body: JSON.stringify({ newRoomId })
+    });
   } catch (error) {
     console.error(`Failed to change room for booking ${bookingId}:`, error);
     throw error;
@@ -415,38 +305,10 @@ export const deleteBookingHistory = async (bookingId) => {
  */
 export const loginUser = async (credentials) => {
   try {
-    // return await apiRequest('/auth/login', {
-    //   method: 'POST',
-    //   body: JSON.stringify(credentials)
-    // });
-    
-    // For now, simulate login
-    await delay(800);
-    
-    // Basic validation
-    if (!credentials.password || credentials.password.length < 6) {
-      throw new Error('Invalid credentials');
-    }
-    
-    const mockUser = {
-      id: 1,
-      firstName: credentials.firstName || 'Test',
-      lastName: credentials.lastName || 'User',
-      email: 'test@example.com',
-      studentId: credentials.studentId || '123456789'
-    };
-    
-    // Store auth token in localStorage (simulated)
-    localStorage.setItem('authToken', 'mock-token-abc123');
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    
-    return {
-      success: true,
-      data: {
-        token: 'mock-token-abc123',
-        user: mockUser
-      }
-    };
+    return await apiRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials)
+    });
   } catch (error) {
     console.error('Login failed:', error);
     throw error;
@@ -485,11 +347,21 @@ export const getCurrentUser = async () => {
  */
 export const logoutUser = async () => {
   try {
-    // return await apiRequest('/auth/logout', { method: 'POST' });
+    const token = localStorage.getItem('token');
     
-    // For now, just clear localStorage
-    await delay(300);
-    localStorage.removeItem('authToken');
+    if (token) {
+      // Call the actual logout API endpoint
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+    
+    // Clear local storage regardless of API result
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
     
     return {
@@ -498,6 +370,9 @@ export const logoutUser = async () => {
     };
   } catch (error) {
     console.error('Logout failed:', error);
+    // Still clear the local storage even if the API call fails
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     throw error;
   }
 };

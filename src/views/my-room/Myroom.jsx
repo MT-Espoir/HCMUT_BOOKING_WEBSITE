@@ -1,17 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Myroom.css';
 import Header from '../../components/common/Header';
-import roomImage from '../../assets/room-main.png';
 import { FaClock, FaCheckCircle, FaTimes, FaCalendarAlt, FaSearch } from 'react-icons/fa';
+import { getUserBookings, cancelBooking } from '../../services/api';
 
 const MyRoomPage = () => {
   const navigate = useNavigate();
   const [confirmAction, setConfirmAction] = useState({ show: false, type: '', bookingId: null });
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const bookings = [
-    { id: 1, roomName: 'Phòng B1-201', checkIn: 'Sunday, April 24, 2025 - 09:00', checkOut: 'Sunday, April 24, 2025 - 10:00', duration: '1 tiếng', status: 'upcoming', image: roomImage },
-    { id: 2, roomName: 'Phòng B1-202', checkIn: 'Monday, March 19, 2023 - 13:00', checkOut: 'Monday, March 19, 2023 - 15:00', duration: '2 tiếng', status: 'past', image: roomImage },  ];
+  useEffect(() => {
+    // Fetch user's bookings when component mounts
+    const fetchBookings = async () => {
+      try {
+        setLoading(true);
+        const response = await getUserBookings();
+        if (response.success) {
+          setBookings(response.data);
+        } else {
+          setError('Failed to load bookings');
+        }
+      } catch (err) {
+        console.error('Error fetching bookings:', err);
+        setError('Failed to load your bookings. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   const handleChangeRoom = (bookingId) => {
     navigate(`/changeroom/${bookingId}`);
@@ -29,12 +50,33 @@ const MyRoomPage = () => {
     setConfirmAction({ show: false, type: '', bookingId: null });
   };
 
-  const handleConfirmAction = () => {
-    // Xử lý hành động hủy phòng
+  const handleConfirmAction = async () => {
+    // Handle cancel booking
     if (confirmAction.type === 'cancel') {
-      alert(`Đã hủy phòng có ID: ${confirmAction.bookingId}`);
+      try {
+        setLoading(true);
+        const response = await cancelBooking(confirmAction.bookingId);
+        if (response.success) {
+          // Update the bookings list to reflect the cancellation
+          setBookings(prevBookings => 
+            prevBookings.map(booking => 
+              booking.id === confirmAction.bookingId 
+                ? { ...booking, status: 'canceled' } 
+                : booking
+            )
+          );
+          alert('Booking cancelled successfully');
+        } else {
+          alert('Failed to cancel booking');
+        }
+      } catch (err) {
+        console.error('Error cancelling booking:', err);
+        alert('Failed to cancel booking. Please try again.');
+      } finally {
+        setLoading(false);
+        closeConfirmation();
+      }
     }
-    closeConfirmation();
   };
 
   const handleSearchRoom = () => {
@@ -50,6 +92,22 @@ const MyRoomPage = () => {
     }
   };
 
+  const calculateDuration = (checkIn, checkOut) => {
+    try {
+      // This is a simple approximation for the UI
+      // In a real application, you'd use proper date/time libraries
+      const checkInTime = new Date(checkIn);
+      const checkOutTime = new Date(checkOut);
+      const durationMs = checkOutTime - checkInTime;
+      const durationHours = Math.round(durationMs / (1000 * 60 * 60));
+      
+      return `${durationHours} tiếng`;
+    } catch (err) {
+      console.error('Error calculating duration:', err);
+      return 'Unknown duration';
+    }
+  };
+
   return (
     <div className="MR-my-room-page">
       <Header />
@@ -57,12 +115,16 @@ const MyRoomPage = () => {
       <main className="MR-main-content">
         <h2 className="MR-page-title">Phòng của tôi</h2>
 
-        {bookings.length > 0 ? (
+        {loading ? (
+          <div className="MR-loading">Loading your bookings...</div>
+        ) : error ? (
+          <div className="MR-error">{error}</div>
+        ) : bookings.length > 0 ? (
           <div className="MR-bookings-list">
             {bookings.map(booking => (
               <div className={`MR-booking-card ${booking.status}`} key={booking.id}>
                 <div className="MR-booking-image">
-                  <img src={booking.image} alt={booking.roomName} />
+                  <img src={booking.image || "https://via.placeholder.com/350x200?text=Room+Image"} alt={booking.roomName} />
                   <div className={`MR-booking-status ${booking.status}`}>
                     {getStatusLabel(booking.status)}
                   </div>
@@ -74,7 +136,10 @@ const MyRoomPage = () => {
                     <div className="MR-booking-time">
                       <p><strong>Check-in:</strong> {booking.checkIn}</p>
                       <p><strong>Check-out:</strong> {booking.checkOut}</p>
-                      <p className="MR-duration"><FaClock className="MR-duration-icon" /> {booking.duration}</p>
+                      <p className="MR-duration">
+                        <FaClock className="MR-duration-icon" /> 
+                        {booking.duration || calculateDuration(booking.checkIn, booking.checkOut)}
+                      </p>
                     </div>
                   </div>
 

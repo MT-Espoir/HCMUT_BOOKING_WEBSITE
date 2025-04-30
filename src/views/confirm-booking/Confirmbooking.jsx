@@ -6,13 +6,16 @@ import roomMainImg from '../../assets/room-main.png';
 import roomSide1Img from '../../assets/room-side1.jpg';
 import roomSide2Img from '../../assets/room-side2.jpg';
 import { FaArrowLeft, FaUser, FaRulerCombined } from 'react-icons/fa';
+import { createBooking } from '../../services/api';
 
 const Confirmbookingpage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('overview');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   
-  // Lấy dữ liệu phòng từ location state hoặc sử dụng dữ liệu mặc định nếu không có
+  // Get room data from location state or use default data
   const roomData = location.state?.roomData || {
     id: 3,
     name: 'Phòng T1',
@@ -26,19 +29,48 @@ const Confirmbookingpage = () => {
     fullDescription: 'Phòng Poker (tầng trệt) là không gian lý tưởng cho các cuộc họp nhỏ hoặc làm việc nhóm. Phòng được trang bị đầy đủ tiện nghi hiện đại, ánh sáng tự nhiên, và không gian yên tĩnh để đảm bảo hiệu quả công việc tối đa.'
   };
 
-  // Chuyển đổi amenities từ chuỗi sang mảng nếu cần
+  // Booking details - in a real app, you'd get these from a form or URL parameters
+  const [bookingDetails, setBookingDetails] = useState({
+    roomId: roomData.id,
+    checkIn: new Date(Date.now() + 3600000).toISOString(), // Default to 1 hour from now
+    checkOut: new Date(Date.now() + 7200000).toISOString(), // Default to 2 hours from now
+    purpose: 'General meeting'
+  });
+
+  // Convert amenities from string to array if needed
   const amenitiesList = typeof roomData.amenities === 'string' 
     ? roomData.amenities.split(',').map(item => item.replace('Tiện nghi:', '').trim())
     : roomData.amenitiesList || roomData.amenities || [];
   
-  // Đảm bảo features luôn là một mảng
+  // Ensure features is an array
   const featuresList = Array.isArray(roomData.features) 
     ? roomData.features 
-    : [];
+    : (roomData.features ? [roomData.features] : []);
 
-  const handleBookButton = () => {
-    // Truyền dữ liệu phòng đến trang checking
-    navigate('/checking', { state: { roomData } });
+  const handleBookButton = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      // Submit booking to backend
+      const response = await createBooking(bookingDetails);
+      
+      if (response.success) {
+        // Navigate to booking confirmation page
+        navigate('/checking', { state: { 
+          roomData,
+          bookingId: response.data.id,
+          bookingDetails: response.data
+        }});
+      } else {
+        setError(response.error || 'Failed to create booking');
+      }
+    } catch (err) {
+      console.error('Error creating booking:', err);
+      setError(err.message || 'An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
   
   const handleBackToRoomSelection = () => {
@@ -98,7 +130,7 @@ const Confirmbookingpage = () => {
                   {activeTab === 'overview' && (
                     <div className="CB-overview-tab">
                       <p className="CB-room-description">
-                        {roomData.fullDescription}
+                        {roomData.fullDescription || roomData.description}
                       </p>
                       
                       <div className="CB-amenities">
@@ -122,10 +154,16 @@ const Confirmbookingpage = () => {
                   )}
                 </div>
               </div>
-
+              
+              {error && <div className="CB-error-message">{error}</div>}
+              
               <div className="CB-booking-action">
-                <button onClick={handleBookButton} className="CB-book-button">
-                  Đặt phòng
+                <button 
+                  onClick={handleBookButton} 
+                  className="CB-book-button"
+                  disabled={loading}
+                >
+                  {loading ? 'Đang xử lý...' : 'Đặt phòng'}
                 </button>
                 <p className="CB-booking-notes"></p>
               </div>

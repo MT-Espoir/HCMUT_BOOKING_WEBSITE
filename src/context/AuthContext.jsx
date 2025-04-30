@@ -1,6 +1,7 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { logoutUser } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -15,12 +16,20 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
   };
-  const logout = () => {
-    setToken('');
-    setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/'); // chuyển về trang guest sau logout
+  
+  const logout = async () => {
+    try {
+      await logoutUser(); // Call the API to invalidate token on the backend
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      // Clear state and storage regardless of API success
+      setToken('');
+      setUser(null);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/'); // redirect to guest page after logout
+    }
   };
 
   return (
