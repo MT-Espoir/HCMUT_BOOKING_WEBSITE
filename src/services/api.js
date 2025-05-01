@@ -370,6 +370,56 @@ export const loginUser = async (credentials) => {
 };
 
 /**
+ * Register a new user
+ * @param {string} username - Username
+ * @param {string} email - Email
+ * @param {string} password - Password
+ * @param {string} fullName - Full name (optional)
+ * @param {string} phoneNumber - Phone number (optional)
+ * @param {string} faculty - Faculty/Department (optional)
+ * @param {string} mssv - Student ID (optional)
+ * @returns {Promise<Object>} - Registration result
+ */
+export async function registerAPI(username, email, password, fullName = '', phoneNumber = '', faculty = '', mssv = '') {
+  try {
+    console.log('Registration attempt:', { username, email, password: "***" });
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        username,
+        email,
+        password,
+        fullName: fullName || username,
+        phoneNumber,
+        faculty,
+        mssv,
+        role: 'student' // Default role for new registrations
+      }),
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error('Registration failed with status:', response.status);
+      throw new Error(data.error || 'Registration failed');
+    }
+    
+    console.log('Registration successful');
+    return {
+      success: true,
+      message: data.message || 'Registration successful',
+      user: data.user
+    };
+  } catch (error) {
+    console.error('Registration failed:', error);
+    throw error;
+  }
+}
+
+/**
  * Get current user info
  * @returns {Promise<Object>} - User info
  */
@@ -740,6 +790,7 @@ export default {
   changeBookingRoom,
   deleteBookingHistory,
   loginUser,
+  registerAPI,
   getCurrentUser,
   logoutUser,
   initializeMockData,

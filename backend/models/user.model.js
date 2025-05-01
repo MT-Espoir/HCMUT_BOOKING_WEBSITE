@@ -1,6 +1,5 @@
 const connection = require('../config/connect_db');
-const bcrypt = require('bcrypt');
-
+// Removed bcrypt import
 
 class User{
 	// this is the design for user table in mysql database
@@ -27,16 +26,21 @@ class User{
 
     async signup() {
         try {
-            // Hash the user's password
-            const hashPassword = await bcrypt.hash(this.password, 10);
-        
-            // Insert the user information into the database
+            // Insert the user information into the database without hashing the password
             const [result] = await connection.execute(
                 `
                 INSERT INTO user (username, email, password, mssv, role, faculty, created_at, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)
             `,
-                [this.username, this.email, hashPassword, this.mssv, this.role, this.faculty, new Date().getTime(), this.status]
+                [
+                    this.username || null, 
+                    this.email || null, 
+                    this.password, // Directly store the password
+                    this.mssv || null, 
+                    this.role || 'STUDENT', 
+                    this.faculty || null, 
+                    this.status || 'ACTIVE'
+                ]
             );
         
             // Check if the insertion was successful
@@ -138,7 +142,8 @@ class User{
     }
 
     hasMatchingPassword(hashedPassword) {
-        return bcrypt.compare(this.password, hashedPassword);
+        // Removed bcrypt comparison logic
+        return this.password === hashedPassword;
     }
 
     async updateUserInformation() {
@@ -147,16 +152,16 @@ class User{
         await connection.execute(
             `
             UPDATE user 
-            SET username = ?, email = ?, mssv = ?, role = ?, faculity = ?, status = ?
+            SET username = ?, email = ?, mssv = ?, role = ?, faculty = ?, status = ?
             WHERE user_id = ?
             `,
             [
-            this.username,
-            this.email,
-            this.mssv,
-            this.role,
-            this.faculity,
-            this.status,
+            this.username || null,
+            this.email || null,
+            this.mssv || null,
+            this.role || 'STUDENT',
+            this.faculty || null, // Fixed the spelling mistake from 'faculity' to 'faculty'
+            this.status || 'ACTIVE',
             this.user_id
             ]
         );
@@ -169,23 +174,20 @@ class User{
 
     async updatePassword() {
         try {
-        // Hash the new password
-        const hashedPassword = await bcrypt.hash(this.password, 10);
-    
-        // Update the password in the database
-        await connection.execute(
-            `
-            UPDATE user 
-            SET password = ?
-            WHERE user_id = ?
-            `,
-            [hashedPassword, this.user_id]
-        );
-    
-        console.log("Password updated successfully");
+            // Removed password hashing logic
+            await connection.execute(
+                `
+                UPDATE user 
+                SET password = ?
+                WHERE user_id = ?
+                `,
+                [this.password, this.user_id]
+            );
+
+            console.log("Password updated successfully");
         } catch (error) {
-        console.error("Error updating password:", error);
-        throw error;
+            console.error("Error updating password:", error);
+            throw error;
         }
     }
 

@@ -11,6 +11,7 @@ import CheckingPage from './views/checking/Checkingpage';
 import MyRoomPage from './views/my-room/Myroom';
 import ChangeRoomPage from './views/change-room/Changeroom';
 import LoginPage from './views/auth/LoginPage';
+import RegisterPage from './views/auth/RegisterPage';
 import PrivateRoute from './routes/PrivateRoute';
 import QuanLy from './views/manager/quanly.jsx';
 import QuanLyThietBi from './views/manager-device/quanlythietbi.jsx';
@@ -27,6 +28,7 @@ const AppRoutes = () => (
     <Route element={<GuestLayout />}>
       <Route path="/" element={<MainPageGuest />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
     </Route>
 
     {/* User Layout + protected with PrivateRoute */}

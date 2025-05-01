@@ -3,6 +3,9 @@
     text-align: center;
     background-color: #ffffff;
     min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .login-header {
@@ -11,14 +14,30 @@
     padding: 24px;
   }
   
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 10px 0;
+    position: relative;
+    z-index: 10;
+  }
+  
   .login-logo {
-    width: 60px;
-    margin-bottom: 8px;
+    height: 70px;
+    max-width: 100%;
+    object-fit: contain;
+    margin: 0 auto;
   }
   
   .login-main {
     max-width: 400px;
     margin: 40px auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    width: 100%;
   }
   
   .login-main h2 {
@@ -76,3 +95,19 @@
     margin-top: 6px;
   }
   
+  /* Registration link styling */
+  .login-register {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  .login-register a {
+    color: #2c1e9f;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .login-register a:hover {
+    text-decoration: underline;
+  }

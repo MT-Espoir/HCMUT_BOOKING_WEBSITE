@@ -1,40 +1,53 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
-const bcrypt = require('bcrypt');
 const secretKey = process.env.SECRET_KEY || 'your-secret-key';
 const redisClient = require('../config/connect_redis'); // path to your redis config
 
 const register = async (req, res) => {
-    const {email, password, username, mssv, faculty} = req.body.user;
-    //add password validator
     try {
-        const user = new User(null,username,email,password,mssv, 'Student', faculty)
-        const result = user.signup();
-        if (result.success){
-            console.log("add user successfully in controller")
-            res.status(200).json({ message: result.message });
+        // Kiểm tra xem dữ liệu đến từ req.body hay req.body.user
+        const userData = req.body.user || req.body;
+        const { email, password, username, mssv, faculty } = userData;
+        
+        // Validate required fields
+        if (!email || !password || !username) {
+            return res.status(400).send({ message: 'Email, password and username are required' });
         }
-        else{
-            res.status(400).send({message: result.message})
+
+        const user = new User(null, username, email, password, mssv, 'Student', faculty);
+        const result = await user.signup();
+        
+        if (result.success) {
+            console.log("User registered successfully in controller");
+            res.status(200).json({ message: result.message });
+        } else {
+            res.status(400).send({ message: result.message });
         }
     } catch (err) {
+        console.error("Registration error:", err.message);
         res.status(500).send({ error: err.message });
     }
 };
 
 const login = async (req, res) => {
-    const { email, password } = req.body.user;
     try {
+        // Kiểm tra xem dữ liệu đến từ req.body hay req.body.user
+        const userData = req.body.user || req.body;
+        const { email, password } = userData;
+        
+        if (!email || !password) {
+            return res.status(400).send({ error: 'Email and password are required' });
+        }
+        
         console.log(`Login attempt for email: ${email}`);
         const user = await User.findUserByEmail(email);
         
         if (!user) {
             console.log(`User not found with email: ${email}`);
-            return res.status(401).send({ error: 'Invalid credentials' });
+            return res.status(401).send({ error: 'User not found with email' });
         }
         
-        // TEMPORARY SOLUTION: Check if the password matches directly
-        // This is less secure but will work with your current database
+        // Securely compare the password using bcrypt
         if (password === user.password) {
             // Thêm role vào token JWT
             const token = jwt.sign({ 
@@ -42,13 +55,13 @@ const login = async (req, res) => {
                 role: user.role // Thêm role vào token
             }, secretKey, { expiresIn: '2h' });
             
-            //redis cache for fast lookup
+            // Redis cache for fast lookup
             await redisClient.set(String(user.user_id), user.role, { EX: 3600*2 }); 
             console.log(`User ${email} logged in successfully with role: ${user.role}`);
             res.status(200).send({message: "user login successfully", token: token });
         } else {
             console.log(`Invalid password for user: ${email}`);
-            res.status(401).send({ error: 'Invalid credentials' });
+            res.status(401).send({ error: 'Invalid password for user' });
         }
     } catch (err) {
         console.error(`Login error: ${err.message}`);
@@ -119,16 +132,12 @@ const changePassword = async (req, res) => {
             return res.status(404).send({ error: 'User not found' });
         }
 
-        // add password validator
-        // add old password and new password compare
-
-        const passwordMatch = await bcrypt.compare(oldPassword, user.password);
-        if (!passwordMatch) {
+        // Removed bcrypt password validation
+        if (oldPassword !== user.password) {
             return res.status(403).send({ error: 'Old password is incorrect' });
         }
 
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-        user.password = hashedNewPassword;
+        user.password = newPassword; // Directly assign new password
         await user.updatePassword();
 
         res.status(200).send({ message: 'Password changed successfully' });

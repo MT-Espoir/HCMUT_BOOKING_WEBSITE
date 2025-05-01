@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './LoginPage.css';
 import logo from '../../assets/logo.png';
 import { loginAPI } from '../../services/api';
@@ -30,8 +30,6 @@ const LoginPage = () => {
 
   return (
     <div className="login-wrapper">
-
-
       <main className="login-main">
         <h2>Dịch vụ xác thực tập trung</h2>
         <form className="login-form" onSubmit={handleSubmit}>
@@ -48,6 +46,10 @@ const LoginPage = () => {
           {error && <p className="login-error">{error}</p>}
 
           <button type="submit">Login</button>
+          
+          <div className="login-register">
+            <p>Chưa có tài khoản? <Link to="/register">Đăng ký</Link></p>
+          </div>
         </form>
       </main>
     </div>
