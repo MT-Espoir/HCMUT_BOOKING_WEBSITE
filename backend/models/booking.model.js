@@ -32,20 +32,23 @@ class Booking {
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
             `;
             
-            const [result] = await db.execute(query, [
+            // Convert undefined values to null for SQL
+            const params = [
                 this.userId,
                 this.roomId,
                 this.title,
-                this.purpose,
-                this.attendeesCount,
+                this.purpose || null,
+                this.attendeesCount || null,
                 this.startTime,
                 this.endTime,
                 this.duration,
-                this.bookingStatus,
-                this.checkInTime,
-                this.checkOutTime,
-                this.notes
-            ]);
+                this.bookingStatus || 'PENDING',
+                this.checkInTime || null,
+                this.checkOutTime || null,
+                this.notes || null
+            ];
+            
+            const [result] = await db.execute(query, params);
             
             if (result.affectedRows === 0) {
                 throw new Error('Failed to create booking');

@@ -28,11 +28,16 @@ const authenticate = (req, res, next) => {
 
 // Middleware to check if user is an admin
 const authorizeAdmin = (req, res, next) => {
+    // With our changes to authenticate.js, this check should no longer be necessary for admin routes
+    // but we'll keep it for extra safety
     if (!req.user) {
-        return res.status(401).send({ error: 'Unauthorized: No user information' });
+        return res.status(401).send({ error: 'Unauthorized: Authentication required' });
     }
     
-    if (req.user.role !== 'ADMIN') {
+    // Make sure the role exists and convert to uppercase for case-insensitive comparison
+    const userRole = req.user.role ? req.user.role.toUpperCase() : '';
+    
+    if (userRole !== 'ADMIN') {
         return res.status(403).send({ error: 'Forbidden: Admin access required' });
     }
     
@@ -45,7 +50,7 @@ const authorizeStudent = (req, res, next) => {
         return res.status(401).send({ error: 'Unauthorized: No user information' });
     }
     
-    if (req.user.role !== 'STUDENT') {
+    if (req.user.role.toUpperCase() !== 'STUDENT') {
         return res.status(403).send({ error: 'Forbidden: Student access required' });
     }
     
@@ -59,7 +64,13 @@ const authorizeRoles = (roles = []) => {
             return res.status(401).send({ error: 'Unauthorized: No user information' });
         }
         
-        if (!roles.includes(req.user.role)) {
+        // Convert user role to uppercase for case-insensitive comparison
+        const userRole = req.user.role.toUpperCase();
+        
+        // Convert all roles in the array to uppercase for comparison
+        const upperRoles = roles.map(role => role.toUpperCase());
+        
+        if (!upperRoles.includes(userRole)) {
             return res.status(403).send({ error: `Forbidden: Required roles: ${roles.join(', ')}` });
         }
         

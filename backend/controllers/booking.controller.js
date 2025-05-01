@@ -312,6 +312,36 @@ const deleteBookingHistory = async (req, res) => {
     }
 };
 
+/**
+ * Get all bookings for a specific user (admin access only)
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {string} userId - User ID (optional, if provided as a function parameter)
+ */
+const getUserBookingsForAdmin = async (req, res, userIdParam = null) => {
+    try {
+        // Get user ID either from parameters or from request params
+        const userId = userIdParam || req.params.userId;
+        
+        if (!userId) {
+            return res.status(400).send({ error: 'User ID is required' });
+        }
+        
+        // Verify the user has admin rights (already checked by the authorizeAdmin middleware)
+        // but added here for extra safety
+        if (req.user?.role.toUpperCase() !== 'ADMIN') {
+            return res.status(403).send({ error: 'Forbidden: Admin access required' });
+        }
+        
+        const bookings = await Booking.findBookingsByUserId(userId);
+        
+        return res.status(200).json(bookings);
+    } catch (err) {
+        console.error(`Error fetching bookings for user ${userIdParam || req.params.userId}:`, err);
+        return res.status(500).send({ error: err.message });
+    }
+};
+
 module.exports = {
     getUserBookings,
     getBookingDetails,
@@ -320,5 +350,6 @@ module.exports = {
     changeBookingRoom,
     checkInBooking,
     checkOutBooking,
-    deleteBookingHistory
+    deleteBookingHistory,
+    getUserBookingsForAdmin
 };

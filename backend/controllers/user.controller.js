@@ -36,10 +36,15 @@ const login = async (req, res) => {
         // TEMPORARY SOLUTION: Check if the password matches directly
         // This is less secure but will work with your current database
         if (password === user.password) {
-            const token = jwt.sign({ id: user.user_id }, secretKey, { expiresIn: '2h' });
+            // Thêm role vào token JWT
+            const token = jwt.sign({ 
+                id: user.user_id, 
+                role: user.role // Thêm role vào token
+            }, secretKey, { expiresIn: '2h' });
+            
             //redis cache for fast lookup
             await redisClient.set(String(user.user_id), user.role, { EX: 3600*2 }); 
-            console.log(`User ${email} logged in successfully`);
+            console.log(`User ${email} logged in successfully with role: ${user.role}`);
             res.status(200).send({message: "user login successfully", token: token });
         } else {
             console.log(`Invalid password for user: ${email}`);

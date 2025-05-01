@@ -41,6 +41,9 @@ export async function loginAPI(account, password) {
     const data = await response.json();
     console.log('Login successful, token received');
     
+    // Lưu token vào localStorage
+    localStorage.setItem('token', data.token);
+    
     try {
       // Fetch user profile with the token
       const profileResponse = await fetch(`${API_BASE_URL}/user/profile`, {
@@ -51,15 +54,20 @@ export async function loginAPI(account, password) {
       
       if (profileResponse.ok) {
         const profileData = await profileResponse.json();
+        const userData = {
+          name: profileData.username,
+          email: profileData.email,
+          role: profileData.role,
+          mssv: profileData.mssv,
+          faculty: profileData.faculty
+        };
+        
+        // Lưu thông tin user vào localStorage
+        localStorage.setItem('user', JSON.stringify(userData));
+        
         return {
           token: data.token,
-          user: {
-            name: profileData.username,
-            email: profileData.email,
-            role: profileData.role,
-            mssv: profileData.mssv,
-            faculty: profileData.faculty
-          }
+          user: userData
         };
       }
     } catch (profileError) {
@@ -67,13 +75,18 @@ export async function loginAPI(account, password) {
     }
     
     // Fallback if profile fetch fails
+    const fallbackUser = {
+      name: account,
+      email: account,
+      role: 'student'
+    };
+    
+    // Lưu thông tin fallback user vào localStorage
+    localStorage.setItem('user', JSON.stringify(fallbackUser));
+    
     return {
       token: data.token,
-      user: {
-        name: account,
-        email: account,
-        role: 'student'
-      }
+      user: fallbackUser
     };
   } catch (error) {
     console.error('Login failed:', error);
@@ -96,22 +109,44 @@ async function apiRequest(endpoint, options = {}) {
       delete options.params;
     }
 
+    // Lấy token từ localStorage
     const token = localStorage.getItem('token');
+    
+    // Kiểm tra token có tồn tại không
+    if (!token) {
+      console.warn('No authentication token found, request may fail if endpoint requires authentication');
+    }
+    
+    // Chuẩn bị headers
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
     
     // Make the actual request
     const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        // Add auth token if available
-        ...(token && { 'Authorization': `Bearer ${token}` }),
-      },
+      headers: headers,
       ...options,
     });
+    
+    // Xử lý các lỗi liên quan đến xác thực
+    if (response.status === 401) {
+      console.error('Authentication failed: Token expired or invalid');
+      // Có thể thực hiện refresh token hoặc logout tại đây
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      throw new Error('Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.');
+    }
+    
+    if (response.status === 403) {
+      console.error('Authorization failed: Insufficient permissions');
+      throw new Error('Forbidden: Admin access required');
+    }
     
     const data = await response.json();
     
     if (!response.ok) {
-      throw new Error(data.error || 'Something went wrong');
+      throw new Error(data.error || data.message || 'Something went wrong');
     }
     
     return data;
@@ -219,7 +254,26 @@ export const createBooking = async (bookingData) => {
  */
 export const getUserBookings = async () => {
   try {
-    return await apiRequest('/booking/user', { method: 'GET' });
+    const response = await apiRequest('/booking/user', { method: 'GET' });
+    
+    // Transform the data to match what the frontend expects
+    if (response.success && response.data) {
+      // Map backend field names to what the frontend component expects
+      const transformedData = {
+        success: true,
+        data: response.data.map(booking => ({
+          ...booking,
+          // Map startTime to checkIn and endTime to checkOut
+          checkIn: booking.startTime ? new Date(booking.startTime).toLocaleString() : '',
+          checkOut: booking.endTime ? new Date(booking.endTime).toLocaleString() : '',
+          // Add status if not present (default to 'upcoming')
+          status: booking.status || (booking.bookingStatus ? booking.bookingStatus.toLowerCase() : 'upcoming')
+        }))
+      };
+      return transformedData;
+    }
+    
+    return response;
   } catch (error) {
     console.error('Failed to fetch user bookings:', error);
     throw error;
@@ -387,6 +441,293 @@ export const initializeMockData = (roomsData) => {
   window.mockRoomData = roomsData;
 };
 
+// --------------------------------
+// Admin-related API functions
+// --------------------------------
+
+/**
+ * Get all users with their active status (Admin only)
+ * @returns {Promise<Array>} - List of users with their status
+ */
+export const getUsersAndTheirActiveStatus = async () => {
+  try {
+    const response = await apiRequest('/admin/user', { method: 'GET' });
+    
+    // Chuyển đổi dữ liệu từ backend để phù hợp với frontend
+    const transformedData = {
+      success: true,
+      data: response.map(user => ({
+        id: user.user_id,
+        name: user.username,
+        email: user.email,
+        role: user.role.toLowerCase(),
+        mssv: user.mssv,
+        faculty: user.faculty,
+        status: user.active ? 'online' : 'offline',
+        lastLogin: user.last_login || null,
+        note: user.notes || '',
+        bookings: [] // Sẽ được điền sau khi lấy thông tin chi tiết
+      }))
+    };
+    
+    return transformedData;
+  } catch (error) {
+    console.error('Failed to fetch users and their status:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get user profile with booking history (Admin only)
+ * @param {string} userId - User ID
+ * @returns {Promise<Object>} - User profile with booking history
+ */
+export const getUserProfile = async (userId) => {
+  try {
+    const userData = await apiRequest(`/admin/user/${userId}`, { method: 'GET' });
+    
+    // Lấy thêm lịch sử đặt phòng của người dùng
+    let bookings = [];
+    try {
+      const bookingData = await apiRequest(`/admin/booking/user/${userId}`, { method: 'GET' });
+      bookings = bookingData.map(booking => ({
+        id: booking.booking_id,
+        roomId: booking.room_id,
+        description: booking.title || booking.purpose,
+        time: `${new Date(booking.start_time).toLocaleTimeString()} - ${new Date(booking.end_time).toLocaleTimeString()}`,
+        date: new Date(booking.start_time).toLocaleDateString(),
+        image: 'https://picsum.photos/50/50?1' // Placeholder
+      }));
+    } catch (bookingError) {
+      console.error(`Could not fetch bookings for user ${userId}:`, bookingError);
+      // Không làm gián đoạn luồng chính nếu không lấy được lịch sử đặt phòng
+    }
+    
+    // Chuyển đổi dữ liệu từ backend để phù hợp với frontend
+    const transformedData = {
+      success: true,
+      data: {
+        id: userData.user_id,
+        name: userData.username,
+        email: userData.email,
+        role: userData.role.toLowerCase(),
+        mssv: userData.mssv,
+        faculty: userData.faculty,
+        status: userData.status === 'ACTIVE' ? 'verified' : 
+                userData.status === 'RESTRICTED' ? 'rejected' : 'pending',
+        lastLogin: userData.last_login || null,
+        note: userData.notes || '',
+        bookings: bookings
+      }
+    };
+    
+    return transformedData;
+  } catch (error) {
+    console.error(`Failed to fetch user profile ${userId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Update user status (Admin only)
+ * @param {string} userId - User ID
+ * @param {string} status - New status
+ * @returns {Promise<Object>} - Updated user
+ */
+export const updateUserStatus = async (userId, status) => {
+  try {
+    return await apiRequest(`/admin/user/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status })
+    });
+  } catch (error) {
+    console.error(`Failed to update user status ${userId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Get all bookings (Admin only)
+ * @param {Object} filters - Filters for bookings (optional)
+ * @returns {Promise<Array>} - List of bookings
+ */
+export const getAllBookings = async (filters = {}) => {
+  try {
+    return await apiRequest('/admin/booking', {
+      method: 'GET',
+      params: filters
+    });
+  } catch (error) {
+    console.error('Failed to fetch all bookings:', error);
+    throw error;
+  }
+};
+
+/**
+ * Approve or reject a booking (Admin only)
+ * @param {string} bookingId - Booking ID
+ * @param {string} status - New status ('approved' or 'rejected')
+ * @param {string} reason - Reason for rejection (optional)
+ * @returns {Promise<Object>} - Updated booking
+ */
+export const updateBookingStatus = async (bookingId, status, reason = '') => {
+  try {
+    return await apiRequest(`/admin/booking/${bookingId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status, reason })
+    });
+  } catch (error) {
+    console.error(`Failed to update booking status ${bookingId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Get all devices (Admin only)
+ * @returns {Promise<Array>} - List of devices
+ */
+export const getAllDevices = async () => {
+  try {
+    return await apiRequest('/device', { method: 'GET' });
+  } catch (error) {
+    console.error('Failed to fetch all devices:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get devices by room (Admin only)
+ * @param {string} roomId - Room ID
+ * @returns {Promise<Array>} - List of devices in the room
+ */
+export const getDevicesByRoom = async (roomId) => {
+  try {
+    return await apiRequest(`/device/room/${roomId}`, { method: 'GET' });
+  } catch (error) {
+    console.error(`Failed to fetch devices for room ${roomId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Update device status (Admin only)
+ * @param {string} deviceId - Device ID
+ * @param {string} status - New status
+ * @returns {Promise<Object>} - Updated device
+ */
+export const updateDeviceStatus = async (deviceId, status) => {
+  try {
+    return await apiRequest(`/device/${deviceId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status })
+    });
+  } catch (error) {
+    console.error(`Failed to update device status ${deviceId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Update user role (Admin only)
+ * @param {string} userId - User ID
+ * @param {string} role - New role
+ * @returns {Promise<Object>} - Updated user
+ */
+export const updateUserRole = async (userId, role) => {
+  try {
+    return await apiRequest(`/admin/user/${userId}/role`, {
+      method: 'PUT',
+      body: JSON.stringify({ role })
+    });
+  } catch (error) {
+    console.error(`Failed to update user role ${userId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Get role change history for a user (Admin only)
+ * @param {string} userId - User ID
+ * @returns {Promise<Array>} - History of role changes
+ */
+export const getUserRoleHistory = async (userId) => {
+  try {
+    return await apiRequest(`/admin/user/${userId}/role-history`, { method: 'GET' });
+  } catch (error) {
+    console.error(`Failed to fetch role history for user ${userId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Get users pending verification (Admin only)
+ * @returns {Promise<Array>} - List of users pending verification
+ */
+export const getUsersForVerification = async () => {
+  try {
+    const response = await apiRequest('/admin/user', { method: 'GET' });
+    
+    // Chuyển đổi dữ liệu từ backend để phù hợp với frontend
+    const transformedData = {
+      success: true,
+      data: response.map(user => ({
+        id: user.user_id,
+        name: user.username,
+        email: user.email,
+        role: user.role,
+        mssv: user.mssv,
+        faculty: user.faculty,
+        status: user.status === 'ACTIVE' ? 'verified' : 'pending',
+        lastLogin: user.last_login || null,
+        note: user.notes || ''
+      }))
+    };
+    
+    return transformedData;
+  } catch (error) {
+    console.error('Failed to fetch users for verification:', error);
+    throw error;
+  }
+};
+
+/**
+ * Verify user (Admin only)
+ * @param {string} userId - User ID
+ * @param {string} verificationStatus - New verification status ('verified', 'rejected', 'pending')
+ * @param {string} notes - Verification notes (optional)
+ * @returns {Promise<Object>} - Updated user
+ */
+export const updateUserVerification = async (userId, verificationStatus, notes = '') => {
+  try {
+    // Chuyển đổi trạng thái từ frontend sang backend
+    let backendStatus;
+    switch (verificationStatus) {
+      case 'verified':
+        backendStatus = 'ACTIVE';
+        break;
+      case 'rejected':
+        backendStatus = 'RESTRICTED';
+        break;
+      case 'pending':
+        backendStatus = 'PENDING';
+        break;
+      default:
+        backendStatus = 'PENDING';
+    }
+    
+    return await apiRequest(`/admin/user/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ 
+        status: backendStatus,
+        notes: notes
+      })
+    });
+  } catch (error) {
+    console.error(`Failed to update user verification ${userId}:`, error);
+    throw error;
+  }
+};
+
 export default {
   getRooms,
   getRoomDetails,
@@ -401,5 +742,17 @@ export default {
   loginUser,
   getCurrentUser,
   logoutUser,
-  initializeMockData
+  initializeMockData,
+  getUsersAndTheirActiveStatus,
+  getUserProfile,
+  updateUserStatus,
+  getAllBookings,
+  updateBookingStatus,
+  getAllDevices,
+  getDevicesByRoom,
+  updateDeviceStatus,
+  updateUserRole,
+  getUserRoleHistory,
+  getUsersForVerification,
+  updateUserVerification
 };

@@ -142,6 +142,45 @@ class Device{
         throw error;
         }
     }
+
+    static async getAllDevices() {
+        try {
+            const [rows] = await connection.execute(
+                `
+                SELECT d.*, r.name as room_name
+                FROM device d
+                LEFT JOIN room r ON d.room_id = r.room_id
+                `
+            );
+
+            if (rows.length === 0) {
+                console.log("No devices found");
+                return [];
+            }
+
+            return rows.map(row => ({
+                device_id: row.device_id,
+                room_id: row.room_id,
+                room_name: row.room_name,
+                device_type: row.device_type,
+                mac_address: row.mac_address,
+                status: row.status
+            }));
+        } catch (error) {
+            console.error("Error finding all devices:", error);
+            throw error;
+        }
+    }
+
+    // This is the function that's being called by the controller
+    static async getDeviceList() {
+        try {
+            return await this.getAllDevices();
+        } catch (error) {
+            console.error("Error getting device list:", error);
+            throw error;
+        }
+    }
 }
 
 module.exports = Device

@@ -1,111 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './quanlythietbipage.css';
 import Headermanager from '../../components/common/Headermanager';
 import roomMainImg from '../../assets/room-main.png';
 import roomSide1Img from '../../assets/room-side1.jpg';
 import roomSide2Img from '../../assets/room-side2.jpg';
 import { FaSearch, FaBuilding, FaChartPie, FaTable, FaTh, FaMap, FaChevronRight } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-
-// Mock data - sẽ được thay thế bằng API calls trong thực tế
-const MOCK_BUILDINGS = [
-  {
-    id: 'A',
-    name: 'Tòa nhà A',
-    floors: [
-      { id: 'A1', name: 'Tầng 1', hasIssue: true },
-      { id: 'A2', name: 'Tầng 2', hasIssue: false }
-    ]
-  },
-  {
-    id: 'B',
-    name: 'Tòa nhà B',
-    floors: [
-      { id: 'B1', name: 'Tầng 1', hasIssue: false },
-      { id: 'B2', name: 'Tầng 2', hasIssue: true },
-      { id: 'B3', name: 'Tầng 3', hasIssue: false }
-    ]
-  },
-  {
-    id: 'C',
-    name: 'Tòa nhà C',
-    floors: [
-      { id: 'C1', name: 'Tầng 1', hasIssue: false },
-      { id: 'C2', name: 'Tầng 2', hasIssue: false }
-    ]
-  }
-];
-
-const MOCK_ROOMS = [
-  {
-    id: 'A101',
-    name: 'Phòng A101',
-    type: 'Phòng học',
-    building: 'A',
-    floor: '1',
-    capacity: 50,
-    deviceCount: 8,
-    status: 'normal',
-    image: roomMainImg
-  },
-  {
-    id: 'A102',
-    name: 'Phòng A102',
-    type: 'Phòng học',
-    building: 'A',
-    floor: '1',
-    capacity: 50,
-    deviceCount: 10,
-    status: 'maintenance',
-    image: roomSide1Img
-  },
-  {
-    id: 'B201',
-    name: 'Phòng B201',
-    type: 'Phòng thí nghiệm',
-    building: 'B',
-    floor: '2',
-    capacity: 30,
-    deviceCount: 15,
-    status: 'issue',
-    image: roomSide2Img
-  },
-  {
-    id: 'B202',
-    name: 'Phòng B202',
-    type: 'Phòng thí nghiệm',
-    building: 'B',
-    floor: '2',
-    capacity: 30,
-    deviceCount: 15,
-    status: 'normal',
-    image: roomMainImg
-  },
-  {
-    id: 'C101',
-    name: 'Phòng C101',
-    type: 'Phòng hội thảo',
-    building: 'C',
-    floor: '1',
-    capacity: 100,
-    deviceCount: 12,
-    status: 'normal',
-    image: roomSide1Img
-  },
-];
-
-const DASHBOARD_DATA = {
-  totalRooms: 42,
-  normalRooms: 35,
-  issueRooms: 5,
-  maintenanceDevices: 8
-};
+import { useNavigate, useLocation } from 'react-router-dom';
+import { getRooms, getDevicesByRoom, getAllDevices, updateDeviceStatus } from '../../services/api';
 
 const QuanLyThietBiPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
   // State
-  const [expandedBuilding, setExpandedBuilding] = useState('A');
-  const [selectedFloor, setSelectedFloor] = useState('A1');
+  const [buildings, setBuildings] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  const [dashboardData, setDashboardData] = useState({
+    totalRooms: 0,
+    normalRooms: 0,
+    issueRooms: 0,
+    maintenanceDevices: 0
+  });
+  const [expandedBuilding, setExpandedBuilding] = useState('');
+  const [selectedFloor, setSelectedFloor] = useState('');
   const [viewMode, setViewMode] = useState('table'); // 'table', 'grid', or 'map'
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
@@ -114,6 +31,90 @@ const QuanLyThietBiPage = () => {
     roomType: '',
     status: ''
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Fetch rooms and organize by building/floor
+  useEffect(() => {
+    const fetchRoomData = async () => {
+      try {
+        setLoading(true);
+        const response = await getRooms();
+        const roomsData = response.data || [];
+        setRooms(roomsData);
+        
+        // Process buildings and floors from rooms data
+        const buildingsMap = {};
+        
+        // Group rooms by building and floor
+        roomsData.forEach(room => {
+          if (!buildingsMap[room.building]) {
+            buildingsMap[room.building] = {
+              id: room.building,
+              name: `Tòa nhà ${room.building}`,
+              floors: {}
+            };
+          }
+          
+          if (!buildingsMap[room.building].floors[room.floor]) {
+            buildingsMap[room.building].floors[room.floor] = {
+              id: `${room.building}${room.floor}`,
+              name: `Tầng ${room.floor}`,
+              hasIssue: false
+            };
+          }
+          
+          // Mark floors with issues
+          if (room.status === 'issue' || room.status === 'maintenance') {
+            buildingsMap[room.building].floors[room.floor].hasIssue = true;
+          }
+        });
+        
+        // Convert to array format needed for UI
+        const buildingsArray = Object.values(buildingsMap).map(building => ({
+          ...building,
+          floors: Object.values(building.floors)
+        }));
+        
+        setBuildings(buildingsArray);
+        
+        // Set default expanded building and selected floor if available
+        if (buildingsArray.length > 0) {
+          setExpandedBuilding(buildingsArray[0].id);
+          if (buildingsArray[0].floors.length > 0) {
+            setSelectedFloor(buildingsArray[0].floors[0].id);
+          }
+        }
+        
+        // Calculate dashboard data
+        const totalRooms = roomsData.length;
+        const normalRooms = roomsData.filter(room => room.status === 'normal').length;
+        const issueRooms = roomsData.filter(room => room.status === 'issue').length;
+        
+        // Get all devices to count those in maintenance
+        const devicesResponse = await getAllDevices();
+        const devicesData = devicesResponse.data || [];
+        const maintenanceDevices = devicesData.filter(
+          device => device.status === 'maintenance'
+        ).length;
+        
+        setDashboardData({
+          totalRooms,
+          normalRooms,
+          issueRooms,
+          maintenanceDevices
+        });
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching room data:', error);
+        setError('Không thể tải dữ liệu phòng. Vui lòng thử lại sau.');
+        setLoading(false);
+      }
+    };
+    
+    fetchRoomData();
+  }, []);
 
   // Handlers
   const toggleBuilding = (buildingId) => {
@@ -122,6 +123,19 @@ const QuanLyThietBiPage = () => {
 
   const selectFloor = (floorId) => {
     setSelectedFloor(floorId);
+    
+    // Extract building and floor from floorId (e.g., "A1" -> building "A", floor "1")
+    if (floorId && floorId.length >= 2) {
+      const buildingId = floorId.charAt(0);
+      const floorNumber = floorId.substring(1);
+      
+      // Update filters to match the selected floor
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        building: buildingId,
+        floor: floorNumber
+      }));
+    }
   };
 
   const handleSearchChange = (e) => {
@@ -138,9 +152,22 @@ const QuanLyThietBiPage = () => {
   const handleViewRoomDetails = (roomId) => {
     navigate(`/manager-device/quanlythietbi?room=${roomId}`);
   };
+  
+  const handleScheduleMaintenance = async (roomId, status) => {
+    try {
+      // In a real implementation, you would call an API to schedule maintenance
+      // For now, we'll just change the status of the room
+      alert(`Đặt lịch ${status === 'maintenance' ? 'bảo trì' : 'sửa chữa'} cho phòng ${roomId}`);
+      
+      // You would then refresh the data to show the updated status
+    } catch (error) {
+      console.error(`Error scheduling maintenance for room ${roomId}:`, error);
+      alert('Không thể đặt lịch bảo trì. Vui lòng thử lại sau.');
+    }
+  };
 
   // Filter rooms based on search and filter criteria
-  const filteredRooms = MOCK_ROOMS.filter(room => {
+  const filteredRooms = rooms.filter(room => {
     // Filter by search term
     if (searchTerm && 
         !room.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -171,6 +198,27 @@ const QuanLyThietBiPage = () => {
     return true;
   });
 
+  if (loading) {
+    return (
+      <div className="DMP-device-management-container">
+        <Headermanager />
+        <div className="DMP-loading">Đang tải dữ liệu...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="DMP-device-management-container">
+        <Headermanager />
+        <div className="DMP-error">
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()}>Thử lại</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="DMP-device-management-container">
       <Headermanager />
@@ -179,7 +227,7 @@ const QuanLyThietBiPage = () => {
       <div className="DMP-sidebar">
         <div className="DMP-sidebar-title">Danh sách tòa nhà</div>
         <ul className="DMP-building-list">
-          {MOCK_BUILDINGS.map(building => (
+          {buildings.map(building => (
             <li key={building.id} className="DMP-building-item">
               <div 
                 className={`DMP-building-header ${expandedBuilding === building.id ? 'active' : ''}`}
@@ -234,7 +282,7 @@ const QuanLyThietBiPage = () => {
                 onChange={(e) => handleFilterChange('building', e.target.value)}
               >
                 <option value="">Tất cả</option>
-                {MOCK_BUILDINGS.map(building => (
+                {buildings.map(building => (
                   <option key={building.id} value={building.id}>
                     {building.name}
                   </option>
@@ -250,9 +298,10 @@ const QuanLyThietBiPage = () => {
                 onChange={(e) => handleFilterChange('floor', e.target.value)}
               >
                 <option value="">Tất cả</option>
-                <option value="1">Tầng 1</option>
-                <option value="2">Tầng 2</option>
-                <option value="3">Tầng 3</option>
+                {/* Generate options for floors 1-10 */}
+                {Array.from({length: 10}, (_, i) => i + 1).map(floor => (
+                  <option key={floor} value={floor.toString()}>Tầng {floor}</option>
+                ))}
               </select>
             </div>
             
@@ -290,30 +339,28 @@ const QuanLyThietBiPage = () => {
         <div className="DMP-dashboard-overview">
           <div className="DMP-dashboard-card blue">
             <div className="DMP-card-title">Tổng số phòng</div>
-            <div className="DMP-card-value">{DASHBOARD_DATA.totalRooms}</div>
+            <div className="DMP-card-value">{dashboardData.totalRooms}</div>
             <div className="DMP-card-info">Trên toàn trường</div>
           </div>
           
           <div className="DMP-dashboard-card green">
             <div className="DMP-card-title">Phòng hoạt động tốt</div>
-            <div className="DMP-card-value">{DASHBOARD_DATA.normalRooms}</div>
+            <div className="DMP-card-value">{dashboardData.normalRooms}</div>
             <div className="DMP-card-info">Tất cả thiết bị hoạt động bình thường</div>
           </div>
           
           <div className="DMP-dashboard-card red">
             <div className="DMP-card-title">Phòng có vấn đề</div>
-            <div className="DMP-card-value">{DASHBOARD_DATA.issueRooms}</div>
+            <div className="DMP-card-value">{dashboardData.issueRooms}</div>
             <div className="DMP-card-info">Cần sửa chữa thiết bị</div>
           </div>
           
           <div className="DMP-dashboard-card yellow">
             <div className="DMP-card-title">Thiết bị đang bảo trì</div>
-            <div className="DMP-card-value">{DASHBOARD_DATA.maintenanceDevices}</div>
+            <div className="DMP-card-value">{dashboardData.maintenanceDevices}</div>
             <div className="DMP-card-info">Đang trong quá trình bảo trì</div>
           </div>
         </div>
-        
-        {/* Charts would be implemented here using a library like recharts, chart.js etc. */}
         
         {/* View Mode Toggle */}
         <div className="DMP-view-toggle">
@@ -353,38 +400,49 @@ const QuanLyThietBiPage = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredRooms.map(room => (
-                <tr key={room.id}>
-                  <td>{room.id}</td>
-                  <td>{room.name}</td>
-                  <td>{room.type}</td>
-                  <td>Tòa {room.building} - Tầng {room.floor}</td>
-                  <td>{room.capacity} người</td>
-                  <td>{room.deviceCount}</td>
-                  <td>
-                    <span className={`DMP-status-badge ${
-                      room.status === 'normal' ? 'green' : 
-                      room.status === 'issue' ? 'red' : 'yellow'
-                    }`}>
-                      {room.status === 'normal' ? 'Tốt' : 
-                       room.status === 'issue' ? 'Có vấn đề' : 'Đang bảo trì'}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="DMP-action-buttons">
-                      <button className="DMP-action-button view" onClick={() => handleViewRoomDetails(room.id)}>
-                        Xem
-                      </button>
-                      <button className="DMP-action-button edit">
-                        Sửa
-                      </button>
-                      <button className="DMP-action-button schedule">
-                        Đặt lịch
-                      </button>
-                    </div>
+              {filteredRooms.length > 0 ? (
+                filteredRooms.map(room => (
+                  <tr key={room.id}>
+                    <td>{room.id}</td>
+                    <td>{room.name}</td>
+                    <td>{room.type}</td>
+                    <td>Tòa {room.building} - Tầng {room.floor}</td>
+                    <td>{room.capacity} người</td>
+                    <td>{room.deviceCount}</td>
+                    <td>
+                      <span className={`DMP-status-badge ${
+                        room.status === 'normal' ? 'green' : 
+                        room.status === 'issue' ? 'red' : 'yellow'
+                      }`}>
+                        {room.status === 'normal' ? 'Tốt' : 
+                        room.status === 'issue' ? 'Có vấn đề' : 'Đang bảo trì'}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="DMP-action-buttons">
+                        <button className="DMP-action-button view" onClick={() => handleViewRoomDetails(room.id)}>
+                          Xem
+                        </button>
+                        <button 
+                          className="DMP-action-button schedule"
+                          onClick={() => handleScheduleMaintenance(
+                            room.id, 
+                            room.status === 'issue' ? 'maintenance' : 'issue'
+                          )}
+                        >
+                          {room.status === 'issue' ? 'Đặt bảo trì' : 'Kiểm tra'}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="DMP-no-results">
+                    Không tìm thấy phòng nào phù hợp với điều kiện lọc
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         )}
@@ -392,45 +450,60 @@ const QuanLyThietBiPage = () => {
         {/* Room List - Grid View */}
         {viewMode === 'grid' && (
           <div className="DMP-room-grid">
-            {filteredRooms.map(room => (
-              <div key={room.id} className="DMP-room-card">
-                <div className="DMP-room-card-image">
-                  <img src={room.image} alt={room.name} />
-                  <div className={`DMP-room-card-badge ${
-                    room.status === 'normal' ? 'green' : 
-                    room.status === 'issue' ? 'red' : 'yellow'
-                  }`}>
-                    {room.status === 'normal' ? 'Tốt' : 
-                     room.status === 'issue' ? 'Có vấn đề' : 'Đang bảo trì'}
+            {filteredRooms.length > 0 ? (
+              filteredRooms.map(room => (
+                <div key={room.id} className="DMP-room-card">
+                  <div className="DMP-room-card-image">
+                    <img src={room.image || (
+                      room.status === 'normal' ? roomMainImg : 
+                      room.status === 'issue' ? roomSide2Img : roomSide1Img
+                    )} alt={room.name} />
+                    <div className={`DMP-room-card-badge ${
+                      room.status === 'normal' ? 'green' : 
+                      room.status === 'issue' ? 'red' : 'yellow'
+                    }`}>
+                      {room.status === 'normal' ? 'Tốt' : 
+                      room.status === 'issue' ? 'Có vấn đề' : 'Đang bảo trì'}
+                    </div>
+                  </div>
+                  <div className="DMP-room-card-content">
+                    <div className="DMP-room-card-title">{room.name} ({room.id})</div>
+                    <div className="DMP-room-card-info">
+                      <span>
+                        <FaBuilding /> {room.type}
+                      </span>
+                      <span>
+                        <FaBuilding /> Tòa {room.building} - Tầng {room.floor}
+                      </span>
+                      <span>
+                        <FaBuilding /> Sức chứa: {room.capacity} người
+                      </span>
+                      <span>
+                        <FaBuilding /> Thiết bị: {room.deviceCount}
+                      </span>
+                    </div>
+                    <div className="DMP-room-card-actions">
+                      <button className="DMP-action-button view" onClick={() => handleViewRoomDetails(room.id)}>
+                        Xem chi tiết
+                      </button>
+                      <button 
+                        className="DMP-action-button schedule"
+                        onClick={() => handleScheduleMaintenance(
+                          room.id, 
+                          room.status === 'issue' ? 'maintenance' : 'issue'
+                        )}
+                      >
+                        {room.status === 'issue' ? 'Đặt bảo trì' : 'Kiểm tra thiết bị'}
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="DMP-room-card-content">
-                  <div className="DMP-room-card-title">{room.name} ({room.id})</div>
-                  <div className="DMP-room-card-info">
-                    <span>
-                      <FaBuilding /> {room.type}
-                    </span>
-                    <span>
-                      <FaBuilding /> Tòa {room.building} - Tầng {room.floor}
-                    </span>
-                    <span>
-                      <FaBuilding /> Sức chứa: {room.capacity} người
-                    </span>
-                    <span>
-                      <FaBuilding /> Thiết bị: {room.deviceCount}
-                    </span>
-                  </div>
-                  <div className="DMP-room-card-actions">
-                    <button className="DMP-action-button view" onClick={() => handleViewRoomDetails(room.id)}>
-                      Xem chi tiết
-                    </button>
-                    <button className="DMP-action-button schedule">
-                      Đặt lịch sửa
-                    </button>
-                  </div>
-                </div>
+              ))
+            ) : (
+              <div className="DMP-no-results">
+                Không tìm thấy phòng nào phù hợp với điều kiện lọc
               </div>
-            ))}
+            )}
           </div>
         )}
         

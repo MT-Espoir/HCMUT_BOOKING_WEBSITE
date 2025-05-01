@@ -32,9 +32,11 @@ const Confirmbookingpage = () => {
   // Booking details - in a real app, you'd get these from a form or URL parameters
   const [bookingDetails, setBookingDetails] = useState({
     roomId: roomData.id,
-    checkIn: new Date(Date.now() + 3600000).toISOString(), // Default to 1 hour from now
-    checkOut: new Date(Date.now() + 7200000).toISOString(), // Default to 2 hours from now
-    purpose: 'General meeting'
+    title: 'Room Booking', // Added required field
+    purpose: 'General meeting',
+    startTime: new Date(Date.now() + 3600000).toISOString(), // Changed from checkIn to startTime
+    endTime: new Date(Date.now() + 7200000).toISOString(),   // Changed from checkOut to endTime
+    attendeesCount: roomData.capacity || 1 // Added attendeesCount field
   });
 
   // Convert amenities from string to array if needed
@@ -52,8 +54,20 @@ const Confirmbookingpage = () => {
       setLoading(true);
       setError('');
       
+      // Ensure all values are properly defined before sending to API
+      // Convert any undefined values to null
+      const bookingPayload = {
+        roomId: bookingDetails.roomId || null,
+        title: bookingDetails.title || 'Room Booking',
+        purpose: bookingDetails.purpose || 'General meeting',
+        startTime: bookingDetails.startTime,
+        endTime: bookingDetails.endTime,
+        attendeesCount: bookingDetails.attendeesCount || 1,
+        notes: bookingDetails.notes || null
+      };
+      
       // Submit booking to backend
-      const response = await createBooking(bookingDetails);
+      const response = await createBooking(bookingPayload);
       
       if (response.success) {
         // Navigate to booking confirmation page

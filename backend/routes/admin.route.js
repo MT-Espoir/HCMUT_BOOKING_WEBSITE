@@ -72,6 +72,15 @@ router.get("/booking", (req, res) => {
   // This will be a wrapper around getUserBookings that gets all bookings for admin
   res.status(200).send({ message: 'Get all bookings functionality to be implemented' });
 }) //get all booking request
+router.get("/booking/user/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const bookings = await bookingController.getUserBookingsForAdmin(req, res, userId);
+  } catch (error) {
+    console.error('Error fetching user bookings for admin:', error);
+    res.status(500).send({ error: 'Failed to fetch user bookings' });
+  }
+}) //get bookings for a specific user (admin view)
 router.get("/booking/:bookingId", bookingController.getBookingDetails) //view booking detail
 router.put("/booking/:bookingId", (req, res) => {
   // Admin function to approve or reject booking
