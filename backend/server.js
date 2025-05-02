@@ -39,6 +39,10 @@ app.use(cors({
   credentials: true
 }));
 
+// Phục vụ thư mục uploads như một thư mục tĩnh
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Public routes that don't require authentication
 app.use('/api/auth', authRoutes);
 

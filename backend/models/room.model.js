@@ -185,6 +185,18 @@ class Room {
                 params.push(filters.roomType);
             }
             
+            // Add date filter if provided
+            if (filters.date) {
+                query += `
+                    AND room_id NOT IN (
+                        SELECT room_id FROM booking
+                        WHERE DATE(start_time) = DATE(?)
+                        AND booking_status IN ('PENDING', 'CONFIRMED', 'CHECKED_IN')
+                    )
+                `;
+                params.push(filters.date);
+            }
+            
             query += ` ORDER BY name ASC`;
             
             const [rows] = await db.execute(query, params);

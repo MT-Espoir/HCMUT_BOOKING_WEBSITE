@@ -176,6 +176,10 @@
   border-left: 5px solid #ef4444;
 }
 
+.MR-booking-card.active {
+  border-left: 5px solid #10b981;
+}
+
 .MR-booking-image {
   width: 280px;
   height: 310px;
@@ -219,6 +223,10 @@
 
 .MR-booking-status.canceled {
   background-color: #ef4444;
+}
+
+.MR-booking-status.active {
+  background-color: #10b981;
 }
 
 .MR-booking-details {
@@ -268,13 +276,29 @@
   margin-right: 0.5rem;
 }
 
+.MR-time-remaining {
+  display: flex;
+  align-items: center;
+  background-color: #f0f9ff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  color: #0369a1;
+}
+
+.MR-time-remaining strong {
+  margin-left: 0.5rem;
+  font-weight: 600;
+}
+
 .MR-booking-actions {
   display: flex;
   gap: 1rem;
   margin-top: 1.5rem;
-  position: absolute; /* Thay đổi vị trí thành absolute */
-  bottom: 1.25rem; /* Cách bottom 1.25rem */
-  right: 1.25rem; /* Cách right 1.25rem */
+  /* Thay đổi vị trí từ absolute thành relative để đảm bảo nút luôn hiển thị */
+  position: relative;
+  margin-top: auto; /* Đẩy các nút xuống dưới cùng của container */
 }
 
 .MR-action-btn {
@@ -348,6 +372,19 @@
 }
 
 .MR-completed-btn svg {
+  margin-right: 0.5rem;
+}
+
+.MR-action-btn.active-btn {
+  background-color: #f9fafb;
+  color: #10b981;
+  border: 1px solid #10b981;
+  cursor: default;
+  display: flex;
+  align-items: center;
+}
+
+.MR-action-btn.active-btn svg {
   margin-right: 0.5rem;
 }
 

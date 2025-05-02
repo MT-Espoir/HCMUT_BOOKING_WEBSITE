@@ -29,14 +29,59 @@ const Confirmbookingpage = () => {
     fullDescription: 'Phòng Poker (tầng trệt) là không gian lý tưởng cho các cuộc họp nhỏ hoặc làm việc nhóm. Phòng được trang bị đầy đủ tiện nghi hiện đại, ánh sáng tự nhiên, và không gian yên tĩnh để đảm bảo hiệu quả công việc tối đa.'
   };
 
-  // Booking details - in a real app, you'd get these from a form or URL parameters
+  // Lấy thông tin ngày và khoảng thời gian từ location state
+  const selectedDate = location.state?.selectedDate || new Date().toISOString().split('T')[0];
+  const selectedTimeRange = location.state?.selectedTimeRange || '7h - 9h';
+  const selectedDuration = location.state?.selectedDuration || '1 tiếng';
+
+  // Chuyển đổi khoảng thời gian thành thời gian bắt đầu và kết thúc
+  const getTimeFromRange = (timeRange) => {
+    if (!timeRange) return { startHour: 7, endHour: 9 };
+    const parts = timeRange.split(' - ');
+    const startPart = parts[0].replace('h', '');
+    const endPart = parts[1].replace('h', '');
+    return {
+      startHour: parseInt(startPart, 10),
+      endHour: parseInt(endPart, 10)
+    };
+  };
+
+  // Chuyển đổi thời lượng thành số giờ
+  const getDurationHours = (duration) => {
+    if (!duration) return 1;
+    return parseInt(duration.split(' ')[0], 10) || 1;
+  };
+
+  // Tính toán thời gian bắt đầu và kết thúc dựa trên ngày và khoảng thời gian đã chọn
+  const calculateBookingTimes = () => {
+    const { startHour } = getTimeFromRange(selectedTimeRange);
+    const durationHours = getDurationHours(selectedDuration);
+    
+    // Tạo đối tượng Date từ ngày đã chọn và giờ bắt đầu
+    const startDate = new Date(selectedDate);
+    startDate.setHours(startHour, 0, 0, 0);
+    
+    // Tính toán thời gian kết thúc bằng cách thêm thời lượng
+    const endDate = new Date(startDate);
+    endDate.setHours(startDate.getHours() + durationHours);
+    
+    return {
+      startTime: startDate.toISOString(),
+      endTime: endDate.toISOString()
+    };
+  };
+
+  // Lấy thời gian đặt phòng từ hàm đã tính
+  const bookingTimes = calculateBookingTimes();
+
+  // Booking details - now using the calculated times from selected date and time range
   const [bookingDetails, setBookingDetails] = useState({
     roomId: roomData.id,
-    title: 'Room Booking', // Added required field
+    title: 'Room Booking',
     purpose: 'General meeting',
-    startTime: new Date(Date.now() + 3600000).toISOString(), // Changed from checkIn to startTime
-    endTime: new Date(Date.now() + 7200000).toISOString(),   // Changed from checkOut to endTime
-    attendeesCount: roomData.capacity || 1 // Added attendeesCount field
+    startTime: bookingTimes.startTime,
+    endTime: bookingTimes.endTime,
+    attendeesCount: roomData.capacity || 1
   });
 
   // Convert amenities from string to array if needed
@@ -107,7 +152,14 @@ const Confirmbookingpage = () => {
             <div className="CB-room-images">
               <div className="CB-image-gallery">
                 <div className="CB-main-image">
-                  <img src={roomData.image || roomMainImg} alt="Hình ảnh chính của phòng" />
+                  <img 
+                    src={
+                      roomData.roomImage || roomData.room_image
+                        ? `http://localhost:5000${roomData.roomImage || roomData.room_image}`
+                        : roomData.image || roomMainImg
+                    } 
+                    alt="Hình ảnh chính của phòng" 
+                  />
                 </div>
                 <div className="CB-side-images">
                   <img src={roomSide1Img} alt="Hình ảnh phụ 1 của phòng" />
@@ -128,6 +180,14 @@ const Confirmbookingpage = () => {
                   <h4>Diện tích</h4>
                   <p><FaRulerCombined /> {roomData.size} m²</p>
                 </div>
+              </div>
+
+              {/* Hiển thị thông tin đặt phòng */}
+              <div className="CB-booking-time-info">
+                <h3>Thông tin đặt phòng</h3>
+                <p><strong>Ngày:</strong> {new Date(selectedDate).toLocaleDateString('vi-VN')}</p>
+                <p><strong>Thời gian:</strong> {selectedTimeRange || '7h - 9h'}</p>
+                <p><strong>Thời lượng:</strong> {selectedDuration || '1 tiếng'}</p>
               </div>
               
               <div className="CB-tab-container">

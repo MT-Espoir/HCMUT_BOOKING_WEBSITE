@@ -393,6 +393,34 @@
   text-align: center;
 }
 
+/* Booking time info styles */
+.CB-booking-time-info {
+  background-color: #f3f4f6;
+  padding: 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #2563EB;
+}
+
+.CB-booking-time-info h3 {
+  color: #1f2937;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.CB-booking-time-info p {
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.CB-booking-time-info strong {
+  font-weight: 600;
+  color: #1f2937;
+  margin-right: 0.25rem;
+}
+
 /* Loading Container */
 .CB-loading-container {
   display: flex;

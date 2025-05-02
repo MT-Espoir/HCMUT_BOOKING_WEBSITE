@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RoomSearchPage.css';
 import Header from '../../components/common/Header';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaCalendar } from 'react-icons/fa';
 import { getRooms, searchRooms, filterRooms } from '../../services/api';
 
 const RoomSearchPage = () => {
@@ -11,14 +11,15 @@ const RoomSearchPage = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [filters, setFilters] = useState({
     capacity: [],
     timeRange: [],
-    duration: []
+    duration: [],
+    size: []
   });
 
   useEffect(() => {
-    // Load rooms from backend when component mounts
     const fetchRooms = async () => {
       try {
         setLoading(true);
@@ -45,7 +46,6 @@ const RoomSearchPage = () => {
 
   const handleSearchSubmit = async () => {
     if (!searchQuery.trim()) {
-      // If search query is empty, fetch all rooms
       try {
         setLoading(true);
         const response = await getRooms();
@@ -78,10 +78,8 @@ const RoomSearchPage = () => {
       const updatedFilters = { ...prevFilters };
       
       if (updatedFilters[filterType].includes(value)) {
-        // If value already exists, remove it
         updatedFilters[filterType] = updatedFilters[filterType].filter(item => item !== value);
       } else {
-        // Otherwise add it
         updatedFilters[filterType] = [...updatedFilters[filterType], value];
       }
       
@@ -89,13 +87,16 @@ const RoomSearchPage = () => {
     });
   };
 
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+  };
+
   const applyFilters = async () => {
     try {
       setLoading(true);
-      // Convert filters to format expected by API
       const apiFilters = {
         capacity: filters.capacity.length ? Math.min(...filters.capacity) : undefined,
-        // Add other filters as needed
+        date: selectedDate,
       };
       
       const response = await filterRooms(apiFilters);
@@ -110,15 +111,21 @@ const RoomSearchPage = () => {
   };
 
   useEffect(() => {
-    // Apply filters when they change
-    if (Object.values(filters).some(filterArray => filterArray.length > 0)) {
+    if (Object.values(filters).some(filterArray => filterArray.length > 0) || selectedDate) {
       applyFilters();
     }
-  }, [filters]);
+  }, [filters, selectedDate]);
 
   const handleBookRoom = (room) => {
-    // Navigate to booking confirmation page with room data
-    navigate('/confirm-booking', { state: { roomData: room } });
+    // Truyền cả ngày đã chọn cùng với thông tin phòng
+    navigate('/confirm-booking', { 
+      state: { 
+        roomData: room,
+        selectedDate: selectedDate,
+        selectedTimeRange: filters.timeRange.length > 0 ? filters.timeRange[0] : null,
+        selectedDuration: filters.duration.length > 0 ? filters.duration[0] : null
+      } 
+    });
   };
 
   const filteredRooms = searchQuery
@@ -134,7 +141,6 @@ const RoomSearchPage = () => {
       <Header />
 
       <div className="room-search-wrapper">
-        {/* Sidebar */}
         <aside className="filter-sidebar">
           <div className="search-bar">
             <input
@@ -150,6 +156,20 @@ const RoomSearchPage = () => {
           </div>
 
           <h4>Filter by</h4>
+
+          <div className="filter-group">
+            <h5>Chọn ngày</h5>
+            <div className="date-selector">
+              <FaCalendar className="calendar-icon" />
+              <input 
+                type="date"
+                value={selectedDate}
+                onChange={handleDateChange}
+                min={new Date().toISOString().split('T')[0]}
+                className="date-input"
+              />
+            </div>
+          </div>
 
           <div className="filter-group">
             <h5>Cơ sở</h5>
@@ -210,9 +230,8 @@ const RoomSearchPage = () => {
           
         </aside>
 
-        {/* Main content */}
         <section className="room-listing">
-          <h2>Phòng khả dụng để đặt </h2>
+          <h2>Phòng khả dụng ngày {new Date(selectedDate).toLocaleDateString('vi-VN')}</h2>
           
           {loading ? (
             <div className="loading">Loading rooms...</div>
@@ -224,14 +243,25 @@ const RoomSearchPage = () => {
               <div className="room-grid">
                 {filteredRooms.map((room) => (
                   <div key={room.id} className="room-card-modern">
-                    <img src={room.image_url || "https://via.placeholder.com/350x200?text=Room+Image"} alt={room.name} />
+                    <img 
+                      src={
+                        room.roomImage || room.room_image
+                          ? `http://localhost:5000${room.roomImage || room.room_image}`
+                          : require('../../assets/room-main.png')
+                      } 
+                      alt={room.name} 
+                    />
                     <div className="card-body">
                       <h4>{room.name}</h4>
                       <p>{room.location}</p>
                       <p>{room.description}</p>
                       <div className="room-amenities">
-                        {room.amenities && room.amenities.length > 0 && (
-                          <p>Tiện nghi: {Array.isArray(room.amenities) ? room.amenities.join(', ') : room.amenities}</p>
+                        {room.facilities && (
+                          <p>Tiện nghi: {typeof room.facilities === 'string' 
+                            ? room.facilities 
+                            : Array.isArray(room.facilities) 
+                              ? room.facilities.join(', ') 
+                              : JSON.stringify(room.facilities)}</p>
                         )}
                       </div>
                       <button className="btn-primary" onClick={() => handleBookRoom(room)}>Đặt</button>

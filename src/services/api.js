@@ -261,14 +261,47 @@ export const getUserBookings = async () => {
       // Map backend field names to what the frontend component expects
       const transformedData = {
         success: true,
-        data: response.data.map(booking => ({
-          ...booking,
-          // Map startTime to checkIn and endTime to checkOut
-          checkIn: booking.startTime ? new Date(booking.startTime).toLocaleString() : '',
-          checkOut: booking.endTime ? new Date(booking.endTime).toLocaleString() : '',
-          // Add status if not present (default to 'upcoming')
-          status: booking.status || (booking.bookingStatus ? booking.bookingStatus.toLowerCase() : 'upcoming')
-        }))
+        data: response.data.map(booking => {
+          console.log('Booking data from API:', booking);
+          
+          // Xác định đường dẫn hình ảnh dựa trên roomName
+          let roomImage;
+          // Lấy tên phòng từ booking hoặc từ phòng được liên kết
+          const roomName = booking.room_name || booking.roomName || '';
+          
+          // Xác định tòa nhà từ tên phòng
+          if (roomName.includes('B1') || roomName.includes('B 1') || roomName.toLowerCase().includes('b1')) {
+            roomImage = '/uploads/rooms/B1.png';
+          } else if (roomName.includes('H6') || roomName.includes('H 6') || roomName.toLowerCase().includes('h6')) {
+            roomImage = '/uploads/rooms/H6.jpg';
+          } else if (roomName.includes('B') || roomName.toLowerCase().includes('b')) {
+            // Nếu tên phòng chỉ chứa ký tự B
+            roomImage = '/uploads/rooms/B1.png';
+          } else if (roomName.includes('H') || roomName.toLowerCase().includes('h')) {
+            // Nếu tên phòng chỉ chứa ký tự H
+            roomImage = '/uploads/rooms/H6.jpg';
+          } else {
+            // Mặc định sử dụng hình ảnh B1.png
+            roomImage = '/uploads/rooms/B1.png';
+          }
+          
+          return {
+            ...booking,
+            checkIn: booking.startTime ? new Date(booking.startTime).toLocaleString() : '',
+            checkOut: booking.endTime ? new Date(booking.endTime).toLocaleString() : '',
+            status: booking.status || (booking.bookingStatus 
+              ? booking.bookingStatus.toLowerCase() === 'confirmed' 
+                ? 'upcoming' 
+                : booking.bookingStatus.toLowerCase() === 'completed'
+                  ? 'past'
+                  : booking.bookingStatus.toLowerCase() === 'cancelled' || booking.bookingStatus.toLowerCase() === 'auto_cancelled'
+                    ? 'canceled'
+                    : 'upcoming'
+              : 'upcoming'),
+            roomImage: roomImage,
+            roomName: roomName || `Phòng ${booking.room_id || 'không xác định'}`
+          };
+        })
       };
       return transformedData;
     }

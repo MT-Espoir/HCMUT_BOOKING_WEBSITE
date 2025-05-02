@@ -61,6 +61,32 @@
   color: #444;
 }
 
+/* Date selector styles */
+.date-selector {
+  display: flex;
+  align-items: center;
+  background: #f1f3f5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.calendar-icon {
+  color: #2563EB;
+  margin-right: 8px;
+}
+
+.date-input {
+  border: none;
+  background: transparent;
+  flex: 1;
+  font-size: 14px;
+  font-family: inherit;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+}
+
 .room-listing {
   flex: 1;
   max-width: 1100px;         /* ✅ Giới hạn chiều ngang tổng */
@@ -73,7 +99,7 @@
   color: #111;
 }
 
-.room-listing p {
+room-listing p {
   font-size: 14px;
   color: #666;
   margin-bottom: 20px;
