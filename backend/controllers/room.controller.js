@@ -12,10 +12,64 @@ const getRooms = async (req, res) => {
             status: req.query.status || 'AVAILABLE',
             building: req.query.building,
             floor: req.query.floor,
-            roomType: req.query.roomType
+            roomType: req.query.roomType,
+            date: req.query.date // Lấy ngày từ query params
         };
         
+        // Thêm thời gian vào filters nếu có (quan trọng để kiểm tra chồng chéo thời gian)
+        if (req.query.startTime && req.query.endTime) {
+            filters.startTime = req.query.startTime;
+            filters.endTime = req.query.endTime;
+            console.log(`Filtering with time range: ${filters.startTime} - ${filters.endTime}`);
+        }
+        
+        // Get all rooms matching basic filters
         const rooms = await Room.findAll(filters);
+        
+        // Log debug
+        console.log(`Found ${rooms.length} rooms matching basic filters`);
+        
+        // Xử lý lọc phòng theo khung giờ hoạt động
+        if (req.query.startTime && req.query.endTime) {
+            const startTime = req.query.startTime;
+            const endTime = req.query.endTime;
+            
+            // Debug log
+            console.log(`Filtering rooms by time range: ${startTime} - ${endTime}`);
+            
+            // Check each room's availability for the requested time
+            for (const room of rooms) {
+                // Log special info for room B1-101
+                if (room.name && room.name.includes('B1-101')) {
+                    console.log('------- B1-101 ROOM INFO -------');
+                    console.log('Room data:', {
+                        id: room.id,
+                        name: room.name,
+                        status: room.status,
+                        openingHours: room.openingHours
+                    });
+                }
+                
+                // Add availability status to each room based on opening hours
+                room.isAvailableForTimeRange = Room.isWithinOpeningHours(
+                    room.openingHours, 
+                    startTime, 
+                    endTime
+                );
+                
+                // Log special info for B1-101 result
+                if (room.name && room.name.includes('B1-101')) {
+                    console.log(`B1-101 is ${room.isAvailableForTimeRange ? 'AVAILABLE' : 'NOT AVAILABLE'} for this time range`);
+                    console.log('------- END B1-101 INFO -------');
+                }
+            }
+        } else {
+            // If no time filter, all rooms are considered available from the opening hours perspective
+            for (const room of rooms) {
+                room.isAvailableForTimeRange = true;
+            }
+        }
+        
         res.status(200).json({ success: true, data: rooms });
     } catch (err) {
         console.error('Error fetching rooms:', err);
@@ -149,6 +203,14 @@ const checkRoomAvailability = async (req, res) => {
             return res.status(400).send({ error: 'Start time and end time are required' });
         }
         
+        // Debug log để kiểm tra thời gian nhận được
+        console.log(`Checking availability for room ${roomId}:`, {
+            startTime,
+            endTime,
+            startTimeObj: new Date(startTime),
+            endTimeObj: new Date(endTime)
+        });
+        
         const isAvailable = await Room.checkAvailability(roomId, startTime, endTime);
         
         res.status(200).json({ 
@@ -171,10 +233,20 @@ const checkRoomAvailability = async (req, res) => {
  */
 const getAvailableRooms = async (req, res) => {
     try {
-        const { startTime, endTime } = req.query;
+        const { startTime, endTime, date } = req.query;
         
         if (!startTime || !endTime) {
             return res.status(400).send({ error: 'Start time and end time are required' });
+        }
+        
+        // Tạo datetime đầy đủ nếu có date
+        let fullStartTime = startTime;
+        let fullEndTime = endTime;
+        
+        if (date) {
+            // Nếu có tham số date, kết hợp với thời gian để tạo datetime đầy đủ
+            fullStartTime = `${date}T${startTime}`;
+            fullEndTime = `${date}T${endTime}`;
         }
         
         // Extract additional filters
@@ -183,14 +255,21 @@ const getAvailableRooms = async (req, res) => {
             area: req.query.area,
             building: req.query.building,
             floor: req.query.floor,
-            roomType: req.query.roomType
+            roomType: req.query.roomType,
+            date: date // Thêm date vào filters
         };
         
-        const availableRooms = await Room.getAvailableRooms(startTime, endTime, filters);
+        // Lấy danh sách phòng khả dụng từ model (không bị trùng lịch đặt phòng)
+        const availableRooms = await Room.getAvailableRooms(fullStartTime, fullEndTime, filters);
+        
+        // Lọc thêm dựa trên giờ hoạt động của phòng
+        const roomsWithinHours = availableRooms.filter(room => 
+            Room.isWithinOpeningHours(room.openingHours, fullStartTime, fullEndTime)
+        );
         
         res.status(200).json({
             success: true,
-            data: availableRooms
+            data: roomsWithinHours
         });
     } catch (err) {
         console.error('Error getting available rooms:', err);

@@ -6,7 +6,6 @@ import roomMainImg from '../../assets/room-main.png';
 import roomSide1Img from '../../assets/room-side1.jpg';
 import roomSide2Img from '../../assets/room-side2.jpg';
 import { FaArrowLeft, FaUser, FaRulerCombined } from 'react-icons/fa';
-import { createBooking } from '../../services/api';
 
 const Confirmbookingpage = () => {
   const navigate = useNavigate();
@@ -54,25 +53,81 @@ const Confirmbookingpage = () => {
 
   // Tính toán thời gian bắt đầu và kết thúc dựa trên ngày và khoảng thời gian đã chọn
   const calculateBookingTimes = () => {
-    const { startHour } = getTimeFromRange(selectedTimeRange);
-    const durationHours = getDurationHours(selectedDuration);
+    // Sử dụng thông tin giờ được truyền từ RoomSearchPage
+    const startHour = location.state?.selectedStartHour || 7;
+    const endHour = location.state?.selectedEndHour|| 9;
     
-    // Tạo đối tượng Date từ ngày đã chọn và giờ bắt đầu
-    const startDate = new Date(selectedDate);
-    startDate.setHours(startHour, 0, 0, 0);
+    // Nếu đã có thời gian từ trang trước, sử dụng trực tiếp
+    if (location.state?.startTime && location.state?.endTime) {
+      return {
+        startTime: location.state.startTime,
+        endTime: location.state.endTime,
+        formattedStart: `${startHour.toString().padStart(2, '0')}:00`,
+        formattedEnd: `${endHour.toString().padStart(2, '0')}:00`
+      };
+    }
     
-    // Tính toán thời gian kết thúc bằng cách thêm thời lượng
-    const endDate = new Date(startDate);
-    endDate.setHours(startDate.getHours() + durationHours);
+    // Tạo đối tượng Date với ngày đã chọn
+    const selectedDateObj = new Date(selectedDate);
+    selectedDateObj.setHours(0, 0, 0, 0);
+    
+    // Tạo thời gian bắt đầu và kết thúc theo giờ địa phương
+    const startTime = new Date(selectedDateObj);
+    startTime.setHours(startHour, 0, 0, 0);
+    
+    const endTime = new Date(selectedDateObj);
+    endTime.setHours(endHour, 0, 0, 0);
+    
+    // Tạo chuỗi thời gian tùy chỉnh dạng "YYYY-MM-DD HH:MM:SS"
+    const formatDateToCustomString = (date) => {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const seconds = date.getSeconds().toString().padStart(2, '0');
+      
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
+    
+    const startTimeStr = formatDateToCustomString(startTime);
+    const endTimeStr = formatDateToCustomString(endTime);
+    
+    // Chỉ hiển thị debug log trong môi trường development
+    if (process.env.NODE_ENV === 'development') {
+      console.log("DEBUG - Chi tiết thời gian:", {
+        selectedDate,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        startHour,
+        endHour,
+        startTimeLocal: startTime.toLocaleString(),
+        endTimeLocal: endTime.toLocaleString(),
+        startTimeStr,
+        endTimeStr
+      });
+    }
     
     return {
-      startTime: startDate.toISOString(),
-      endTime: endDate.toISOString()
+      startTime: startTimeStr,
+      endTime: endTimeStr,
+      formattedStart: `${startHour.toString().padStart(2, '0')}:00`,
+      formattedEnd: `${endHour.toString().padStart(2, '0')}:00`
     };
   };
 
   // Lấy thời gian đặt phòng từ hàm đã tính
   const bookingTimes = calculateBookingTimes();
+  
+  // Chỉ hiển thị debug log trong môi trường development
+  if (process.env.NODE_ENV === 'development') {
+    console.log("Thời gian đặt phòng:", {
+      selectedDate,
+      selectedTimeRange,
+      selectedDuration,
+      startTime: bookingTimes.startTime,
+      endTime: bookingTimes.endTime
+    });
+  }
 
   // Booking details - now using the calculated times from selected date and time range
   const [bookingDetails, setBookingDetails] = useState({
@@ -99,33 +154,19 @@ const Confirmbookingpage = () => {
       setLoading(true);
       setError('');
       
-      // Ensure all values are properly defined before sending to API
-      // Convert any undefined values to null
-      const bookingPayload = {
-        roomId: bookingDetails.roomId || null,
-        title: bookingDetails.title || 'Room Booking',
-        purpose: bookingDetails.purpose || 'General meeting',
-        startTime: bookingDetails.startTime,
-        endTime: bookingDetails.endTime,
-        attendeesCount: bookingDetails.attendeesCount || 1,
-        notes: bookingDetails.notes || null
-      };
-      
-      // Submit booking to backend
-      const response = await createBooking(bookingPayload);
-      
-      if (response.success) {
-        // Navigate to booking confirmation page
-        navigate('/checking', { state: { 
+      // Không gọi API createBooking ở đây nữa, chỉ chuyển sang trang checking với thông tin phòng và booking
+      navigate('/checking', { 
+        state: { 
           roomData,
-          bookingId: response.data.id,
-          bookingDetails: response.data
-        }});
-      } else {
-        setError(response.error || 'Failed to create booking');
-      }
+          bookingDetails: {
+            ...bookingDetails,
+            duration: selectedDuration
+          }
+        }
+      });
+      
     } catch (err) {
-      console.error('Error creating booking:', err);
+      console.error('Error handling booking:', err);
       setError(err.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);

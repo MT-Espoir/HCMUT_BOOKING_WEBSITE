@@ -9,292 +9,403 @@
 
 /* Main page container */
 .changeroom-page {
-  font-family: 'Inter', 'Roboto', sans-serif;
-  color: #333;
-  background-color: #f8f9fa;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f7f9fc;
   min-height: 100vh;
 }
 
-/* Header được quản lý bởi component Header.jsx và file Header.css */
-
-/* Main Content Styles */
-.changeroom-main-content {
+/* Wrapper */
+.changeroom-wrapper {
   max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 2rem;
+  margin: 0 auto;
+  padding: 30px 40px;
 }
 
-/* Current Room Info */
-.changeroom-current-room-info {
-  margin-bottom: 2rem;
+/* Current booking info section */
+.changeroom-current-booking {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  margin-bottom: 30px;
 }
 
-.changeroom-current-room-info h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 1.5rem;
+.changeroom-back-button-container {
+  margin-bottom: 20px;
+}
+
+.changeroom-back-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: transparent;
+  border: none;
+  color: #0056b3;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 5px 0;
+}
+
+.changeroom-back-button:hover {
+  text-decoration: underline;
 }
 
 .changeroom-current-room-card {
-  background-color: rgb(255, 255, 255);
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
   display: flex;
-  gap: 2rem;
-  align-items: center;
-  
-}
-
-.changeroom-current-room-card .changeroom-room-image {
-  width: 180px;
-  height: 120px;
+  background-color: #f8f9fa;
   border-radius: 8px;
   overflow: hidden;
-  flex-shrink: 0;
-  
+  margin-top: 20px;
 }
 
-.changeroom-current-room-card .changeroom-room-image img {
+.changeroom-room-image {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.changeroom-room-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.changeroom-current-room-card .changeroom-room-details {
-  flex-grow: 1;
-}
-
-.changeroom-current-room-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: #1f2937;
-}
-
-.changeroom-current-room-card p {
-  margin-bottom: 0.5rem;
-  color: #4b5563;
-}
-
-/* Search Container */
-.changeroom-search-container {
-  margin-bottom: 2rem;
-}
-
-.changeroom-search-box {
-  position: relative;
-  max-width: 600px;
-}
-
-.changeroom-search-icon {
-  position: absolute;
-  top: 50%;
-  left: 16px;
-  transform: translateY(-50%);
-  color: #9ca3af;
-}
-
-.changeroom-search-input {
-  width: 100%;
-  padding: 1rem 1rem 1rem 2.5rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-}
-
-.changeroom-search-input:focus {
-  outline: none;
-  border-color: #2563EB;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-/* Content Container */
-.changeroom-content-container {
-  display: flex;
-  gap: 2rem;
-}
-
-/* Filter Panel */
-.changeroom-filter-panel {
-  width: 300px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
-  align-self: flex-start;
-}
-
-.changeroom-filter-panel h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: #1f2937;
-}
-
-.changeroom-filter-group {
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 1.5rem;
-}
-
-.changeroom-filter-group:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-.changeroom-filter-group h4 {
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 1rem;
-  color: #4b5563;
-}
-
-.changeroom-filter-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.changeroom-filter-option {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.changeroom-filter-option input[type="checkbox"] {
-  margin-right: 10px;
-}
-
-.changeroom-filter-option span {
-  color: #4b5563;
-}
-
-.changeroom-filter-option .changeroom-count {
-  margin-left: auto;
-  color: #9ca3af;
-  font-size: 0.875rem;
-}
-
-/* Room List */
-.changeroom-room-list {
+.changeroom-room-details {
+  padding: 20px;
   flex: 1;
 }
 
-.changeroom-room-list h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #1f2937;
+.changeroom-room-specs {
+  margin-top: 15px;
+}
+
+.changeroom-room-meta {
+  display: flex;
+  gap: 20px;
+  margin: 10px 0;
+}
+
+.changeroom-restriction-notice {
+  display: flex;
+  align-items: center;
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 15px;
+  border-left: 4px solid #ffeeba;
+}
+
+.changeroom-warning-icon {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+/* Main content layout - MATCH ROOMSEARCHPAGE */
+.changeroom-content {
+  display: flex;
+  gap: 30px;
+}
+
+/* Sidebar with filters - MATCH ROOMSEARCHPAGE */
+.changeroom-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.changeroom-search-bar {
+  display: flex;
+  align-items: center;
+  background: #f1f3f5;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.changeroom-search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  margin-left: 8px;
+  flex: 1;
+  font-size: 14px;
+}
+
+.changeroom-search-button {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+}
+
+.changeroom-sidebar h4 {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.changeroom-filter-group {
+  margin-bottom: 20px;
+}
+
+.changeroom-filter-group h5 {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.changeroom-filter-option {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: #444;
+}
+
+.changeroom-count {
+  margin-left: auto;
+  background-color: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #555;
+}
+
+/* Date selector styles - MATCH ROOMSEARCHPAGE */
+.changeroom-date-selector {
+  display: flex;
+  align-items: center;
+  background: #f1f3f5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.changeroom-calendar-icon {
+  color: #2563EB;
+  margin-right: 8px;
+}
+
+.changeroom-date-input {
+  border: none;
+  background: transparent;
+  flex: 1;
+  font-size: 14px;
+  font-family: inherit;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Room listing section - MATCH ROOMSEARCHPAGE */
+.changeroom-room-listing {
+  flex: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.changeroom-room-listing h3 {
+  margin-bottom: 6px;
+  color: #111;
+  font-size: 20px;
 }
 
 .changeroom-result-count {
-  color: #6b7280;
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
+  color: #666;
+  font-size: 14px;
 }
 
-.changeroom-rooms-container {
+.changeroom-room-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin-top: 20px;
 }
 
-.changeroom-room-card {
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+.changeroom-room-card-modern {
+  width: 280px;
+  max-width: 100%;
+  background: #fff;
+  border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  transition: 0.3s ease;
 }
 
-.changeroom-room-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+.changeroom-room-card-modern:hover {
+  transform: translateY(-5px);
 }
 
-.changeroom-room-card .changeroom-room-image {
-  height: 160px;
-  overflow: hidden;
-}
-
-.changeroom-room-card .changeroom-room-image img {
+.changeroom-room-card-modern img {
   width: 100%;
-  height: 100%;
+  height: 180px;
   object-fit: cover;
-  transition: transform 0.3s;
 }
 
-.changeroom-room-card:hover .changeroom-room-image img {
-  transform: scale(1.05);
-}
-
-.changeroom-room-card .changeroom-room-info {
-  padding: 1.5rem;
-}
-
-.changeroom-room-card h4 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: #1f2937;
-}
-
-.changeroom-room-card .changeroom-room-description {
-  color: #4b5563;
-  margin-bottom: 0.75rem;
-  font-size: 0.875rem;
-}
-
-.changeroom-room-card .changeroom-room-amenities {
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin-bottom: 1.5rem;
-}
-
-.changeroom-room-actions {
+.changeroom-card-body {
+  padding: 16px;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 180px;
 }
 
-.changeroom-change-btn {
-  background-color: #2563EB;
+.changeroom-card-body h4 {
+  margin-bottom: 6px;
+  font-size: 16px;
+  color: #111;
+}
+
+.changeroom-location {
+  color: #666;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.changeroom-description {
+  color: #555;
+  margin-bottom: 15px;
+  font-size: 13px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.changeroom-room-meta {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.changeroom-room-amenities {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.changeroom-book-btn {
+  display: inline-block;
+  padding: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  background-color: #0066ff;
+  color: white;
+  cursor: pointer;
+  width: auto;
+}
+
+.changeroom-book-btn:hover {
+  background-color: #004ec2;
+}
+
+.changeroom-book-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* State displays */
+.changeroom-loading,
+.changeroom-error,
+.changeroom-success,
+.changeroom-processing,
+.changeroom-no-results {
+  text-align: center;
+  padding: 40px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.changeroom-loading,
+.changeroom-processing {
+  color: #0056b3;
+}
+
+.changeroom-error,
+.changeroom-error-message {
+  color: #dc3545;
+  margin-bottom: 20px;
+}
+
+.changeroom-success {
+  color: #28a745;
+}
+
+.changeroom-success h3 {
+  margin-top: 0;
+}
+
+.changeroom-no-results {
+  color: #666;
+}
+
+.changeroom-restriction-container {
+  text-align: center;
+  padding: 30px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.changeroom-back-btn {
+  padding: 10px 20px;
+  background-color: #0066ff;
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 0.75rem 1.5rem;
-  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 14px;
+  margin-top: 20px;
 }
 
-.changeroom-change-btn:hover {
-  background-color: #1d4ed8;
+.changeroom-back-btn:hover {
+  background-color: #004ec2;
 }
 
-/* Responsive styles */
+/* Responsive adjustments */
 @media (max-width: 768px) {
+  .changeroom-wrapper {
+    padding: 20px;
+  }
+  
+  .changeroom-content {
+    flex-direction: column;
+  }
+  
+  .changeroom-sidebar {
+    width: 100%;
+    position: static;
+    margin-bottom: 20px;
+  }
+  
   .changeroom-current-room-card {
     flex-direction: column;
-    align-items: flex-start;
   }
   
-  .changeroom-current-room-card .changeroom-room-image {
+  .changeroom-room-image {
     width: 100%;
-    height: 160px;
+    height: 200px;
   }
   
-  .changeroom-content-container {
-    flex-direction: column;
-  }
-  
-  .changeroom-filter-panel {
-    width: 100%;
-    margin-bottom: 1.5rem;
-  }
-  
-  .changeroom-rooms-container {
+  .changeroom-room-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .changeroom-room-card-modern {
+    width: 100%;
   }
 }

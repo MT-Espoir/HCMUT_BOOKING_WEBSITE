@@ -153,7 +153,14 @@ class Booking {
     static async findBookingsByUserId(userId) {
         try {
             const query = `
-                SELECT b.*, r.name as room_name, r.location, r.capacity, r.room_image, r.area
+                SELECT 
+                    b.booking_id, b.user_id, b.room_id, b.title, b.purpose, 
+                    b.attendees_count, 
+                    b.start_time, 
+                    b.end_time, 
+                    b.duration, b.booking_status, b.check_in_time, b.check_out_time,
+                    b.notes, r.name as room_name, r.location, r.capacity, 
+                    r.room_image, r.area
                 FROM booking b
                 LEFT JOIN room r ON b.room_id = r.room_id
                 WHERE b.user_id = ?
@@ -162,20 +169,32 @@ class Booking {
             
             const [rows] = await db.execute(query, [userId]);
             
-            return rows.map(booking => ({
-                id: booking.booking_id,
-                roomId: booking.room_id,
-                roomName: booking.room_name,
-                title: booking.title,
-                startTime: booking.start_time,
-                endTime: booking.end_time,
-                duration: booking.duration,
-                status: booking.booking_status,
-                location: booking.location,
-                capacity: booking.capacity,
-                size: booking.area,
-                image: booking.room_image
-            }));
+            // Process the results to ensure consistent date handling
+            return rows.map(booking => {
+                // Log the raw dates for debugging
+                if (process.env.NODE_ENV === 'development') {
+                    console.log('Raw DB dates:', {
+                        id: booking.booking_id,
+                        rawStartTime: booking.start_time,
+                        rawEndTime: booking.end_time
+                    });
+                }
+                
+                return {
+                    id: booking.booking_id,
+                    roomId: booking.room_id,
+                    roomName: booking.room_name,
+                    title: booking.title,
+                    startTime: booking.start_time ? booking.start_time.toISOString() : null,
+                    endTime: booking.end_time ? booking.end_time.toISOString() : null,
+                    duration: booking.duration,
+                    status: booking.booking_status,
+                    location: booking.location,
+                    capacity: booking.capacity,
+                    size: booking.area,
+                    image: booking.room_image
+                };
+            });
         } catch (error) {
             console.error('Error finding bookings by user ID:', error);
             throw error;

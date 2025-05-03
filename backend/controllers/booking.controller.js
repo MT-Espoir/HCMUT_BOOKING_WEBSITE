@@ -59,7 +59,18 @@ const createBooking = async (req, res) => {
             return res.status(401).send({ error: 'Unauthorized: Missing user ID' });
         }
         
-        const { roomId, title, purpose, attendeesCount, startTime, endTime } = req.body;
+        const { roomId, title, purpose, attendeesCount, startTime, endTime, notes } = req.body;
+        
+        // Debug log để theo dõi dữ liệu đặt phòng
+        console.log('Booking request received:', {
+            roomId,
+            startTime,
+            endTime,
+            title,
+            purpose,
+            attendeesCount,
+            notes
+        });
         
         // Basic validation
         if (!roomId || !title || !startTime || !endTime) {
@@ -96,7 +107,7 @@ const createBooking = async (req, res) => {
             'PENDING', 
             null, 
             null, 
-            req.body.notes
+            notes
         );
         
         const result = await booking.save();

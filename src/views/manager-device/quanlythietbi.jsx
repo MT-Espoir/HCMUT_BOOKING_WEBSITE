@@ -1,129 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import './quanlythietbi.css';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Headermanager from '../../components/common/Headermanager';
-import { FaArrowLeft, FaUserAlt } from "react-icons/fa";
 import roomMainImg from '../../assets/room-main.png';
 import roomSide1Img from '../../assets/room-side1.jpg';
 import roomSide2Img from '../../assets/room-side2.jpg';
 import logoImg from '../../assets/logo.png';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
+import './quanlythietbi.css';
 
 // Dữ liệu mẫu cho các phòng
 const MOCK_ROOM_DATA = {
-    'A101': {
-        id: 'A101',
-        name: 'Phòng A101',
-        type: 'Phòng học',
-        building: 'A',
-        floor: '1',
-        equipment: [
-            {
-                id: 'MC001',
-                name: 'Máy chiếu',
-                brand: 'Sony',
-                status: 'normal',
-                condition: 'Hoạt động tốt',
-                lastReport: '15/04/2025 bởi Giảng viên B'
-            },
-            {
-                id: 'ML001',
-                name: 'Máy lạnh',
-                brand: 'Panasonic',
-                status: 'normal',
-                condition: 'Hoạt động tốt',
-                lastReport: '20/04/2025 bởi Nhân viên kỹ thuật C'
-            },
-            {
-                id: 'AT001',
-                name: 'Hệ thống âm thanh',
-                brand: 'JBL',
-                status: 'normal',
-                condition: 'Hoạt động tốt',
-                lastReport: '10/04/2025 bởi Nhân viên kỹ thuật D'
-            }
-        ]
-    },
-    'A102': {
-        id: 'A102',
-        name: 'Phòng A102',
-        type: 'Phòng học',
-        building: 'A',
-        floor: '1',
-        equipment: [
-            {
-                id: 'MC002',
-                name: 'Máy chiếu',
-                brand: 'Epson',
-                status: 'broken',
-                condition: 'Hình ảnh không rõ nét',
-                lastReport: '25/04/2025 bởi Giảng viên E'
-            },
-            {
-                id: 'ML002',
-                name: 'Máy lạnh',
-                brand: 'Daikin',
-                status: 'normal',
-                condition: 'Hoạt động tốt',
-                lastReport: '18/04/2025 bởi Nhân viên kỹ thuật F'
-            }
-        ]
-    },
-    'B201': {
-        id: 'B201',
-        name: 'Phòng B201',
-        type: 'Phòng thí nghiệm',
-        building: 'B',
-        floor: '2',
-        equipment: [
-            {
-                id: 'MC003',
-                name: 'Máy chiếu',
-                brand: 'BenQ',
-                status: 'broken',
-                condition: 'Không bật được',
-                lastReport: '27/04/2025 bởi Giảng viên G'
-            },
-            {
-                id: 'ML003',
-                name: 'Máy lạnh',
-                brand: 'LG',
-                status: 'broken',
-                condition: 'Kêu to, không mát',
-                lastReport: '26/04/2025 bởi Sinh viên H'
-            }
-        ]
-    },
     'T1': {
-        id: 'T1',
-        name: 'Phòng T1',
-        type: 'Phòng hội thảo',
-        building: 'T',
-        floor: '1',
+        name: 'Phòng T1-101',
+        type: 'Phòng học',
         equipment: [
-            {
-                id: 'MC001',
-                name: 'Máy chiếu',
-                brand: 'Sony',
-                status: 'broken',
-                condition: 'Bóng đèn hỏng',
-                lastReport: '27/04/2025 bởi Giảng viên A'
-            },
-            {
-                id: 'ML001',
-                name: 'Máy lạnh',
-                brand: 'Panasonic',
-                status: 'normal',
-                condition: 'Hoạt động tốt',
-                lastReport: '20/04/2025 bởi Nhân viên kỹ thuật B'
-            },
-            {
-                id: 'AT001',
-                name: 'Hệ thống âm thanh',
-                brand: 'JBL',
-                status: 'normal',
-                condition: 'Hoạt động tốt',
-                lastReport: '15/04/2025 bởi Sinh viên C'
-            }
+            { id: 'DH001', name: 'Máy lạnh', status: 'normal', brand: 'Panasonic', condition: 'Mới 90%', lastReport: '20/04/2025' },
+            { id: 'DH002', name: 'Máy chiếu', status: 'broken', brand: 'Sony', condition: 'Hỏng phần kết nối HDMI', lastReport: '18/04/2025' },
+            { id: 'DH003', name: 'Đèn LED', status: 'normal', brand: 'Philips', condition: 'Mới thay tháng trước', lastReport: '01/04/2025' },
+            { id: 'DH004', name: 'Bàn ghế', status: 'normal', brand: 'Hòa Phát', condition: 'Sử dụng tốt', lastReport: '15/03/2025' }
+        ]
+    },
+    'B1': {
+        name: 'Phòng B1-202',
+        type: 'Phòng Lab',
+        equipment: [
+            { id: 'BL001', name: 'Máy tính', status: 'normal', brand: 'Dell', condition: 'Mới nâng cấp RAM', lastReport: '25/04/2025' },
+            { id: 'BL002', name: 'Màn hình', status: 'normal', brand: 'LG', condition: 'Sử dụng tốt', lastReport: '25/04/2025' },
+            { id: 'BL003', name: 'Máy lạnh', status: 'broken', brand: 'Daikin', condition: 'Yếu, không đủ lạnh', lastReport: '22/04/2025' }
+        ]
+    },
+    'H6': {
+        name: 'Phòng H6-303',
+        type: 'Phòng hội thảo',
+        equipment: [
+            { id: 'HT001', name: 'Hệ thống âm thanh', status: 'normal', brand: 'JBL', condition: 'Hoạt động tốt', lastReport: '28/04/2025' },
+            { id: 'HT002', name: 'Micro không dây', status: 'broken', brand: 'Shure', condition: 'Hỏng pin', lastReport: '27/04/2025' },
+            { id: 'HT003', name: 'Máy chiếu', status: 'normal', brand: 'Epson', condition: 'Mới 95%', lastReport: '26/04/2025' }
         ]
     }
 };
