@@ -277,6 +277,110 @@ const getAvailableRooms = async (req, res) => {
     }
 };
 
+/**
+ * Filter rooms with additional checks
+ */
+const filterRooms = async (req, res) => {
+    try {
+        // Trích xuất các filter từ query parameters
+        const { capacity, date, building, timeRange, startTime, endTime } = req.query;
+        
+        // Kiểm tra thời gian quá khứ
+        if (startTime && endTime) {
+            const now = new Date();
+            let requestStartTime;
+            
+            // Xử lý định dạng datetime
+            if (date) {
+                requestStartTime = new Date(`${date}T${startTime}`);
+            } else if (startTime.includes('T') || startTime.includes(' ')) {
+                requestStartTime = new Date(startTime);
+            } else {
+                // Nếu chỉ có giờ, sử dụng ngày hiện tại
+                const today = new Date().toISOString().split('T')[0];
+                requestStartTime = new Date(`${today}T${startTime}`);
+            }
+            
+            // Kiểm tra nếu thời gian đã qua
+            if (requestStartTime < now) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Không thể đặt phòng cho thời gian đã qua',
+                    data: []
+                });
+            }
+        }
+        
+        // Kiểm tra nếu ngày đã qua
+        if (date) {
+            const selectedDate = new Date(date);
+            selectedDate.setHours(0, 0, 0, 0);
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Không thể đặt phòng cho ngày đã qua',
+                    data: []
+                });
+            }
+        }
+        
+        // Tạo object filter để sử dụng trong truy vấn
+        const filters = {
+            capacity: capacity ? parseInt(capacity) : undefined,
+            date: date,
+            building: building,
+        };
+        
+        // Xử lý khoảng thời gian cụ thể nếu có
+        if (timeRange) {
+            // Chuyển đổi định dạng "7h - 9h" thành giờ bắt đầu và kết thúc
+            const [start, end] = timeRange.split(' - ');
+            filters.startTime = start.replace('h', ':00');
+            filters.endTime = end.replace('h', ':00');
+        } else if (startTime && endTime) {
+            filters.startTime = startTime;
+            filters.endTime = endTime;
+        }
+        
+        // Lấy danh sách phòng phù hợp với các filter
+        const rooms = await Room.findAll(filters);
+        
+        // Nếu không có filter thời gian, trả về danh sách phòng ngay
+        if (!timeRange && !startTime && !endTime) {
+            return res.status(200).json({ success: true, data: rooms });
+        }
+        
+        // Thêm thông tin khả dụng dựa trên khung giờ cho mỗi phòng
+        for (const room of rooms) {
+            // Chuẩn bị các tham số thời gian
+            let roomStartTime = filters.startTime;
+            let roomEndTime = filters.endTime;
+            
+            // Nếu có date, kết hợp với thời gian
+            if (date) {
+                roomStartTime = `${date}T${filters.startTime}`;
+                roomEndTime = `${date}T${filters.endTime}`;
+            }
+            
+            // Kiểm tra xem phòng có khả dụng trong khung giờ không
+            room.isAvailableForTimeRange = await Room.isWithinOpeningHours(
+                room.openingHours,
+                roomStartTime,
+                roomEndTime
+            );
+        }
+        
+        res.status(200).json({ success: true, data: rooms });
+    } catch (err) {
+        console.error('Error filtering rooms:', err);
+        res.status(500).json({ success: false, error: err.message, data: [] });
+    }
+};
+
 module.exports = {
     getRooms,
     getRoomDetails,
@@ -284,5 +388,6 @@ module.exports = {
     updateRoom,
     searchRooms,
     checkRoomAvailability,
-    getAvailableRooms
+    getAvailableRooms,
+    filterRooms
 };

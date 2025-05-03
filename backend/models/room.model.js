@@ -536,6 +536,15 @@ class Room {
      */
     static async checkAvailability(roomId, startTime, endTime) {
         try {
+            // First check if the requested time is in the past
+            const now = new Date();
+            const requestStartTime = new Date(startTime);
+            
+            if (requestStartTime < now) {
+                console.log(`Room ${roomId} is not available - requested time (${startTime}) is in the past`);
+                return false; // Cannot book for a time that has already passed
+            }
+            
             // First check if room exists and is available
             const roomQuery = `
                 SELECT * FROM room
@@ -609,6 +618,16 @@ class Room {
      */
     static async getAvailableRooms(startTime, endTime, filters = {}) {
         try {
+            // Kiểm tra nếu thời gian đã qua
+            const now = new Date();
+            const requestStartTime = new Date(startTime);
+            
+            // Nếu thời gian bắt đầu đã qua, trả về mảng rỗng
+            if (requestStartTime < now) {
+                console.log(`Requested start time (${startTime}) is in the past. No rooms available.`);
+                return [];
+            }
+            
             // Start with general filters
             let query = `
                 SELECT r.* FROM room r

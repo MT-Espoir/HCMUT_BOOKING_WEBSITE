@@ -34,18 +34,52 @@ const MyRoomPage = () => {
       const response = await getUserBookings();
       if (response.success) {
         const processedBookings = response.data.map(booking => {
+          // Debug log để kiểm tra dữ liệu gốc từ API
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Original booking data from API:', booking);
+          }
+          
           const endTime = new Date(booking.endTime || booking.checkOut);
           const startTime = new Date(booking.startTime || booking.checkIn);
           const now = new Date();
           
-          // Kiểm tra nếu quá thời gian kết thúc -> đã hoàn thành
+          // Kiểm tra trường status hoặc bookingStatus từ API
+          // API có thể trả về 'status' hoặc 'bookingStatus' nên cần kiểm tra cả hai
+          const apiStatus = booking.bookingStatus || booking.status;
+          
+          // Nếu có trạng thái từ API thì ưu tiên sử dụng
+          if (apiStatus) {
+            // Chuyển về chữ thường để so sánh dễ dàng hơn
+            const lowerCaseStatus = apiStatus.toLowerCase();
+            
+            // Chuyển đổi từ trạng thái API sang trạng thái UI
+            if (lowerCaseStatus === 'cancelled' || lowerCaseStatus === 'canceled' || lowerCaseStatus === 'auto_cancelled') {
+              return { ...booking, status: 'canceled', autoCanceled: lowerCaseStatus === 'auto_cancelled' };
+            }
+            
+            if (lowerCaseStatus === 'completed') {
+              return { ...booking, status: 'past' };
+            }
+            
+            if (lowerCaseStatus === 'checked_in') {
+              return { ...booking, status: 'active' };
+            }
+            
+            if (lowerCaseStatus === 'pending' || lowerCaseStatus === 'confirmed') {
+              // Kiểm tra thêm logic thời gian dưới đây
+            } else {
+              console.log(`Unknown booking status from API: ${apiStatus}`);
+            }
+          }
+          
+          // Tiếp tục logic xử lý dựa trên thời gian nếu status API không rõ ràng
           if (endTime < now && booking.status !== 'canceled') {
             return { ...booking, status: 'past' };
           }
           
           // Kiểm tra nếu đã qua 10 phút từ thời gian bắt đầu mà chưa check-in -> tự động hủy
           // Chỉ áp dụng cho đơn đang ở trạng thái upcoming (chưa bắt đầu)
-          if (booking.status === 'upcoming' && !booking.actualCheckIn) {
+          if (!booking.status || booking.status === 'upcoming' || booking.bookingStatus === 'PENDING' || booking.bookingStatus === 'CONFIRMED') {
             const tenMinutesAfterStart = new Date(startTime);
             tenMinutesAfterStart.setMinutes(tenMinutesAfterStart.getMinutes() + 10);
             
@@ -53,6 +87,9 @@ const MyRoomPage = () => {
               // Tạm thời chỉ cập nhật UI, trong thực tế sẽ gọi API hủy đơn
               return { ...booking, status: 'canceled', autoCanceled: true };
             }
+            
+            // Booking vẫn trong tương lai và còn hạn
+            return { ...booking, status: 'upcoming' };
           }
           
           return booking;
@@ -252,8 +289,24 @@ const MyRoomPage = () => {
 
   // Kiểm tra xem có nên hiển thị nút hay không
   const shouldShowButtons = (booking) => {
-    // Không hiển thị nút nếu booking đã hoàn thành hoặc đã hủy
-    return !(booking.status === 'past' || booking.status === 'canceled');
+    // Kiểm tra trạng thái UI đầu tiên
+    if (booking.status === 'past' || booking.status === 'canceled') {
+      return false;
+    }
+    
+    // Kiểm tra cả trường status và bookingStatus từ API
+    const apiStatus = booking.bookingStatus || booking.status;
+    if (apiStatus) {
+      const lowerCaseStatus = String(apiStatus).toLowerCase();
+      if (lowerCaseStatus === 'cancelled' || 
+          lowerCaseStatus === 'canceled' ||
+          lowerCaseStatus === 'auto_cancelled' ||
+          lowerCaseStatus === 'completed') {
+        return false;
+      }
+    }
+    
+    return true;
   };
 
   return (
