@@ -72,7 +72,7 @@ CREATE TABLE `booking` (
   KEY `room_id` (`room_id`),
   CONSTRAINT `booking_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `room` (`room_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,7 +81,7 @@ CREATE TABLE `booking` (
 
 LOCK TABLES `booking` WRITE;
 /*!40000 ALTER TABLE `booking` DISABLE KEYS */;
-INSERT INTO `booking` VALUES (6,1,1,'Room Booking','General meeting',2,'2025-05-02 07:10:26','2025-05-02 08:10:26',60,'2025-05-02 13:10:27','PENDING',NULL,NULL,NULL),(7,1,3,'Room Booking','General meeting',7,'2025-05-02 07:54:00','2025-05-02 08:54:00',60,'2025-05-02 13:54:02','PENDING',NULL,NULL,NULL),(8,1,1,'Room Booking','General meeting',2,'2025-05-02 17:00:00','2025-05-02 18:00:00',60,'2025-05-02 13:56:42','PENDING',NULL,NULL,NULL),(9,1,2,'Room Booking','General meeting',5,'2025-05-02 17:00:00','2025-05-02 18:00:00',60,'2025-05-02 13:57:00','PENDING',NULL,NULL,NULL),(10,1,3,'Room Booking','General meeting',7,'2025-05-02 19:00:00','2025-05-02 20:00:00',60,'2025-05-02 14:10:29','PENDING',NULL,NULL,NULL);
+INSERT INTO `booking` VALUES (43,1,2,'Booking by Trần Minh','General meeting',5,'2025-05-03 10:00:00','2025-05-03 12:00:00',120,'2025-05-03 09:32:54','CANCELLED',NULL,NULL,'Email: lanhsuong230@gmail.com, Student ID: N/A'),(44,1,1,'Booking by Trần Minh','General meeting',2,'2025-05-03 10:00:00','2025-05-03 12:00:00',120,'2025-05-03 09:40:23','CHECKED_IN','2025-05-03 02:40:34',NULL,'Email: lanhsuong230@gmail.com, Student ID: N/A');
 /*!40000 ALTER TABLE `booking` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -316,7 +316,7 @@ CREATE TABLE `room` (
   `room_image` varchar(255) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `facilities` text DEFAULT NULL COMMENT 'Danh sách các tiện ích trong phòng (JSON)',
-  `opening_hours` varchar(255) DEFAULT NULL COMMENT 'Giờ mở cửa',
+  `opening_hours` text DEFAULT NULL COMMENT 'Giờ mở cửa (JSON format)',
   `status` enum('AVAILABLE','OCCUPIED','MAINTENANCE','OFFLINE') DEFAULT 'AVAILABLE',
   PRIMARY KEY (`room_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -328,7 +328,7 @@ CREATE TABLE `room` (
 
 LOCK TABLES `room` WRITE;
 /*!40000 ALTER TABLE `room` DISABLE KEYS */;
-INSERT INTO `room` VALUES (1,'B1-101','Building B1',1,'B1',2,30,'STUDY','/uploads/rooms/B1.png','Phòng học nhỏ phù hợp cho nhóm học tập','[\"Bàn ghế hiện đại\", \"Máy chiếu\", \"Bảng trắng\", \"Điều hòa nhiệt độ\", \"Wifi tốc độ cao\"]','07:00-09:00','AVAILABLE'),(2,'B1-102','Building B1',1,'B1',5,40,'STUDY','/uploads/rooms/B1.png','Phòng học vừa với đầy đủ thiết bị ','[\"Bàn ghế hiện đại\", \"Máy chiếu\", \"Bảng trắng\", \"Điều hòa nhiệt độ\", \"Wifi tốc độ cao\"]','07:00-22:00','AVAILABLE'),(3,'B1-201','Building B1',2,'B1',7,55,'MEETING','/uploads/rooms/B1.png','Phòng họp phù hợp cho thảo luận nhóm','[\"Bàn ghế hiện đại\", \"Máy chiếu\", \"Bảng trắng\", \"Điều hòa nhiệt độ\", \"Wifi tốc độ cao\"]','07:00-22:00','AVAILABLE'),(4,'H6-101','Building H6',1,'H6',2,30,'STUDY','/uploads/rooms/H6.jpg','Phòng học nhỏ phù hợp cho nhóm học tập','[\"Máy chiếu\", \"Điều hòa\", \"Hệ thống âm thanh\", \"Bàn họp lớn\"]','07:00-20:00','AVAILABLE'),(5,'H6-303','Building H6',3,'H6',5,40,'STUDY','/uploads/rooms/H6.jpg','Phòng học vừa với đầy đủ thiết bị ','[\"Máy chiếu\", \"Điều hòa\", \"Hệ thống âm thanh\", \"Bàn họp lớn\"]','08:00-21:00','AVAILABLE');
+INSERT INTO `room` VALUES (1,'B1-101','Building B1',1,'B1',2,30,'STUDY','/uploads/rooms/B1.png','Phòng học nhỏ phù hợp cho nhóm học tập','[\"Bàn ghế hiện đại\", \"Máy chiếu\", \"Bảng trắng\", \"Điều hòa nhiệt độ\", \"Wifi tốc độ cao\"]','[\r\n  {\"start\":\"07:00\",\"end\":\"09:00\"},\r\n  {\"start\":\"09:00\",\"end\":\"11:00\"},\r\n  {\"start\":\"11:00\",\"end\":\"13:00\"},\r\n  {\"start\":\"13:00\",\"end\":\"15:00\"},\r\n  {\"start\":\"15:00\",\"end\":\"17:00\"},\r\n  {\"start\":\"17:00\",\"end\":\"19:00\"},\r\n  {\"start\":\"19:00\",\"end\":\"21:00\"}\r\n]','AVAILABLE'),(2,'B1-102','Building B1',1,'B1',5,40,'STUDY','/uploads/rooms/B1.png','Phòng học vừa với đầy đủ thiết bị ','[\"Bàn ghế hiện đại\", \"Máy chiếu\", \"Bảng trắng\", \"Điều hòa nhiệt độ\", \"Wifi tốc độ cao\"]','[{\"start\":\"07:00\",\"end\":\"22:00\"}]','AVAILABLE'),(3,'B1-201','Building B1',2,'B1',7,55,'MEETING','/uploads/rooms/B1.png','Phòng họp phù hợp cho thảo luận nhóm','[\"Bàn ghế hiện đại\", \"Máy chiếu\", \"Bảng trắng\", \"Điều hòa nhiệt độ\", \"Wifi tốc độ cao\"]','[{\"start\":\"09:00\",\"end\":\"11:00\"},{\"start\":\"13:00\",\"end\":\"17:00\"}]','AVAILABLE'),(4,'H6-101','Building H6',1,'H6',2,30,'STUDY','/uploads/rooms/H6.jpg','Phòng học nhỏ phù hợp cho nhóm học tập','[\"Máy chiếu\", \"Điều hòa\", \"Hệ thống âm thanh\", \"Bàn họp lớn\"]','[\n  {\"start\":\"07:00\",\"end\":\"09:00\"},\n  {\"start\":\"09:00\",\"end\":\"11:00\"},\n  {\"start\":\"11:00\",\"end\":\"13:00\"},\n  {\"start\":\"13:00\",\"end\":\"15:00\"},\n  {\"start\":\"15:00\",\"end\":\"17:00\"},\n  {\"start\":\"17:00\",\"end\":\"19:00\"},\n  {\"start\":\"19:00\",\"end\":\"21:00\"}\n]','AVAILABLE'),(5,'H6-303','Building H6',3,'H6',5,40,'STUDY','/uploads/rooms/H6.jpg','Phòng học vừa với đầy đủ thiết bị ','[\"Máy chiếu\", \"Điều hòa\", \"Hệ thống âm thanh\", \"Bàn họp lớn\"]','[{\"start\":\"07:00\",\"end\":\"22:00\"}]','AVAILABLE');
 /*!40000 ALTER TABLE `room` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -455,7 +455,7 @@ CREATE TABLE `user` (
   `status` enum('ACTIVE','RESTRICTED','BANNED') DEFAULT 'ACTIVE',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `mssv` (`mssv`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -464,7 +464,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'admin1','admin1@gmail.com','123456789',NULL,'ADMIN',NULL,'0901234567','Admin One',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(2,'admin2','admin2@gmail.com','123456789',NULL,'ADMIN',NULL,'0901234568','Admin Two',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(3,'manager1','manager1@gmail.com','123456789',NULL,'MANAGER',NULL,'0901234569','Manager One',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(4,'student1','student1@gmail.com','123456789','20210001','STUDENT','Information Technology','0901234570','Student One',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(5,'student2','student2@gmail.com','123456789','20210002','STUDENT','Computer Science','0901234571','Student Two',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(6,'student3','student3@gmail.com','123456789','20210003','STUDENT','Electrical Engineering','0901234572','Student Three',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(7,'student4','student4@gmail.com','123456789','20210004','STUDENT','Information Technology','0901234573','Student Four',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(8,'student5','student5@gmail.com','123456789','20210005','STUDENT','Computer Science','0901234574','Student Five',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(9,'tech1','tech1@gmail.com','123456789',NULL,'TECHNICIAN',NULL,'0901234575','Technician One',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(10,'tech2','tech2@gmail.com','123456789',NULL,'TECHNICIAN',NULL,'0901234576','Technician Two',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE');
+INSERT INTO `user` VALUES (1,'admin1','admin1@gmail.com','123456789',NULL,'ADMIN',NULL,'0901234567','Admin One',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(2,'admin2','admin2@gmail.com','123456789',NULL,'ADMIN',NULL,'0901234568','Admin Two',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(3,'manager1','manager1@gmail.com','123456789',NULL,'MANAGER',NULL,'0901234569','Manager One',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(4,'student1','student1@gmail.com','123456789','20210001','STUDENT','Information Technology','0901234570','Student One',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(5,'student2','student2@gmail.com','123456789','20210002','STUDENT','Computer Science','0901234571','Student Two',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(6,'student3','student3@gmail.com','123456789','20210003','STUDENT','Electrical Engineering','0901234572','Student Three',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(7,'student4','student4@gmail.com','123456789','20210004','STUDENT','Information Technology','0901234573','Student Four',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(8,'student5','student5@gmail.com','123456789','20210005','STUDENT','Computer Science','0901234574','Student Five',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(9,'tech1','tech1@gmail.com','123456789',NULL,'TECHNICIAN',NULL,'0901234575','Technician One',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(10,'tech2','tech2@gmail.com','123456789',NULL,'TECHNICIAN',NULL,'0901234576','Technician Two',NULL,'2025-04-30 18:26:33','0000-00-00 00:00:00','ACTIVE'),(11,'admin11','admin11@gmail.com','123456789','22222222','STUDENT',NULL,NULL,NULL,NULL,'2025-05-03 06:07:57','0000-00-00 00:00:00','ACTIVE');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -477,4 +477,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-02 21:33:14
+-- Dump completed on 2025-05-03 16:44:09
