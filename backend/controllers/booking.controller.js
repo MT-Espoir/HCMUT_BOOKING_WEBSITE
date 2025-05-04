@@ -345,8 +345,26 @@ const getUserBookingsForAdmin = async (req, res, userIdParam = null) => {
         }
         
         const bookings = await Booking.findBookingsByUserId(userId);
+
+        // Debug log các booking được trả về từ database
+        console.log(`Debug bookings for user ${userId}:`, bookings);
         
-        return res.status(200).json(bookings);
+        // Đảm bảo rằng dữ liệu booking được trả về đủ các trường dữ liệu cần thiết
+        const processedBookings = bookings.map(booking => {
+            return {
+                ...booking,
+                booking_id: booking.id || booking.booking_id,
+                room_id: booking.roomId || booking.room_id,
+                title: booking.title,
+                purpose: booking.purpose,
+                start_time: booking.startTime,
+                end_time: booking.endTime,
+                room_name: booking.roomName,
+                booking_status: booking.status
+            };
+        });
+        
+        return res.status(200).json(processedBookings);
     } catch (err) {
         console.error(`Error fetching bookings for user ${userIdParam || req.params.userId}:`, err);
         return res.status(500).send({ error: err.message });

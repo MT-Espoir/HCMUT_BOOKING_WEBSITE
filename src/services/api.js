@@ -647,14 +647,50 @@ export const getUserProfile = async (userId) => {
     let bookings = [];
     try {
       const bookingData = await apiRequest(`/admin/booking/user/${userId}`, { method: 'GET' });
-      bookings = bookingData.map(booking => ({
-        id: booking.booking_id,
-        roomId: booking.room_id,
-        description: booking.title || booking.purpose,
-        time: `${new Date(booking.start_time).toLocaleTimeString()} - ${new Date(booking.end_time).toLocaleTimeString()}`,
-        date: new Date(booking.start_time).toLocaleDateString(),
-        image: 'https://picsum.photos/50/50?1' // Placeholder
-      }));
+      bookings = bookingData.map(booking => {
+        // Lưu trữ thời gian đặt phòng dưới dạng chuỗi ISO để dễ dàng xử lý ở frontend
+        const startTime = booking.start_time ? new Date(booking.start_time) : null;
+        const endTime = booking.end_time ? new Date(booking.end_time) : null;
+        
+        // Format hiển thị ngày tháng
+        let formattedDate = 'Không xác định';
+        let formattedTime = 'Không xác định';
+        
+        try {
+          if (startTime && !isNaN(startTime.getTime())) {
+            // Format ngày tháng
+            const day = startTime.getDate().toString().padStart(2, '0');
+            const month = (startTime.getMonth() + 1).toString().padStart(2, '0');
+            const year = startTime.getFullYear();
+            formattedDate = `${day}/${month}/${year}`;
+            
+            // Format thời gian
+            if (endTime && !isNaN(endTime.getTime())) {
+              const startHours = startTime.getHours().toString().padStart(2, '0');
+              const startMinutes = startTime.getMinutes().toString().padStart(2, '0');
+              const endHours = endTime.getHours().toString().padStart(2, '0');
+              const endMinutes = endTime.getMinutes().toString().padStart(2, '0');
+              
+              formattedTime = `${startHours}:${startMinutes} - ${endHours}:${endMinutes}`;
+            }
+          }
+        } catch (timeError) {
+          console.error('Error formatting time:', timeError);
+        }
+        
+        return {
+          id: booking.booking_id,
+          roomId: booking.room_id || 'Không xác định',
+          roomName: booking.room_name || `Phòng ${booking.room_id || 'không xác định'}`,
+          description: booking.title || booking.purpose || 'Đặt phòng học',
+          time: formattedTime,
+          date: formattedDate,
+          // Truyền thêm dữ liệu thời gian gốc nếu có sẵn
+          startTime: startTime ? startTime.toISOString() : null,
+          endTime: endTime ? endTime.toISOString() : null,
+          image: 'https://picsum.photos/50/50?1' // Placeholder
+        };
+      });
     } catch (bookingError) {
       console.error(`Could not fetch bookings for user ${userId}:`, bookingError);
       // Không làm gián đoạn luồng chính nếu không lấy được lịch sử đặt phòng

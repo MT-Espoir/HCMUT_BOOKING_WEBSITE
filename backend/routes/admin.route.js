@@ -77,7 +77,8 @@ router.get("/booking", (req, res) => {
 router.get("/booking/user/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-    const bookings = await bookingController.getUserBookingsForAdmin(req, res, userId);
+    // Trực tiếp gọi hàm, không lưu kết quả vì hàm đã gửi response
+    await bookingController.getUserBookingsForAdmin(req, res, userId);
   } catch (error) {
     console.error('Error fetching user bookings for admin:', error);
     res.status(500).send({ error: 'Failed to fetch user bookings' });

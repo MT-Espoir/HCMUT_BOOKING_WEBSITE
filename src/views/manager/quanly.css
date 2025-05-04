@@ -363,6 +363,29 @@ header .quanly-user-info img {
     font-weight: 500;
 }
 
+/* Cải thiện hiển thị thông tin thời gian trong lịch sử đặt phòng */
+.quanly-booking-time {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-left: auto;
+    text-align: right;
+}
+
+.quanly-date, .quanly-time {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.quanly-icon {
+    color: #2563EB;
+    font-size: 0.9rem;
+}
+
 /* Responsive styles */
 @media (max-width: 992px) {
     .quanly-container {
