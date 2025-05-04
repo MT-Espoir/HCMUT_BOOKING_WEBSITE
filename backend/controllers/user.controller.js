@@ -186,10 +186,15 @@ const getUserProfile = async (req, res) => {
 
 const updateUserStatus = async (req, res) => {
     try {
-       const userId = req.params.userId;
-       const status = req.body.status;
+        const userId = req.params.userId;
+        const { status, notes } = req.body;
+        
         if (!userId) {
-            return res.status(401).send({ error: 'Unauthorized: Missing user ID' });
+            return res.status(400).send({ error: 'User ID is required' });
+        }
+        
+        if (!status) {
+            return res.status(400).send({ error: 'Status is required' });
         }
         
         const user = await User.findUserById(userId);
@@ -197,11 +202,39 @@ const updateUserStatus = async (req, res) => {
             return res.status(404).send({ error: 'User not found' });
         }
 
-        user.status = status;
-        const result = user.updateUserInformation()
-        res.status(200).send({message: "User status updated successfully!"});
+        // Map frontend status values to backend status values if needed
+        let backendStatus = status;
+        if (typeof status === 'string' && status.toLowerCase() === 'verified') {
+            backendStatus = 'ACTIVE';
+        } else if (typeof status === 'string' && status.toLowerCase() === 'rejected') {
+            backendStatus = 'RESTRICTED';
+        } else if (typeof status === 'string' && status.toLowerCase() === 'pending') {
+            backendStatus = 'PENDING';
+        }
+
+        // Update user status
+        user.status = backendStatus;
+        
+        // Update notes if provided
+        if (notes !== undefined) {
+            user.notes = notes;
+        }
+        
+        await user.updateUserInformation();
+        
+        return res.status(200).json({
+            success: true,
+            message: "User status updated successfully!",
+            user: {
+                id: user.user_id,
+                name: user.username,
+                email: user.email,
+                status: user.status
+            }
+        });
     } catch (err) {
-        res.status(500).send({ error: err.message });
+        console.error('Error updating user status:', err);
+        return res.status(500).send({ error: err.message });
     }
 };
 
@@ -227,6 +260,97 @@ const getUsersAndTheirActiveStatus = async (req, res) => {
     }
 };
 
+/**
+ * Update user role (Admin only)
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ */
+const updateUserRole = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const { role } = req.body;
+        
+        if (!userId) {
+            return res.status(400).send({ error: 'User ID is required' });
+        }
+        
+        if (!role) {
+            return res.status(400).send({ error: 'Role is required' });
+        }
+        
+        // Validate role is one of the allowed values
+        const validRoles = ['student', 'admin', 'technician', 'it'];
+        if (!validRoles.includes(role.toLowerCase())) {
+            return res.status(400).send({ error: 'Invalid role value' });
+        }
+        
+        const user = await User.findUserById(userId);
+        if (!user) {
+            return res.status(404).send({ error: 'User not found' });
+        }
+        
+        // Update user role
+        user.role = role.toUpperCase();
+        await user.updateUserInformation();
+        
+        // Update role in Redis if user is currently logged in
+        if (await redisClient.exists(String(userId))) {
+            await redisClient.set(String(userId), role.toUpperCase(), { EX: 3600*2 });
+        }
+        
+        // Store role change history (this would ideally be implemented in a model)
+        // For now, we'll just return success
+        
+        return res.status(200).json({ 
+            success: true,
+            message: 'User role updated successfully',
+            user: {
+                id: user.user_id,
+                username: user.username,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (err) {
+        console.error('Error updating user role:', err);
+        return res.status(500).send({ error: err.message });
+    }
+};
+
+/**
+ * Get user role history (Admin only)
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ */
+const getUserRoleHistory = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        
+        if (!userId) {
+            return res.status(400).send({ error: 'User ID is required' });
+        }
+        
+        // This would typically fetch from a role history table
+        // For now, we'll return a mock history
+        const mockHistory = [
+            {
+                role: 'STUDENT',
+                timestamp: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
+                status: 'Assigned at registration',
+                note: 'Initial role'
+            }
+        ];
+        
+        return res.status(200).json({ 
+            success: true,
+            data: mockHistory
+        });
+    } catch (err) {
+        console.error('Error getting user role history:', err);
+        return res.status(500).send({ error: err.message });
+    }
+};
+
 module.exports = {
     register,
     login,
@@ -236,5 +360,7 @@ module.exports = {
     changePassword,
     getUserProfile,
     updateUserStatus,
-    getUsersAndTheirActiveStatus
+    getUsersAndTheirActiveStatus,
+    updateUserRole,
+    getUserRoleHistory
 };

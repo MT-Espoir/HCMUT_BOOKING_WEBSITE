@@ -66,6 +66,8 @@ router.post('/notification/send', notificationController.createNotificaiton) //s
 router.get('/user', userController.getUsersAndTheirActiveStatus) //get list of all user and their active status
 router.get('/user/:userId', userController.getUserProfile) //get user detail
 router.put('/user/:userId', userController.updateUserStatus) //update user status
+router.put('/user/:userId/role', userController.updateUserRole) //update user role
+router.get('/user/:userId/role-history', userController.getUserRoleHistory) //get user role history
 
 // Fix function names to match those in the booking controller
 router.get("/booking", (req, res) => {
