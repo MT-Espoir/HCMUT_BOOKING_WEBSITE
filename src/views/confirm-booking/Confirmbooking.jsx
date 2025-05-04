@@ -19,7 +19,7 @@ const Confirmbookingpage = () => {
     id: 3,
     name: 'Phòng T1',
     description: 'Tầng trệt, khu vực thư viện',
-    amenities: ['Bàn ghế hiện đại', 'Máy chiếu', 'Bảng trắng', 'Điều hòa nhiệt độ', 'Wifi tốc độ cao', 'Giá đỡ tài liệu'],
+    facilities: ['Bàn ghế hiện đại', 'Máy chiếu', 'Bảng trắng', 'Điều hòa nhiệt độ', 'Wifi tốc độ cao', 'Giá đỡ tài liệu'],
     image: roomMainImg,
     branch: 1,
     capacity: 2,
@@ -139,10 +139,10 @@ const Confirmbookingpage = () => {
     attendeesCount: roomData.capacity || 1
   });
 
-  // Convert amenities from string to array if needed
-  const amenitiesList = typeof roomData.amenities === 'string' 
-    ? roomData.amenities.split(',').map(item => item.replace('Tiện nghi:', '').trim())
-    : roomData.amenitiesList || roomData.amenities || [];
+  // Convert facilities from string to array if needed
+  const facilitiesList = typeof roomData.facilities === 'string' 
+    ? roomData.facilities.split(',').map(item => item.replace('Tiện nghi:', '').trim())
+    : roomData.facilitiesList || roomData.facilities || [];
   
   // Ensure features is an array
   const featuresList = Array.isArray(roomData.features) 
@@ -228,7 +228,6 @@ const Confirmbookingpage = () => {
                 <h3>Thông tin đặt phòng</h3>
                 <p><strong>Ngày:</strong> {new Date(selectedDate).toLocaleDateString('vi-VN')}</p>
                 <p><strong>Thời gian:</strong> {selectedTimeRange || '7h - 9h'}</p>
-                <p><strong>Thời lượng:</strong> {selectedDuration || '1 tiếng'}</p>
               </div>
               
               <div className="CB-tab-container">
@@ -248,20 +247,14 @@ const Confirmbookingpage = () => {
                         {roomData.fullDescription || roomData.description}
                       </p>
                       
-                      <div className="CB-amenities">
+                      <div className="CB-facilities">
                         <h4>Tiện ích</h4>
-                        <ul>
-                          {amenitiesList.map((amenity, index) => (
-                            <li key={index}>{amenity}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      <div className="CB-features">
-                        <h4>Đặc điểm</h4>
-                        <div className="CB-feature-list">
-                          {featuresList.map((feature, index) => (
-                            <span key={index} className="CB-feature">{feature}</span>
+                        <div className="CB-facilities-list">
+                          {facilitiesList.map((facility, index) => (
+                            <div key={index} className="CB-facility-item">
+                              <span className="CB-facility-icon">•</span>
+                              <span className="CB-facility-text">{facility}</span>
+                            </div>
                           ))}
                         </div>
                       </div>

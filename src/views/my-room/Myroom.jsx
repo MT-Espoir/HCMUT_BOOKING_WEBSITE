@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './Myroom.css';
 import Header from '../../components/common/Header';
 import { FaClock, FaCheckCircle, FaTimes, FaCalendarAlt, FaSearch, FaRegClock } from 'react-icons/fa';
-import { getUserBookings, cancelBooking, startBooking } from '../../services/api';
+import { getUserBookings, cancelBooking, startBooking, checkOutBooking } from '../../services/api';
 
 const MyRoomPage = () => {
   const navigate = useNavigate();
@@ -62,6 +62,12 @@ const MyRoomPage = () => {
             }
             
             if (lowerCaseStatus === 'checked_in') {
+              // Kiểm tra nếu booking đang ở trạng thái CHECKED_IN nhưng đã quá hạn checkout
+              if (endTime < now) {
+                // Gọi API để tự động checkout cho booking này
+                handleAutoCheckout(booking.id);
+                return { ...booking, status: 'past' };
+              }
               return { ...booking, status: 'active' };
             }
             
@@ -152,6 +158,19 @@ const MyRoomPage = () => {
       alert('Không thể bắt đầu sử dụng phòng. Vui lòng thử lại.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAutoCheckout = async (bookingId) => {
+    try {
+      const response = await checkOutBooking(bookingId);
+      if (response.success) {
+        console.log(`Auto checkout successful for booking ID: ${bookingId}`);
+      } else {
+        console.error(`Failed to auto checkout for booking ID: ${bookingId}`);
+      }
+    } catch (err) {
+      console.error(`Error during auto checkout for booking ID: ${bookingId}`, err);
     }
   };
 

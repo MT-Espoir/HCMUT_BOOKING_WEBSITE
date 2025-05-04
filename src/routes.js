@@ -28,6 +28,7 @@ const AppRoutes = () => (
       <Route path="/" element={<MainPageGuest />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/about" element={<About />} />
     </Route>
 
     {/* User Layout + protected with PrivateRoute */}
@@ -44,7 +45,7 @@ const AppRoutes = () => (
       <Route path="/checking" element={<CheckingPage />} />
       <Route path="/myroom" element={<MyRoomPage />} />
       <Route path="/changeroom/:bookingId" element={<ChangeRoomPage />} />
-      <Route path="/about" element={<About />} />
+      <Route path="/user-about" element={<About />} />
     </Route>
 
     {/* Manager Routes - Không sử dụng layout chung */}

@@ -436,6 +436,25 @@ export const startBooking = async (bookingId) => {
   }
 };
 
+/**
+ * Complete a booking (check out)
+ * @param {number} bookingId - Booking ID
+ * @returns {Promise<Object>} - Updated booking with check-out time
+ */
+export const checkOutBooking = async (bookingId) => {
+  try {
+    return await apiRequest(`/booking/${bookingId}/check-out`, { 
+      method: 'POST',
+      body: JSON.stringify({ 
+        checkOutTime: new Date().toISOString() 
+      })
+    });
+  } catch (error) {
+    console.error(`Failed to complete booking ${bookingId}:`, error);
+    throw error;
+  }
+};
+
 // --------------------------------
 // User-related API functions
 // --------------------------------
@@ -878,6 +897,7 @@ export default {
   changeBookingRoom,
   deleteBookingHistory,
   startBooking,
+  checkOutBooking,
   loginUser,
   registerAPI,
   getCurrentUser,

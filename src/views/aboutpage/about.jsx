@@ -4,7 +4,11 @@ import {
   FaCloud, FaChartLine, FaFileAlt, FaUserCheck, FaChartBar, 
   FaSearch, FaClock, FaLock, FaBell, FaCalendarAlt, FaStar 
 } from 'react-icons/fa';
-
+import studentImage from '../../assets/student-booking.jpg';
+import studentImage2 from '../../assets/room-side2.jpg';
+import teacherImage from '../../assets/teacher.jpg';
+import ManagerImage from '../../assets/manager.jpg';
+import logo from '../../assets/logo.png';
 const About = () => {
   // JavaScript để xử lý chuyển tab - được di chuyển vào useEffect
   useEffect(() => {
@@ -66,7 +70,7 @@ const About = () => {
               </p>
             </div>
             <div className="Aintro-image">
-              <img src="/images/student-booking.jpg" alt="Sinh viên đang sử dụng hệ thống đặt phòng" />
+              <img src={studentImage} alt="Sinh viên đang sử dụng hệ thống đặt phòng" />
             </div>
           </div>
         </div>
@@ -118,7 +122,7 @@ const About = () => {
           <div className="Atab-content Aactive" id="students">
             <div className="Auser-info">
               <div className="Auser-image">
-                <img src="/images/students.jpg" alt="Sinh viên đang học nhóm" />
+                <img src={studentImage2} alt="Sinh viên đang học nhóm" />
               </div>
               <div className="Auser-details">
                 <h3>Dành cho Sinh viên</h3>
@@ -135,7 +139,7 @@ const About = () => {
           <div className="Atab-content" id="teachers">
             <div className="Auser-info">
               <div className="Auser-image">
-                <img src="/images/teachers.jpg" alt="Giảng viên đang giảng dạy" />
+                <img src={teacherImage} alt="Giảng viên đang giảng dạy" />
               </div>
               <div className="Auser-details">
                 <h3>Dành cho Giảng viên</h3>
@@ -152,7 +156,7 @@ const About = () => {
           <div className="Atab-content" id="managers">
             <div className="Auser-info">
               <div className="Auser-image">
-                <img src="/images/managers.jpg" alt="Nhân viên quản lý làm việc" />
+                <img src={ManagerImage} alt="Nhân viên quản lý làm việc" />
               </div>
               <div className="Auser-details">
                 <h3>Dành cho Quản lý</h3>
@@ -352,11 +356,7 @@ const About = () => {
       <section className="Acta-section">
         <div className="Acontainer">
           <div className="Acta-content">
-            <h2>Sẵn sàng tối ưu hóa trải nghiệm học tập của bạn?</h2>
-            <div className="Acta-buttons">
-              <a href="/login" className="Abtn-primary">Bắt đầu đặt phòng</a>
-              <a href="/guide" className="Abtn-secondary">Xem hướng dẫn sử dụng</a>
-            </div>
+            <h5>Sẵn sàng tối ưu hóa trải nghiệm học tập của bạn?</h5>
           </div>
         </div>
       </section>
@@ -366,7 +366,7 @@ const About = () => {
         <div className="Acontainer">
           <div className="Afooter-content">
             <div className="Afooter-logo">
-              <img src="/images/logo.png" alt="HCMUT Logo" />
+              <img src={logo} alt="HCMUT Logo" />
               <div className="Afooter-name">
                 <h3>Trường Đại học Bách Khoa - ĐHQG TP.HCM</h3>
                 <p>Ho Chi Minh City University of Technology (HCMUT)</p>

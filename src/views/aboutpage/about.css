@@ -23,7 +23,22 @@
   margin: 0 auto;
   padding: 0 20px;
 }
-
+.Acontainer h2 {
+  text-align: left;
+  font-size: 1.8rem;
+  position: relative;
+  padding-bottom: 10px;
+}
+.Acontainer h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100px;
+  height: 3px;
+  background-color: var(--Aprimary-color);
+  transform: none;
+}
 /* 1. Hero Section */
 .Ahero-section {
   position: relative;
@@ -109,6 +124,7 @@
 /* 2. Introduction Section */
 .Aintro-section {
   background-color: var(--Abg-color);
+  padding: 30px 0 30px;
 }
 
 .Aintro-content {
@@ -140,12 +156,15 @@
 /* 3. Goals Section */
 .Agoals-section {
   background-color: var(--Alight-bg);
+  padding: 30px 0 30px;
+
 }
 
 .Agoals-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 30px;
+  margin-top: 30px
 }
 
 .Agoal-card {
@@ -180,6 +199,7 @@
 /* 4. Users Section */
 .Ausers-section {
   background-color: var(--Abg-color);
+  padding: 30px 0 30px;
 }
 
 .Atabs {
@@ -266,6 +286,7 @@
 /* 5. Features Section */
 .Afeatures-section {
   background-color: var(--Alight-bg);
+  padding: 20px 0 30px;
 }
 
 .Afeatures-grid {
@@ -276,6 +297,7 @@
 
 .Afeature-card {
   background-color: white;
+  margin-top: 20px;
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
@@ -308,11 +330,13 @@
 /* 6. Principles Section */
 .Aprinciples-section {
   background-color: var(--Abg-color);
+  padding: 30px 0 20px;
 }
 
 .Aprinciples-list {
   max-width: 900px;
   margin: 0 auto;
+  margin-top:30px;
 }
 
 .Aprinciple-item {
@@ -349,13 +373,16 @@
 /* 7. Development Section */
 .Adevelopment-section {
   background-color: var(--Alight-bg);
+  padding: 20px 0 20px;
 }
 
 .Adev-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
   gap: 30px;
+  margin-top: 20px;
 }
+
 
 .Adev-card {
   background-color: white;
@@ -403,6 +430,7 @@
 /* 8. Contact Section */
 .Acontact-section {
   background-color: var(--Abg-color);
+  padding: 30px 0 20px;
 }
 
 .Acontact-grid {
@@ -413,10 +441,20 @@
 
 .Acontact-info h2 {
   text-align: left;
+  font-size: 1.8rem;
+  position: relative;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .Acontact-info h2::after {
+  content: '';
+  position: absolute;
   left: 0;
+  bottom: 0;
+  width: 80px;
+  height: 3px;
+  background-color: var(--Aprimary-color);
   transform: none;
 }
 
@@ -523,22 +561,16 @@
   padding: 60px 0;
 }
 
-.Acta-content h2 {
+.Acta-content h5 {
   color: white;
   font-size: 2.2rem;
-  margin-bottom: 30px;
+  position:relative;
 }
 
-.Acta-content h2::after {
+.Acta-content h5::after {
   background-color: white;
 }
 
-.Acta-buttons {
-  margin-top: 40px;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
 
 .Abtn-primary,
 .Abtn-secondary {
@@ -576,14 +608,14 @@
 .Afooter {
   background-color: #222;
   color: white;
-  padding: 60px 0 30px;
+  padding: 30px 0 10px;
 }
 
 .Afooter-content {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .Afooter-logo {
@@ -594,7 +626,7 @@
 }
 
 .Afooter-logo img {
-  height: 60px;
+  height: 100px;
   width: auto;
 }
 
