@@ -72,31 +72,35 @@ const QuanLyQuyenHeThong = () => {
             alert('Vui lòng chọn một vai trò khác với vai trò hiện tại');
             return;
         }
-        
+
         try {
             const response = await updateUserRole(userId, selectedRole);
-            
-            // Update the local state to reflect the change
-            const updatedUsersByRole = { ...usersByRole };
-            
-            // Remove user from current role array
-            updatedUsersByRole[selectedUser.role] = updatedUsersByRole[selectedUser.role].filter(
-                u => u.id !== userId
-            );
-            
-            // Update user's role and add to new role array
-            const updatedUser = { ...selectedUser, role: selectedRole };
-            updatedUsersByRole[selectedRole] = [...updatedUsersByRole[selectedRole], updatedUser];
-            
-            setUsersByRole(updatedUsersByRole);
-            
-            // Reset selected user
-            setSelectedUser(null);
-            
-            // Fetch updated role history for this user
-            await fetchRoleHistory(userId);
-            
-            alert('Đã thay đổi chức vụ thành: ' + convertRole(selectedRole));
+
+            if (response.success) {
+                // Update the local state to reflect the change
+                const updatedUsersByRole = { ...usersByRole };
+
+                // Remove user from current role array
+                updatedUsersByRole[selectedUser.role] = updatedUsersByRole[selectedUser.role].filter(
+                    u => u.id !== userId
+                );
+
+                // Update user's role and add to new role array
+                const updatedUser = { ...selectedUser, role: selectedRole };
+                updatedUsersByRole[selectedRole] = [...updatedUsersByRole[selectedRole], updatedUser];
+
+                setUsersByRole(updatedUsersByRole);
+
+                // Reset selected user
+                setSelectedUser(null);
+
+                // Fetch updated role history for this user
+                await fetchRoleHistory(userId);
+
+                alert('Đã thay đổi chức vụ thành: ' + convertRole(selectedRole));
+            } else {
+                alert('Không thể cập nhật chức vụ người dùng. Vui lòng thử lại sau.');
+            }
         } catch (error) {
             console.error(`Error updating role for user ${userId}:`, error);
             alert('Không thể cập nhật chức vụ người dùng. Vui lòng thử lại sau.');
