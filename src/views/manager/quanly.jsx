@@ -256,15 +256,6 @@ const QuanLy = () => {
                                     <p><strong>Lần đăng nhập gần nhất:</strong> {selectedUser.lastLogin || 'Chưa có thông tin'}</p>
                                     <p>
                                         <strong>Trạng thái:</strong> {selectedUser.status}
-                                        <button 
-                                            onClick={() => handleStatusChange(
-                                                selectedUser.id, 
-                                                selectedUser.status.toLowerCase() === 'online' ? 'offline' : 'online'
-                                            )}
-                                            className="status-toggle-btn"
-                                        >
-                                            {selectedUser.status.toLowerCase() === 'online' ? 'Đặt Offline' : 'Đặt Online'}
-                                        </button>
                                     </p>
                                     <p><strong>Ghi chú:</strong> {selectedUser.note || '(Trống)'}</p>
                                 </div>

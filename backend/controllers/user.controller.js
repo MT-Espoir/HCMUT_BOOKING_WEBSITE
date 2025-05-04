@@ -49,6 +49,11 @@ const login = async (req, res) => {
         
         // Securely compare the password using bcrypt
         if (password === user.password) {
+            // Cập nhật trạng thái và thời gian đăng nhập cuối
+            user.status = 'ACTIVE';
+            user.last_login = new Date();
+            await user.updateUserInformation();
+            
             // Thêm role vào token JWT
             const token = jwt.sign({ 
                 id: user.user_id, 
@@ -58,7 +63,18 @@ const login = async (req, res) => {
             // Redis cache for fast lookup
             await redisClient.set(String(user.user_id), user.role, { EX: 3600*2 }); 
             console.log(`User ${email} logged in successfully with role: ${user.role}`);
-            res.status(200).send({message: "user login successfully", token: token });
+            res.status(200).send({
+                message: "user login successfully", 
+                token: token,
+                user: {
+                    id: user.user_id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role,
+                    status: user.status,
+                    last_login: user.last_login
+                }
+            });
         } else {
             console.log(`Invalid password for user: ${email}`);
             res.status(401).send({ error: 'Invalid password for user' });
@@ -158,6 +174,20 @@ const logout = async (req, res) => {
             return res.status(400).send({ error: 'Invalid token' });
         }
 
+        // Cập nhật trạng thái người dùng thành offline
+        try {
+            const user = await User.findUserById(decoded.id);
+            if (user) {
+                user.status = 'OFFLINE';
+                await user.updateUserInformation();
+                console.log(`User ${user.email} logged out and status set to OFFLINE`);
+            }
+        } catch (updateErr) {
+            console.error('Error updating user status on logout:', updateErr);
+            // Tiếp tục xử lý đăng xuất ngay cả khi không cập nhật được trạng thái
+        }
+
+        // Xóa token khỏi Redis (đánh dấu người dùng đã đăng xuất)
         await redisClient.del(decoded.id.toString());
         res.status(200).send({ message: 'User logged out successfully' });
     } catch (err) {

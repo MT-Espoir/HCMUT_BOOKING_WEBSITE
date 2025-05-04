@@ -21,6 +21,7 @@ class User{
         this.role = role
         this.faculty = faculty
         this.created_at = created_at
+        this.last_login = last_login
         this.status = status
     }
 
@@ -83,6 +84,7 @@ class User{
             row.role,
             row.faculty,
             row.created_at,
+            row.last_login,
             row.status
         );
         } catch (error) {
@@ -117,6 +119,7 @@ class User{
             row.role,
             row.faculty,
             row.created_at,
+            row.last_login,
             row.status
           );
         } catch (error) {
@@ -148,27 +151,28 @@ class User{
 
     async updateUserInformation() {
         try {
-        // Update user information in the database based on user_id
-        await connection.execute(
-            `
-            UPDATE user 
-            SET username = ?, email = ?, mssv = ?, role = ?, faculty = ?, status = ?
-            WHERE user_id = ?
-            `,
-            [
-            this.username || null,
-            this.email || null,
-            this.mssv || null,
-            this.role || 'STUDENT',
-            this.faculty || null, // Fixed the spelling mistake from 'faculity' to 'faculty'
-            this.status || 'ACTIVE',
-            this.user_id
-            ]
-        );
-        console.log("User information updated successfully");
+            // Update user information in the database based on user_id
+            await connection.execute(
+                `
+                UPDATE user 
+                SET username = ?, email = ?, mssv = ?, role = ?, faculty = ?, status = ?, last_login = ?
+                WHERE user_id = ?
+                `,
+                [
+                    this.username || null,
+                    this.email || null,
+                    this.mssv || null,
+                    this.role || 'STUDENT',
+                    this.faculty || null,
+                    this.status || 'ACTIVE',
+                    this.last_login || null,
+                    this.user_id
+                ]
+            );
+            console.log("User information updated successfully");
         } catch (error) {
-        console.error("Error updating user information:", error);
-        throw error;
+            console.error("Error updating user information:", error);
+            throw error;
         }
     }
 
@@ -221,6 +225,7 @@ class User{
                     row.role,
                     row.faculty,
                     row.created_at,
+                    row.last_login,
                     row.status
                   )
                 
