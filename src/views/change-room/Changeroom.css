@@ -145,8 +145,13 @@
 }
 
 .changeroom-sidebar h4 {
-  font-size: 16px;
-  margin-bottom: 16px;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
 }
 
 .changeroom-filter-group {
@@ -154,8 +159,13 @@
 }
 
 .changeroom-filter-group h5 {
-  font-size: 14px;
-  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 12px;
+  font-weight: 500;
 }
 
 .changeroom-filter-option {
@@ -163,6 +173,23 @@
   margin-bottom: 4px;
   font-size: 13px;
   color: #444;
+}
+
+.changeroom-filter-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.changeroom-filter-group input[type="checkbox"] {
+  margin: 0;
+  width: 16px;
+  height: 16px;
 }
 
 .changeroom-count {
@@ -190,9 +217,10 @@
 }
 
 .changeroom-date-input {
-  border: none;
-  background: transparent;
-  flex: 1;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   font-size: 14px;
   font-family: inherit;
   color: #333;
@@ -410,4 +438,110 @@
   .changeroom-room-card-modern {
     width: 100%;
   }
+}
+
+/* Filter styles matching RoomSearchPage */
+.changeroom-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+.changeroom-filter-group {
+  margin-bottom: 20px;
+}
+
+.changeroom-filter-group h5 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.changeroom-filter-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.changeroom-filter-group input[type="checkbox"] {
+  margin: 0;
+  width: 16px;
+  height: 16px;
+}
+
+/* Date selector styles */
+.changeroom-date-selector {
+  margin-bottom: 10px;
+}
+
+.changeroom-date-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Room availability styles */
+.changeroom-availability-toggle {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.changeroom-availability-toggle label {
+  font-size: 13px;
+  color: #4a5568;
+}
+
+.room-availability {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 10px 0;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.room-availability.available {
+  background-color: #e6f7ee;
+  color: #2f855a;
+}
+
+.room-availability.unavailable {
+  background-color: #feefef;
+  color: #c53030;
+}
+
+.unavailable-room {
+  opacity: 0.8;
+  position: relative;
+}
+
+.unavailable-room::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  pointer-events: none;
 }
