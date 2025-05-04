@@ -64,7 +64,6 @@ const Header = () => {
           <li><Link to="/room-search" className={isActive('/room-search') ? 'active' : ''}>Tìm phòng</Link></li>
           <li><Link to="/myroom" className={isActive('/myroom') ? 'active' : ''}>My Rooms</Link></li>
           <li><Link to="/user-about" className={isActive('/user-about') ? 'active' : ''}>About</Link></li>
-          <li><Link to="/contact" className={isActive('/contact') ? 'active' : ''}>Contact</Link></li>
         </ul>
       </nav>
 
