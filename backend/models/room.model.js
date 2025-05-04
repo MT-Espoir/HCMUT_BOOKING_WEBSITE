@@ -713,6 +713,56 @@ class Room {
             throw error;
         }
     }
+
+    /**
+     * Update room status based on the maintenance status of its devices
+     * @param {number|string} roomId - Room ID
+     * @returns {Promise<boolean>} - True if room status was updated
+     */
+    static async updateRoomStatusBasedOnDevices(roomId) {
+        try {
+            // Get all devices in the room
+            const deviceModel = require('./device.model');
+            const devices = await deviceModel.findAllDeviceOfRoom(roomId);
+            
+            // Get the room
+            const room = await this.findRoomById(roomId);
+            if (!room) {
+                console.log(`Room ${roomId} not found`);
+                return false;
+            }
+            
+            // Check if any devices are in MAINTENANCE status
+            const hasMaintenanceDevice = devices.some(device => 
+                device && device.status === 'MAINTENANCE');
+            
+            // If a device is in maintenance, set room status to 'MAINTENANCE'
+            // Otherwise, set it to 'AVAILABLE' (if it was previously in maintenance)
+            let statusChanged = false;
+            
+            if (hasMaintenanceDevice && room.status !== 'MAINTENANCE') {
+                room.status = 'MAINTENANCE';
+                statusChanged = true;
+                console.log(`Setting room ${roomId} status to MAINTENANCE due to device maintenance`);
+            } else if (!hasMaintenanceDevice && room.status === 'MAINTENANCE') {
+                room.status = 'AVAILABLE';
+                statusChanged = true;
+                console.log(`Setting room ${roomId} status to AVAILABLE as no devices are in maintenance`);
+            }
+            
+            // Update the room if status changed
+            if (statusChanged) {
+                await room.update();
+                console.log(`Room ${roomId} status updated to ${room.status}`);
+                return true;
+            }
+            
+            return false;
+        } catch (error) {
+            console.error('Error updating room status based on devices:', error);
+            return false;
+        }
+    }
 }
 
 module.exports = Room;
