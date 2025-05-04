@@ -176,6 +176,10 @@
   border-left: 5px solid #ef4444;
 }
 
+.MR-booking-card.active {
+  border-left: 5px solid #10b981;
+}
+
 .MR-booking-image {
   width: 280px;
   height: 310px;
@@ -221,13 +225,17 @@
   background-color: #ef4444;
 }
 
+.MR-booking-status.active {
+  background-color: #10b981;
+}
+
 .MR-booking-details {
   flex-grow: 1;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative; /* Thêm position relative */
+  position: relative;
 }
 
 .MR-room-name {
@@ -268,18 +276,34 @@
   margin-right: 0.5rem;
 }
 
+.MR-time-remaining {
+  display: flex;
+  align-items: center;
+  background-color: #f0f9ff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  color: #0369a1;
+}
+
+.MR-time-remaining strong {
+  margin-left: 0.5rem;
+  font-weight: 600;
+}
+
 .MR-booking-actions {
   display: flex;
   gap: 1rem;
   margin-top: 1.5rem;
-  position: absolute; /* Thay đổi vị trí thành absolute */
-  bottom: 1.25rem; /* Cách bottom 1.25rem */
-  right: 1.25rem; /* Cách right 1.25rem */
+  position: absolute;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  justify-content: flex-end;
 }
 
 .MR-action-btn {
   padding: 0.75rem 1.5rem;
-  border: none;
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.95rem;
@@ -290,56 +314,48 @@
   justify-content: center;
 }
 
-.MR-start-btn {
-  background-color: #2563EB;
-  color: white;
-}
-
-.MR-start-btn:hover {
-  background-color: #1d4ed8;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
-}
-
-.MR-start-btn:active {
-  transform: translateY(0);
-}
-
-.MR-cancel-btn, .MR-delete-btn {
-  background-color: #f9fafb;
-  color: #ef4444;
-  border: 1px solid #ef4444;
-}
-
-.MR-cancel-btn:hover, .MR-delete-btn:hover {
-  background-color: #fef2f2;
-  color: #dc2626;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.15);
-}
-
-.MR-change-btn {
-  background-color: #f9fafb;
+/* Nút Bắt đầu: màu trắng với viền xanh dương */
+.MR-action-btn.start-btn {
+  background-color: white;
   color: #2563EB;
   border: 1px solid #2563EB;
 }
 
-.MR-change-btn:hover {
+.MR-action-btn.start-btn:hover {
   background-color: #f0f7ff;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(37, 99, 235, 0.15);
 }
 
-.MR-canceled-btn {
-  background-color: #f3f4f6;
-  color: #9ca3af;
-  border: 1px solid #d1d5db;
-  cursor: not-allowed;
+/* Nút Đổi phòng: màu xanh dương nhạt và không viền */
+.MR-action-btn.change-btn {
+  background-color: #e0e7ff;
+  color: #2563EB;
+  border: none;
 }
 
-/* Thêm style cho nút đã hoàn thành */
-.MR-completed-btn {
-  background-color: #f9fafb;
+.MR-action-btn.change-btn:hover {
+  background-color: #c7d2fe;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.15);
+}
+
+/* Nút Hủy: màu đỏ */
+.MR-action-btn.cancel-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+}
+
+.MR-action-btn.cancel-btn:hover {
+  background-color: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+}
+
+/* Nút đã hoàn thành */
+.MR-action-btn.completed-btn {
+  background-color: #f0fdf4;
   color: #10b981;
   border: 1px solid #10b981;
   cursor: default;
@@ -347,8 +363,12 @@
   align-items: center;
 }
 
-.MR-completed-btn svg {
-  margin-right: 0.5rem;
+/* Nút đã hủy */
+.MR-action-btn.canceled-btn {
+  background-color: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  cursor: default;
 }
 
 /* Modal styles */
@@ -542,7 +562,7 @@
   }
   
   .MR-booking-actions {
-    position: static; /* Trên mobile thì đặt lại thành static */
+    position: static;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;

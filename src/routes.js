@@ -5,7 +5,6 @@ import UserLayout from './layouts/UserLayout';
 import MainPageGuest from './views/guest/MainPageGuest';
 import MainPage from './views/main/MainPage';
 import RoomSearchPage from './views/room-search/RoomSearchPage';
-import Roomselection from './views/room-selection/Roomselection';
 import Confirmbookingpage from './views/confirm-booking/Confirmbooking';
 import CheckingPage from './views/checking/Checkingpage';
 import MyRoomPage from './views/my-room/Myroom';
@@ -41,7 +40,6 @@ const AppRoutes = () => (
     >
       <Route path="/home" element={<MainPage />} />
       <Route path="/room-search" element={<RoomSearchPage />} />
-      <Route path="/room-selection" element={<Roomselection />} />
       <Route path="/confirm-booking" element={<Confirmbookingpage />} />
       <Route path="/checking" element={<CheckingPage />} />
       <Route path="/myroom" element={<MyRoomPage />} />

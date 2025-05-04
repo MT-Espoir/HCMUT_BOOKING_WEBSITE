@@ -72,7 +72,7 @@ CREATE TABLE `booking` (
   KEY `room_id` (`room_id`),
   CONSTRAINT `booking_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   CONSTRAINT `booking_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `room` (`room_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,7 +81,7 @@ CREATE TABLE `booking` (
 
 LOCK TABLES `booking` WRITE;
 /*!40000 ALTER TABLE `booking` DISABLE KEYS */;
-INSERT INTO `booking` VALUES (1,1,4,'Room Booking','General meeting',40,'2025-05-01 02:07:59','2025-05-01 03:07:59',60,'2025-05-01 08:11:48','PENDING',NULL,NULL,NULL),(2,1,1,'Room Booking','General meeting',30,'2025-05-01 02:12:41','2025-05-01 03:12:41',60,'2025-05-01 08:12:43','PENDING',NULL,NULL,NULL),(3,1,2,'Room Booking','General meeting',50,'2025-05-01 02:19:56','2025-05-01 03:19:56',60,'2025-05-01 08:19:58','PENDING',NULL,NULL,NULL);
+INSERT INTO `booking` VALUES (6,1,1,'Room Booking','General meeting',2,'2025-05-02 07:10:26','2025-05-02 08:10:26',60,'2025-05-02 13:10:27','PENDING',NULL,NULL,NULL),(7,1,3,'Room Booking','General meeting',7,'2025-05-02 07:54:00','2025-05-02 08:54:00',60,'2025-05-02 13:54:02','PENDING',NULL,NULL,NULL),(8,1,1,'Room Booking','General meeting',2,'2025-05-02 17:00:00','2025-05-02 18:00:00',60,'2025-05-02 13:56:42','PENDING',NULL,NULL,NULL),(9,1,2,'Room Booking','General meeting',5,'2025-05-02 17:00:00','2025-05-02 18:00:00',60,'2025-05-02 13:57:00','PENDING',NULL,NULL,NULL),(10,1,3,'Room Booking','General meeting',7,'2025-05-02 19:00:00','2025-05-02 20:00:00',60,'2025-05-02 14:10:29','PENDING',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `booking` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -328,7 +328,7 @@ CREATE TABLE `room` (
 
 LOCK TABLES `room` WRITE;
 /*!40000 ALTER TABLE `room` DISABLE KEYS */;
-INSERT INTO `room` VALUES (1,'P101','Building A',1,'A',30,45.5,'STUDY','room-main.png','Phòng học nhỏ phù hợp cho nhóm học tập',NULL,'07:00-22:00','AVAILABLE'),(2,'P102','Building A',1,'A',50,60,'LECTURE','room-side1.jpg','Phòng học lớn với đầy đủ thiết bị giảng dạy',NULL,'07:00-22:00','AVAILABLE'),(3,'P201','Building A',2,'A',20,35,'MEETING','room-side2.jpg','Phòng họp nhỏ phù hợp cho thảo luận nhóm',NULL,'07:00-22:00','AVAILABLE'),(4,'L101','Building B',1,'B',40,80,'LAB','room-main.png','Phòng thực hành máy tính với 40 máy',NULL,'07:00-20:00','AVAILABLE'),(5,'P301','Building C',3,'C',100,120,'LECTURE','room-side1.jpg','Hội trường lớn phù hợp cho hội thảo',NULL,'08:00-21:00','AVAILABLE');
+INSERT INTO `room` VALUES (1,'B1-101','Building B1',1,'B1',2,30,'STUDY','/uploads/rooms/B1.png','Phòng học nhỏ phù hợp cho nhóm học tập','[\"Bàn ghế hiện đại\", \"Máy chiếu\", \"Bảng trắng\", \"Điều hòa nhiệt độ\", \"Wifi tốc độ cao\"]','07:00-09:00','AVAILABLE'),(2,'B1-102','Building B1',1,'B1',5,40,'STUDY','/uploads/rooms/B1.png','Phòng học vừa với đầy đủ thiết bị ','[\"Bàn ghế hiện đại\", \"Máy chiếu\", \"Bảng trắng\", \"Điều hòa nhiệt độ\", \"Wifi tốc độ cao\"]','07:00-22:00','AVAILABLE'),(3,'B1-201','Building B1',2,'B1',7,55,'MEETING','/uploads/rooms/B1.png','Phòng họp phù hợp cho thảo luận nhóm','[\"Bàn ghế hiện đại\", \"Máy chiếu\", \"Bảng trắng\", \"Điều hòa nhiệt độ\", \"Wifi tốc độ cao\"]','07:00-22:00','AVAILABLE'),(4,'H6-101','Building H6',1,'H6',2,30,'STUDY','/uploads/rooms/H6.jpg','Phòng học nhỏ phù hợp cho nhóm học tập','[\"Máy chiếu\", \"Điều hòa\", \"Hệ thống âm thanh\", \"Bàn họp lớn\"]','07:00-20:00','AVAILABLE'),(5,'H6-303','Building H6',3,'H6',5,40,'STUDY','/uploads/rooms/H6.jpg','Phòng học vừa với đầy đủ thiết bị ','[\"Máy chiếu\", \"Điều hòa\", \"Hệ thống âm thanh\", \"Bàn họp lớn\"]','08:00-21:00','AVAILABLE');
 /*!40000 ALTER TABLE `room` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -477,4 +477,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-01 15:42:19
+-- Dump completed on 2025-05-02 21:33:14

@@ -55,22 +55,26 @@ const QuanLy = () => {
     
     const handleStatusChange = async (userId, newStatus) => {
         try {
-            await updateUserStatus(userId, newStatus);
-            
-            // Update local state to reflect the change
-            setUsers(prevUsers => 
-                prevUsers.map(user => 
-                    user.id === userId 
-                        ? { ...user, status: newStatus } 
-                        : user
-                )
-            );
-            
-            if (selectedUser && selectedUser.id === userId) {
-                setSelectedUser(prev => ({ ...prev, status: newStatus }));
+            const response = await updateUserStatus(userId, newStatus);
+
+            if (response.success) {
+                // Update local state to reflect the change
+                setUsers(prevUsers => 
+                    prevUsers.map(user => 
+                        user.id === userId 
+                            ? { ...user, status: newStatus } 
+                            : user
+                    )
+                );
+
+                if (selectedUser && selectedUser.id === userId) {
+                    setSelectedUser(prev => ({ ...prev, status: newStatus }));
+                }
+
+                alert(`Trạng thái người dùng đã được cập nhật thành ${newStatus}`);
+            } else {
+                alert('Không thể cập nhật trạng thái người dùng. Vui lòng thử lại sau.');
             }
-            
-            alert(`Trạng thái người dùng đã được cập nhật thành ${newStatus}`);
         } catch (error) {
             console.error(`Error updating user status for ID ${userId}:`, error);
             alert('Không thể cập nhật trạng thái người dùng. Vui lòng thử lại sau.');

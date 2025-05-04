@@ -217,6 +217,19 @@ export const searchRooms = async (query) => {
  */
 export const filterRooms = async (filters) => {
   try {
+    // Handle time range filter
+    if (filters.timeRange) {
+      const timeRangeParts = filters.timeRange.split(' - ');
+      const startHour = parseInt(timeRangeParts[0].replace('h', ''));
+      const endHour = parseInt(timeRangeParts[1].replace('h', ''));
+      
+      filters.startHour = startHour;
+      filters.endHour = endHour;
+      
+      // Remove timeRange as it's not directly used by the backend
+      delete filters.timeRange;
+    }
+    
     return await apiRequest('/room', { 
       method: 'GET', 
       params: filters 
@@ -238,9 +251,26 @@ export const filterRooms = async (filters) => {
  */
 export const createBooking = async (bookingData) => {
   try {
+    // Log the original booking data for debugging
+    console.log('Sending booking data:', bookingData);
+    
+    // Create a clean copy of the booking data to avoid modifying the original
+    const bookingPayload = { ...bookingData };
+    
+    // In development mode, log timezone information for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Timezone information:', {
+        browserTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        startTimeOriginal: bookingPayload.startTime,
+        endTimeOriginal: bookingPayload.endTime
+      });
+    }
+    
+    // Send the original UTC times without any additional conversion
+    // The backend already expects times in UTC format
     return await apiRequest('/booking', { 
       method: 'POST', 
-      body: JSON.stringify(bookingData)
+      body: JSON.stringify(bookingPayload)
     });
   } catch (error) {
     console.error('Failed to create booking:', error);
@@ -261,14 +291,53 @@ export const getUserBookings = async () => {
       // Map backend field names to what the frontend component expects
       const transformedData = {
         success: true,
-        data: response.data.map(booking => ({
-          ...booking,
-          // Map startTime to checkIn and endTime to checkOut
-          checkIn: booking.startTime ? new Date(booking.startTime).toLocaleString() : '',
-          checkOut: booking.endTime ? new Date(booking.endTime).toLocaleString() : '',
-          // Add status if not present (default to 'upcoming')
-          status: booking.status || (booking.bookingStatus ? booking.bookingStatus.toLowerCase() : 'upcoming')
-        }))
+        data: response.data.map(booking => {
+          // In development mode, log the booking data for debugging
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Original booking data from API:', booking);
+          }
+          
+          // Xác định đường dẫn hình ảnh dựa trên roomName
+          let roomImage;
+          // Lấy tên phòng từ booking hoặc từ phòng được liên kết
+          const roomName = booking.room_name || booking.roomName || '';
+          
+          // Xác định tòa nhà từ tên phòng
+          if (roomName.includes('B1') || roomName.includes('B 1') || roomName.toLowerCase().includes('b1')) {
+            roomImage = '/uploads/rooms/B1.png';
+          } else if (roomName.includes('H6') || roomName.includes('H 6') || roomName.toLowerCase().includes('h6')) {
+            roomImage = '/uploads/rooms/H6.jpg';
+          } else if (roomName.includes('B') || roomName.toLowerCase().includes('b')) {
+            // Nếu tên phòng chỉ chứa ký tự B
+            roomImage = '/uploads/rooms/B1.png';
+          } else if (roomName.includes('H') || roomName.toLowerCase().includes('h')) {
+            // Nếu tên phòng chỉ chứa ký tự H
+            roomImage = '/uploads/rooms/H6.jpg';
+          } else {
+            // Mặc định sử dụng hình ảnh B1.png
+            roomImage = '/uploads/rooms/B1.png';
+          }
+          
+          // Don't use toLocaleString for datetime as it causes timezone issues
+          // Instead, pass the original ISO strings to the component for correct formatting
+          return {
+            ...booking,
+            // Pass the original ISO strings rather than converting here
+            startTime: booking.start_time || booking.startTime,
+            endTime: booking.end_time || booking.endTime,
+            status: booking.status || (booking.bookingStatus 
+              ? booking.bookingStatus.toLowerCase() === 'confirmed' 
+                ? 'upcoming' 
+                : booking.bookingStatus.toLowerCase() === 'completed'
+                  ? 'past'
+                  : booking.bookingStatus.toLowerCase() === 'cancelled' || booking.bookingStatus.toLowerCase() === 'auto_cancelled'
+                    ? 'canceled'
+                    : 'upcoming'
+              : 'upcoming'),
+            roomImage: roomImage,
+            roomName: roomName || `Phòng ${booking.room_id || 'không xác định'}`
+          };
+        })
       };
       return transformedData;
     }
@@ -344,6 +413,25 @@ export const deleteBookingHistory = async (bookingId) => {
     };
   } catch (error) {
     console.error(`Failed to delete booking history ${bookingId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Start a booking (check in)
+ * @param {number} bookingId - Booking ID
+ * @returns {Promise<Object>} - Updated booking with check-in time
+ */
+export const startBooking = async (bookingId) => {
+  try {
+    return await apiRequest(`/booking/${bookingId}/check-in`, { 
+      method: 'POST',
+      body: JSON.stringify({ 
+        checkInTime: new Date().toISOString() 
+      })
+    });
+  } catch (error) {
+    console.error(`Failed to start booking ${bookingId}:`, error);
     throw error;
   }
 };
@@ -789,6 +877,7 @@ export default {
   cancelBooking,
   changeBookingRoom,
   deleteBookingHistory,
+  startBooking,
   loginUser,
   registerAPI,
   getCurrentUser,

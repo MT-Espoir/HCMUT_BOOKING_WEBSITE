@@ -6,7 +6,6 @@ import roomMainImg from '../../assets/room-main.png';
 import roomSide1Img from '../../assets/room-side1.jpg';
 import roomSide2Img from '../../assets/room-side2.jpg';
 import { FaArrowLeft, FaUser, FaRulerCombined } from 'react-icons/fa';
-import { createBooking } from '../../services/api';
 
 const Confirmbookingpage = () => {
   const navigate = useNavigate();
@@ -29,14 +28,115 @@ const Confirmbookingpage = () => {
     fullDescription: 'Phòng Poker (tầng trệt) là không gian lý tưởng cho các cuộc họp nhỏ hoặc làm việc nhóm. Phòng được trang bị đầy đủ tiện nghi hiện đại, ánh sáng tự nhiên, và không gian yên tĩnh để đảm bảo hiệu quả công việc tối đa.'
   };
 
-  // Booking details - in a real app, you'd get these from a form or URL parameters
+  // Lấy thông tin ngày và khoảng thời gian từ location state
+  const selectedDate = location.state?.selectedDate || new Date().toISOString().split('T')[0];
+  const selectedTimeRange = location.state?.selectedTimeRange || '7h - 9h';
+  const selectedDuration = location.state?.selectedDuration || '1 tiếng';
+
+  // Chuyển đổi khoảng thời gian thành thời gian bắt đầu và kết thúc
+  const getTimeFromRange = (timeRange) => {
+    if (!timeRange) return { startHour: 7, endHour: 9 };
+    const parts = timeRange.split(' - ');
+    const startPart = parts[0].replace('h', '');
+    const endPart = parts[1].replace('h', '');
+    return {
+      startHour: parseInt(startPart, 10),
+      endHour: parseInt(endPart, 10)
+    };
+  };
+
+  // Chuyển đổi thời lượng thành số giờ
+  const getDurationHours = (duration) => {
+    if (!duration) return 1;
+    return parseInt(duration.split(' ')[0], 10) || 1;
+  };
+
+  // Tính toán thời gian bắt đầu và kết thúc dựa trên ngày và khoảng thời gian đã chọn
+  const calculateBookingTimes = () => {
+    // Sử dụng thông tin giờ được truyền từ RoomSearchPage
+    const startHour = location.state?.selectedStartHour || 7;
+    const endHour = location.state?.selectedEndHour|| 9;
+    
+    // Nếu đã có thời gian từ trang trước, sử dụng trực tiếp
+    if (location.state?.startTime && location.state?.endTime) {
+      return {
+        startTime: location.state.startTime,
+        endTime: location.state.endTime,
+        formattedStart: `${startHour.toString().padStart(2, '0')}:00`,
+        formattedEnd: `${endHour.toString().padStart(2, '0')}:00`
+      };
+    }
+    
+    // Tạo đối tượng Date với ngày đã chọn
+    const selectedDateObj = new Date(selectedDate);
+    selectedDateObj.setHours(0, 0, 0, 0);
+    
+    // Tạo thời gian bắt đầu và kết thúc theo giờ địa phương
+    const startTime = new Date(selectedDateObj);
+    startTime.setHours(startHour, 0, 0, 0);
+    
+    const endTime = new Date(selectedDateObj);
+    endTime.setHours(endHour, 0, 0, 0);
+    
+    // Tạo chuỗi thời gian tùy chỉnh dạng "YYYY-MM-DD HH:MM:SS"
+    const formatDateToCustomString = (date) => {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const seconds = date.getSeconds().toString().padStart(2, '0');
+      
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
+    
+    const startTimeStr = formatDateToCustomString(startTime);
+    const endTimeStr = formatDateToCustomString(endTime);
+    
+    // Chỉ hiển thị debug log trong môi trường development
+    if (process.env.NODE_ENV === 'development') {
+      console.log("DEBUG - Chi tiết thời gian:", {
+        selectedDate,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        startHour,
+        endHour,
+        startTimeLocal: startTime.toLocaleString(),
+        endTimeLocal: endTime.toLocaleString(),
+        startTimeStr,
+        endTimeStr
+      });
+    }
+    
+    return {
+      startTime: startTimeStr,
+      endTime: endTimeStr,
+      formattedStart: `${startHour.toString().padStart(2, '0')}:00`,
+      formattedEnd: `${endHour.toString().padStart(2, '0')}:00`
+    };
+  };
+
+  // Lấy thời gian đặt phòng từ hàm đã tính
+  const bookingTimes = calculateBookingTimes();
+  
+  // Chỉ hiển thị debug log trong môi trường development
+  if (process.env.NODE_ENV === 'development') {
+    console.log("Thời gian đặt phòng:", {
+      selectedDate,
+      selectedTimeRange,
+      selectedDuration,
+      startTime: bookingTimes.startTime,
+      endTime: bookingTimes.endTime
+    });
+  }
+
+  // Booking details - now using the calculated times from selected date and time range
   const [bookingDetails, setBookingDetails] = useState({
     roomId: roomData.id,
-    title: 'Room Booking', // Added required field
+    title: 'Room Booking',
     purpose: 'General meeting',
-    startTime: new Date(Date.now() + 3600000).toISOString(), // Changed from checkIn to startTime
-    endTime: new Date(Date.now() + 7200000).toISOString(),   // Changed from checkOut to endTime
-    attendeesCount: roomData.capacity || 1 // Added attendeesCount field
+    startTime: bookingTimes.startTime,
+    endTime: bookingTimes.endTime,
+    attendeesCount: roomData.capacity || 1
   });
 
   // Convert amenities from string to array if needed
@@ -54,33 +154,19 @@ const Confirmbookingpage = () => {
       setLoading(true);
       setError('');
       
-      // Ensure all values are properly defined before sending to API
-      // Convert any undefined values to null
-      const bookingPayload = {
-        roomId: bookingDetails.roomId || null,
-        title: bookingDetails.title || 'Room Booking',
-        purpose: bookingDetails.purpose || 'General meeting',
-        startTime: bookingDetails.startTime,
-        endTime: bookingDetails.endTime,
-        attendeesCount: bookingDetails.attendeesCount || 1,
-        notes: bookingDetails.notes || null
-      };
-      
-      // Submit booking to backend
-      const response = await createBooking(bookingPayload);
-      
-      if (response.success) {
-        // Navigate to booking confirmation page
-        navigate('/checking', { state: { 
+      // Không gọi API createBooking ở đây nữa, chỉ chuyển sang trang checking với thông tin phòng và booking
+      navigate('/checking', { 
+        state: { 
           roomData,
-          bookingId: response.data.id,
-          bookingDetails: response.data
-        }});
-      } else {
-        setError(response.error || 'Failed to create booking');
-      }
+          bookingDetails: {
+            ...bookingDetails,
+            duration: selectedDuration
+          }
+        }
+      });
+      
     } catch (err) {
-      console.error('Error creating booking:', err);
+      console.error('Error handling booking:', err);
       setError(err.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -107,7 +193,14 @@ const Confirmbookingpage = () => {
             <div className="CB-room-images">
               <div className="CB-image-gallery">
                 <div className="CB-main-image">
-                  <img src={roomData.image || roomMainImg} alt="Hình ảnh chính của phòng" />
+                  <img 
+                    src={
+                      roomData.roomImage || roomData.room_image
+                        ? `http://localhost:5000${roomData.roomImage || roomData.room_image}`
+                        : roomData.image || roomMainImg
+                    } 
+                    alt="Hình ảnh chính của phòng" 
+                  />
                 </div>
                 <div className="CB-side-images">
                   <img src={roomSide1Img} alt="Hình ảnh phụ 1 của phòng" />
@@ -128,6 +221,14 @@ const Confirmbookingpage = () => {
                   <h4>Diện tích</h4>
                   <p><FaRulerCombined /> {roomData.size} m²</p>
                 </div>
+              </div>
+
+              {/* Hiển thị thông tin đặt phòng */}
+              <div className="CB-booking-time-info">
+                <h3>Thông tin đặt phòng</h3>
+                <p><strong>Ngày:</strong> {new Date(selectedDate).toLocaleDateString('vi-VN')}</p>
+                <p><strong>Thời gian:</strong> {selectedTimeRange || '7h - 9h'}</p>
+                <p><strong>Thời lượng:</strong> {selectedDuration || '1 tiếng'}</p>
               </div>
               
               <div className="CB-tab-container">
