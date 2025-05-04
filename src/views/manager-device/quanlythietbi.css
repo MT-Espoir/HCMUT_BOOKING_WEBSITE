@@ -332,3 +332,33 @@ header .MD-user-info img {
         flex-direction: column;
     }
 }
+
+.MD-normal {
+    background-color: #4caf50;
+    color: white;
+}
+
+.MD-warning {
+    background-color: #ff9800;
+    color: white;
+}
+
+.MD-broken {
+    background-color: #f44336;
+    color: white;
+}
+
+.MD-offline {
+    background-color: #9e9e9e;
+    color: white;
+}
+
+.MD-maintenance {
+    background-color: #2196f3;
+    color: white;
+}
+
+.MD-unknown {
+    background-color: #607d8b;
+    color: white;
+}

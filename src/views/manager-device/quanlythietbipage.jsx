@@ -6,7 +6,7 @@ import roomSide1Img from '../../assets/room-side1.jpg';
 import roomSide2Img from '../../assets/room-side2.jpg';
 import { FaSearch, FaBuilding, FaChartPie, FaTable, FaTh, FaMap, FaChevronRight } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getRooms, getDevicesByRoom, getAllDevices, updateDeviceStatus } from '../../services/api';
+import { getRooms, getAllDevices } from '../../services/api';
 
 const QuanLyThietBiPage = () => {
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ const QuanLyThietBiPage = () => {
   // State
   const [buildings, setBuildings] = useState([]);
   const [rooms, setRooms] = useState([]);
+  const [devices, setDevices] = useState([]);
   const [dashboardData, setDashboardData] = useState({
     totalRooms: 0,
     normalRooms: 0,
@@ -34,20 +35,100 @@ const QuanLyThietBiPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Fetch rooms and organize by building/floor
+  // Fetch rooms, devices and organize by building/floor
   useEffect(() => {
-    const fetchRoomData = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await getRooms();
-        const roomsData = response.data || [];
-        setRooms(roomsData);
+        
+        // Fetch rooms
+        const roomsResponse = await getRooms();
+        const roomsData = roomsResponse.data || [];
+        console.log("Rooms data from API:", roomsData);
+        
+        // Fetch devices
+        const devicesResponse = await getAllDevices();
+        let devicesData = [];
+        
+        if (devicesResponse && devicesResponse.devices) {
+          devicesData = devicesResponse.devices;
+        } else if (devicesResponse && Array.isArray(devicesResponse)) {
+          devicesData = devicesResponse;
+        }
+        console.log("Devices data from API:", devicesData);
+        
+        setDevices(devicesData);
+        
+        // Count devices per room - Sửa phần này để đếm chính xác
+        const deviceCountByRoom = {};
+        devicesData.forEach(device => {
+          if (device && device.room_id) {
+            // Chuyển đổi room_id thành chuỗi để đảm bảo khớp với phòng
+            const roomIdStr = device.room_id.toString();
+            if (!deviceCountByRoom[roomIdStr]) {
+              deviceCountByRoom[roomIdStr] = 0;
+            }
+            deviceCountByRoom[roomIdStr]++;
+          }
+        });
+        console.log("Device count by room:", deviceCountByRoom);
+        
+        // Add device count to rooms
+        const roomsWithDeviceCount = roomsData.map(room => {
+          if (!room) return null;
+          
+          // Đảm bảo sử dụng room.id hoặc room.room_id nếu có
+          // Ưu tiên room.id vì thấy trong log dữ liệu phòng có trường id
+          const roomId = room.id || room.room_id;
+          
+          if (!roomId) {
+            console.error("Room without ID:", room);
+            return null;
+          }
+          
+          const roomIdStr = roomId.toString();
+          
+          // Tìm thiết bị trong phòng - so sánh chuỗi với ID phòng
+          const roomDevices = devicesData.filter(device => 
+            device && device.room_id && device.room_id.toString() === roomIdStr);
+          
+          let roomStatus = 'normal';
+          
+          if (roomDevices.some(device => 
+            device && device.status && (device.status === 'ERROR' || device.status === 'OFFLINE'))) {
+            roomStatus = 'issue';
+          } else if (roomDevices.some(device => device && device.status && device.status === 'MAINTENANCE')) {
+            roomStatus = 'maintenance';
+          } else if (roomDevices.some(device => device && device.status && device.status === 'WARNING')) {
+            roomStatus = 'warning';
+          }
+          
+          return {
+            ...room,
+            // Sử dụng ID từ phòng
+            id: roomIdStr,
+            // Lấy số thiết bị từ deviceCountByRoom dựa trên ID phòng
+            deviceCount: deviceCountByRoom[roomIdStr] || 0,
+            status: roomStatus,
+            type: room.room_type === 'STUDY' ? 'Phòng học' : 
+                  room.room_type === 'MEETING' ? 'Phòng họp' : 
+                  room.room_type === 'LAB' ? 'Phòng thí nghiệm' : 
+                  room.room_type === 'LECTURE' ? 'Phòng thuyết trình' : 'Khác',
+            capacity: room.capacity || 0,
+            image: room.room_image
+          };
+        }).filter(Boolean); // Lọc bỏ các phần tử null
+        
+        console.log("Rooms with device count:", roomsWithDeviceCount);
+        setRooms(roomsWithDeviceCount);
         
         // Process buildings and floors from rooms data
         const buildingsMap = {};
         
         // Group rooms by building and floor
-        roomsData.forEach(room => {
+        roomsWithDeviceCount.forEach(room => {
+          if (!room || !room.building || room.floor === undefined) return;
+          
           if (!buildingsMap[room.building]) {
             buildingsMap[room.building] = {
               id: room.building,
@@ -73,7 +154,7 @@ const QuanLyThietBiPage = () => {
         // Convert to array format needed for UI
         const buildingsArray = Object.values(buildingsMap).map(building => ({
           ...building,
-          floors: Object.values(building.floors)
+          floors: Object.values(building.floors || {})
         }));
         
         setBuildings(buildingsArray);
@@ -81,21 +162,17 @@ const QuanLyThietBiPage = () => {
         // Set default expanded building and selected floor if available
         if (buildingsArray.length > 0) {
           setExpandedBuilding(buildingsArray[0].id);
-          if (buildingsArray[0].floors.length > 0) {
+          if (buildingsArray[0].floors && buildingsArray[0].floors.length > 0) {
             setSelectedFloor(buildingsArray[0].floors[0].id);
           }
         }
         
         // Calculate dashboard data
-        const totalRooms = roomsData.length;
-        const normalRooms = roomsData.filter(room => room.status === 'normal').length;
-        const issueRooms = roomsData.filter(room => room.status === 'issue').length;
-        
-        // Get all devices to count those in maintenance
-        const devicesResponse = await getAllDevices();
-        const devicesData = devicesResponse.data || [];
+        const totalRooms = roomsWithDeviceCount.length;
+        const normalRooms = roomsWithDeviceCount.filter(room => room.status === 'normal').length;
+        const issueRooms = roomsWithDeviceCount.filter(room => room.status === 'issue').length;
         const maintenanceDevices = devicesData.filter(
-          device => device.status === 'maintenance'
+          device => device && device.status && device.status === 'MAINTENANCE'
         ).length;
         
         setDashboardData({
@@ -107,13 +184,13 @@ const QuanLyThietBiPage = () => {
         
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching room data:', error);
-        setError('Không thể tải dữ liệu phòng. Vui lòng thử lại sau.');
+        console.error('Error fetching data:', error);
+        setError('Không thể tải dữ liệu. Vui lòng thử lại sau.');
         setLoading(false);
       }
     };
     
-    fetchRoomData();
+    fetchData();
   }, []);
 
   // Handlers
@@ -181,7 +258,7 @@ const QuanLyThietBiPage = () => {
     }
     
     // Filter by floor
-    if (filters.floor && room.floor !== filters.floor) {
+    if (filters.floor && room.floor.toString() !== filters.floor) {
       return false;
     }
     
@@ -316,6 +393,7 @@ const QuanLyThietBiPage = () => {
                 <option value="Phòng học">Phòng học</option>
                 <option value="Phòng thí nghiệm">Phòng thí nghiệm</option>
                 <option value="Phòng hội thảo">Phòng hội thảo</option>
+                <option value="Phòng thuyết trình">Phòng thuyết trình</option>
               </select>
             </div>
             
@@ -328,6 +406,7 @@ const QuanLyThietBiPage = () => {
               >
                 <option value="">Tất cả</option>
                 <option value="normal">Hoạt động tốt</option>
+                <option value="warning">Cảnh báo</option>
                 <option value="issue">Có vấn đề</option>
                 <option value="maintenance">Đang bảo trì</option>
               </select>
@@ -412,9 +491,11 @@ const QuanLyThietBiPage = () => {
                     <td>
                       <span className={`DMP-status-badge ${
                         room.status === 'normal' ? 'green' : 
+                        room.status === 'warning' ? 'yellow' :
                         room.status === 'issue' ? 'red' : 'yellow'
                       }`}>
                         {room.status === 'normal' ? 'Tốt' : 
+                        room.status === 'warning' ? 'Cần chú ý' :
                         room.status === 'issue' ? 'Có vấn đề' : 'Đang bảo trì'}
                       </span>
                     </td>
@@ -460,9 +541,11 @@ const QuanLyThietBiPage = () => {
                     )} alt={room.name} />
                     <div className={`DMP-room-card-badge ${
                       room.status === 'normal' ? 'green' : 
+                      room.status === 'warning' ? 'yellow' :
                       room.status === 'issue' ? 'red' : 'yellow'
                     }`}>
                       {room.status === 'normal' ? 'Tốt' : 
+                      room.status === 'warning' ? 'Cần chú ý' :
                       room.status === 'issue' ? 'Có vấn đề' : 'Đang bảo trì'}
                     </div>
                   </div>
