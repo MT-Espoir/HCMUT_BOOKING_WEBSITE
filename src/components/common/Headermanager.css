@@ -1,0 +1,324 @@
+.header-manager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+  padding: 0.8rem 2rem;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 70px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.logo-container:hover {
+  transform: scale(1.05);
+}
+
+.bk-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  color: white;
+}
+
+.logo-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.logo-subtitle {
+  font-size: 14px;
+  font-weight: 300;
+  opacity: 0.9;
+}
+
+.manager-nav ul {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.manager-nav a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 0.5rem 1rem;
+  position: relative;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+/* Hiệu ứng hover cải tiến */
+.manager-nav a:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Style cho trang active được cải tiến */
+.manager-nav a.active {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  transform: translateY(-3px);
+}
+
+.manager-nav a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 10%;
+  width: 80%;
+  height: 3px;
+  background-color: #edebe0;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.4);
+  animation: glowingUnderline 1.5s infinite alternate;
+}
+
+/* Animation cho underline */
+@keyframes glowingUnderline {
+  from {
+    box-shadow: 0 2px 4px rgba(255, 215, 0, 0.4);
+  }
+  to {
+    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.8);
+  }
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.notification-icon {
+  position: relative;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.9);
+  transition: color 0.3s, transform 0.3s;
+}
+
+.notification-icon:hover {
+  color: white;
+  transform: scale(1.1);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.avatar-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 5px 12px;
+  border-radius: 30px;
+  transition: all 0.3s;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.avatar-container:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.3s;
+}
+
+.avatar-container:hover .avatar {
+  transform: scale(1.1);
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.dropdown-icon {
+  font-size: 12px;
+  margin-left: 4px;
+  opacity: 0.8;
+  transition: transform 0.3s;
+}
+
+.avatar-container:hover .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 200px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  overflow: hidden;
+  transform-origin: top right;
+  animation: dropdownAppear 0.3s ease;
+}
+
+@keyframes dropdownAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.user-dropdown-item {
+  padding: 14px 16px;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-dropdown-item:hover {
+  background-color: #f0f7ff;
+  padding-left: 20px;
+}
+
+.user-dropdown-item:first-child {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.user-dropdown-item:last-child {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Arrow indicator for dropdown */
+.user-dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid white;
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+  .manager-nav ul {
+    gap: 1rem;
+  }
+  
+  .logo-subtitle {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 992px) {
+  .header-manager {
+    padding: 0.8rem 1rem;
+  }
+  
+  .manager-nav a {
+    font-size: 14px;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .user-name {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-manager {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 0.6rem 1rem;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .logo-container {
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+  
+  .manager-nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 0.5rem;
+  }
+  
+  .manager-nav ul {
+    white-space: nowrap;
+    padding-bottom: 0.5rem;
+    justify-content: center;
+  }
+  
+  .user-actions {
+    width: auto;
+  }
+}

@@ -1,0 +1,789 @@
+/* About page styles */
+:root {
+  --Aprimary-color: #1a73e8;
+  --Asecondary-color: #4285f4;
+  --Aaccent-color: #34a853;
+  --Atext-color: #333;
+  --Alight-text: #666;
+  --Abg-color: #fff;
+  --Alight-bg: #f5f7fa;
+  --Aborder-color: #ddd;
+  --Asection-spacing: 80px;
+}
+
+.Aabout-container {
+  font-family: 'Roboto', sans-serif;
+  color: var(--Atext-color);
+  line-height: 1.6;
+}
+
+/* Container for content sections */
+.Acontainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.Acontainer h2 {
+  text-align: left;
+  font-size: 1.8rem;
+  position: relative;
+  padding-bottom: 10px;
+}
+.Acontainer h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100px;
+  height: 3px;
+  background-color: var(--Aprimary-color);
+  transform: none;
+}
+/* 1. Hero Section */
+.Ahero-section {
+  position: relative;
+  height: 500px;
+  background-image: url('../../assets/room-main.png');
+  background-size: cover;
+  background-position: center;
+  color: white;
+}
+
+.Ahero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.Ahero-content {
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.Ahero-content h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.Ahero-content .Aslogan {
+  font-size: 1.4rem;
+  font-style: italic;
+  margin-bottom: 30px;
+}
+
+/* Breadcrumb */
+.Abreadcrumb {
+  background-color: #f0f0f0;
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
+.Abreadcrumb span {
+  margin: 0 5px;
+}
+
+.Abreadcrumb .Aactive {
+  font-weight: bold;
+  color: var(--Aprimary-color);
+}
+
+/* Common section styling */
+.Asection {
+  padding: var(--Asection-spacing) 0;
+}
+
+.Asection h2 {
+  font-size: 2.2rem;
+  margin-bottom: 40px;
+  text-align: center;
+  color: var(--Aprimary-color);
+  position: relative;
+}
+
+.Asection h2::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background-color: var(--Aaccent-color);
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+/* 2. Introduction Section */
+.Aintro-section {
+  background-color: var(--Abg-color);
+  padding: 30px 0 30px;
+}
+
+.Aintro-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 40px;
+}
+
+.Aintro-text {
+  flex: 1;
+}
+
+.Aintro-text p {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.Aintro-image {
+  flex: 1;
+}
+
+.Aintro-image img {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* 3. Goals Section */
+.Agoals-section {
+  background-color: var(--Alight-bg);
+  padding: 30px 0 30px;
+
+}
+
+.Agoals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 30px
+}
+
+.Agoal-card {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.Agoal-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.Agoal-icon {
+  font-size: 2.5rem;
+  color: var(--Aprimary-color);
+  margin-bottom: 20px;
+}
+
+.Agoal-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: var(--Asecondary-color);
+}
+
+.Agoal-card p {
+  color: var(--Alight-text);
+}
+
+/* 4. Users Section */
+.Ausers-section {
+  background-color: var(--Abg-color);
+  padding: 30px 0 30px;
+}
+
+.Atabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.Atab-btn {
+  padding: 15px 30px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--Alight-text);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.Atab-btn.Aactive {
+  color: var(--Aprimary-color);
+  border-bottom-color: var(--Aprimary-color);
+}
+
+.Atab-content {
+  display: none;
+}
+
+.Atab-content.Aactive {
+  display: block;
+  animation: AfadeIn 0.5s ease;
+}
+
+@keyframes AfadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.Auser-info {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.Auser-image {
+  flex: 1;
+}
+
+.Auser-image img {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.Auser-details {
+  flex: 1;
+}
+
+.Auser-details h3 {
+  font-size: 1.8rem;
+  color: var(--Asecondary-color);
+  margin-bottom: 20px;
+}
+
+.Afeature-list {
+  padding-left: 20px;
+}
+
+.Afeature-list li {
+  margin-bottom: 15px;
+  position: relative;
+  padding-left: 30px;
+}
+
+.Afeature-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--Aaccent-color);
+  font-weight: bold;
+}
+
+/* 5. Features Section */
+.Afeatures-section {
+  background-color: var(--Alight-bg);
+  padding: 20px 0 30px;
+}
+
+.Afeatures-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+.Afeature-card {
+  background-color: white;
+  margin-top: 20px;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.Afeature-card:hover {
+  transform: translateY(-5px);
+}
+
+.Afeature-icon {
+  font-size: 2rem;
+  color: var(--Aprimary-color);
+  margin-bottom: 20px;
+}
+
+.Afeature-card h3 {
+  font-size: 1.3rem;
+  color: var(--Asecondary-color);
+  margin-bottom: 15px;
+}
+
+.Afeature-card p {
+  color: var(--Alight-text);
+}
+
+/* 6. Principles Section */
+.Aprinciples-section {
+  background-color: var(--Abg-color);
+  padding: 30px 0 20px;
+}
+
+.Aprinciples-list {
+  max-width: 900px;
+  margin: 0 auto;
+  margin-top:30px;
+}
+
+.Aprinciple-item {
+  display: flex;
+  margin-bottom: 40px;
+  align-items: flex-start;
+}
+
+.Aprinciple-number {
+  background-color: var(--Aprimary-color);
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 1.8rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 25px;
+  flex-shrink: 0;
+}
+
+.Aprinciple-content h3 {
+  font-size: 1.4rem;
+  color: var(--Asecondary-color);
+  margin-bottom: 10px;
+}
+
+.Aprinciple-content p {
+  color: var(--Alight-text);
+}
+
+/* 7. Development Section */
+.Adevelopment-section {
+  background-color: var(--Alight-bg);
+  padding: 20px 0 20px;
+}
+
+.Adev-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 30px;
+  margin-top: 20px;
+}
+
+
+.Adev-card {
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.Adev-card h3 {
+  background-color: var(--Aprimary-color);
+  color: white;
+  padding: 15px 25px;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.Adev-info {
+  padding: 25px;
+}
+
+.Adev-info h4 {
+  font-size: 1.1rem;
+  color: var(--Asecondary-color);
+  margin-bottom: 15px;
+}
+
+.Adev-info p {
+  margin-bottom: 10px;
+  color: var(--Alight-text);
+}
+
+.Acontact {
+  margin-top: 15px;
+}
+
+.Adev-info a {
+  color: var(--Aprimary-color);
+  text-decoration: none;
+}
+
+.Adev-info a:hover {
+  text-decoration: underline;
+}
+
+/* 8. Contact Section */
+.Acontact-section {
+  background-color: var(--Abg-color);
+  padding: 30px 0 20px;
+}
+
+.Acontact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 40px;
+}
+
+.Acontact-info h2 {
+  text-align: left;
+  font-size: 1.8rem;
+  position: relative;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.Acontact-info h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 80px;
+  height: 3px;
+  background-color: var(--Aprimary-color);
+  transform: none;
+}
+
+.Acontact-details {
+  margin-top: 30px;
+}
+
+.Acontact-item {
+  margin-bottom: 15px;
+  font-size: 1.05rem;
+}
+
+.Acontact-item strong {
+  color: var(--Asecondary-color);
+  display: inline-block;
+  width: 100px;
+}
+
+.Acontact-item a {
+  color: var(--Aprimary-color);
+  text-decoration: none;
+}
+
+.Acontact-item a:hover {
+  text-decoration: underline;
+}
+
+.Asocial-links {
+  margin-top: 30px;
+}
+
+.Asocial-links h3 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: var(--Asecondary-color);
+}
+
+.Asocial-icons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.Asocial-icon {
+  display: block;
+  padding: 10px 15px;
+  color: var(--Atext-color);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.Asocial-icon:hover {
+  color: var(--Aprimary-color);
+  transform: translateX(5px);
+}
+
+/* Contact form */
+.Acontact-form {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.Acontact-form h3 {
+  font-size: 1.5rem;
+  margin-bottom: 25px;
+  color: var(--Asecondary-color);
+}
+
+.Aform-group {
+  margin-bottom: 20px;
+}
+
+.Aform-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--Atext-color);
+}
+
+.Aform-group input,
+.Aform-group textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--Aborder-color);
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.Aform-group input:focus,
+.Aform-group textarea:focus {
+  border-color: var(--Aprimary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+/* 9. CTA Section */
+.Acta-section {
+  background-color: var(--Aprimary-color);
+  color: white;
+  text-align: center;
+  padding: 60px 0;
+}
+
+.Acta-content h5 {
+  color: white;
+  font-size: 2.2rem;
+  position:relative;
+}
+
+.Acta-content h5::after {
+  background-color: white;
+}
+
+
+.Abtn-primary,
+.Abtn-secondary {
+  display: inline-block;
+  padding: 15px 30px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.Abtn-primary {
+  background-color: white;
+  color: var(--Aprimary-color);
+}
+
+.Abtn-primary:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-2px);
+}
+
+.Abtn-secondary {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.Abtn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Footer */
+.Afooter {
+  background-color: #222;
+  color: white;
+  padding: 30px 0 10px;
+}
+
+.Afooter-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.Afooter-logo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.Afooter-logo img {
+  height: 100px;
+  width: auto;
+}
+
+.Afooter-name h3 {
+  font-size: 1.1rem;
+  margin: 0 0 5px 0;
+}
+
+.Afooter-name p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.Afooter-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.Afooter-col {
+  min-width: 160px;
+}
+
+.Afooter-col h4 {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.Afooter-col h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: var(--Aaccent-color);
+}
+
+.Afooter-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.Afooter-col ul li {
+  margin-bottom: 10px;
+}
+
+.Afooter-col a {
+  color: #ccc;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.Afooter-col a:hover {
+  color: white;
+}
+
+.Afooter-col a.Aactive {
+  color: white;
+  font-weight: 500;
+}
+
+.Afooter-bottom {
+  border-top: 1px solid #444;
+  padding-top: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.Afooter-bottom p {
+  margin: 5px 0;
+}
+
+.Afooter-bottom a {
+  color: #ccc;
+  text-decoration: none;
+}
+
+.Afooter-bottom a:hover {
+  text-decoration: underline;
+  color: white;
+}
+
+/* Responsive styles */
+@media (max-width: 991px) {
+  .Aintro-content,
+  .Auser-info {
+    flex-direction: column;
+  }
+  
+  .Adev-cards,
+  .Acontact-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .Ahero-content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .Ahero-content .Aslogan {
+    font-size: 1.2rem;
+  }
+  
+  .Auser-image {
+    order: -1;
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --Asection-spacing: 60px;
+  }
+  
+  .Ahero-section {
+    height: 400px;
+  }
+  
+  .Asection h2 {
+    font-size: 1.8rem;
+  }
+  
+  .Agoals-grid,
+  .Afeatures-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .Afooter-content {
+    flex-direction: column;
+  }
+  
+  .Afooter-links {
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 576px) {
+  .Atab-btn {
+    padding: 12px 15px;
+    font-size: 0.9rem;
+  }
+  
+  .Acta-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .Aprinciple-item {
+    flex-direction: column;
+  }
+  
+  .Aprinciple-number {
+    margin-bottom: 15px;
+  }
+}

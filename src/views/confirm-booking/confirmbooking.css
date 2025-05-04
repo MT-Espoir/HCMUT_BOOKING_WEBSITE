@@ -1,0 +1,570 @@
+/* HCMUT Booking Room - Booking Page Styles */
+
+/* Global styles for the booking page */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Main page container */
+.CB-booking-page {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: #333;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Header Styles */
+.CB-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2563EB;
+  padding: 1rem 2rem;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.CB-logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.CB-logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 1rem;
+}
+
+.CB-logo-container h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.CB-main-nav ul {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+}
+
+.CB-main-nav a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+  padding-bottom: 3px;
+  position: relative;
+}
+
+.CB-main-nav a:hover,
+.CB-main-nav a.active {
+  color: white;
+}
+
+.CB-main-nav a.active:after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  border-radius: 2px;
+}
+
+.CB-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.CB-notification-icon {
+  position: relative;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.CB-notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.CB-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid white;
+}
+
+.CB-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Main Content Styles */
+.CB-main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+/* Back Button Styles */
+.CB-back-button-container {
+  margin-bottom: 1.5rem;
+}
+
+.CB-back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  border: none;
+  color: #4b5563;
+  font-size: 0.95rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.CB-back-button:hover {
+  color: #2563EB;
+}
+
+/* Content Wrapper */
+.CB-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Tab Container Styles */
+.CB-tab-container {
+  margin-bottom: 2rem;
+}
+
+.CB-tab-menu {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+
+.CB-tab-menu button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.CB-tab-menu button:hover {
+  color: #2563EB;
+}
+
+.CB-tab-menu button.CB-tab-active {
+  color: #2563EB;
+  font-weight: 600;
+}
+
+.CB-tab-menu button.CB-tab-active:after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #2563EB;
+  border-radius: 2px;
+}
+
+.CB-tab-content {
+  margin-bottom: 1.5rem;
+}
+
+.CB-overview-tab {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Room Details Styles */
+.CB-room-details {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Room Images Styles */
+.CB-room-images {
+  width: 100%;
+}
+
+.CB-image-gallery {
+  display: flex;
+  flex-direction: row;
+  height: 400px; /* Đảm bảo gallery có chiều cao cố định */
+}
+
+.CB-main-image {
+  width: 60%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.CB-main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.CB-side-images {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  height: 100%;
+}
+
+.CB-side-images img {
+  height: 50%;
+  width: 100%;
+  object-fit: cover;
+  padding-left: 4px;
+  padding-bottom: 4px;
+}
+
+/* Room Layout Styles */
+.CB-room-layout {
+  display: flex;
+  flex-direction: column; /* Mặc định là chiều dọc */
+}
+
+/* Room Info Styles */
+.CB-room-info {
+  padding: 2rem;
+}
+
+.CB-room-info h2 {
+  font-size: 2.25rem;
+  margin-bottom: 1rem;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.CB-room-description {
+  margin-bottom: 2rem;
+  color: #4b5563;
+  line-height: 1.7;
+  font-size: 1.1rem;
+}
+
+/* Room Specs Styles */
+.CB-room-specs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.CB-spec {
+  flex: 1;
+  text-align: center;
+}
+
+.CB-spec h4 {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.CB-spec p {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+/* Amenities Styles */
+.CB-amenities {
+  margin-bottom: 2rem;
+}
+
+.CB-amenities h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.CB-amenities ul {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.7rem;
+  list-style-position: inside;
+  list-style-type: disc;
+  color: #4b5563;
+}
+
+/* Facilities Styles */
+.CB-facilities {
+  margin-bottom: 2rem;
+}
+
+.CB-facilities h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.CB-facilities-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.CB-facility-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #d6f7ff4d;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.CB-facility-item:hover {
+  background-color: #d0f3fca6;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.CB-facility-icon {
+  color: #2563EB;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.CB-facility-text {
+  color: #3182ce;
+  font-size: 1.1rem;
+  font-weight:10px;
+}
+
+/* Features Styles */
+.CB-features h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.CB-feature-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.CB-feature {
+  background-color: #f0f7ff;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  color: #2563EB;
+  font-weight: 500;
+}
+
+/* Booking Action Styles */
+.CB-booking-action {
+  margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.CB-book-button {
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.CB-book-button:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(37, 99, 235, 0.3);
+}
+
+.CB-book-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.CB-booking-notes {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Booking time info styles */
+.CB-booking-time-info {
+  background-color: #f3f4f6;
+  padding: 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #2563EB;
+}
+
+.CB-booking-time-info h3 {
+  color: #1f2937;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.CB-booking-time-info p {
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.CB-booking-time-info strong {
+  font-weight: 600;
+  color: #1f2937;
+  margin-right: 0.25rem;
+}
+
+/* Loading Container */
+.CB-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  gap: 1rem;
+}
+
+.CB-loading-container p {
+  font-size: 1.2rem;
+  color: #6b7280;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .CB-room-details {
+    width: 100%;
+  }
+  
+  .CB-amenities ul {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .CB-tab-menu {
+    justify-content: center;
+  }
+
+  .CB-facilities-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .CB-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .CB-main-nav ul {
+    gap: 1rem;
+  }
+  
+  .CB-main-image {
+    height: 300px;
+  }
+  
+  .CB-side-images {
+    height: 100px;
+  }
+  
+  .CB-room-specs {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .CB-amenities ul {
+    grid-template-columns: 1fr;
+  }
+  
+  .CB-room-info h2 {
+    font-size: 1.8rem;
+  }
+  
+  .CB-tab-menu button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .CB-facilities-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .CB-main-nav ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.7rem 1.5rem;
+  }
+  
+  .CB-room-info {
+    padding: 1.5rem;
+  }
+  
+  .CB-book-button {
+    width: 100%;
+  }
+  
+  .CB-tab-menu {
+    flex-wrap: wrap;
+  }
+  
+  .CB-tab-menu button {
+    flex: 1;
+    min-width: 33.33%;
+    text-align: center;
+  }
+}

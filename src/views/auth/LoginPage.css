@@ -1,0 +1,113 @@
+.login-wrapper {
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    background-color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .login-header {
+    background-color: #2c1e9f;
+    color: white;
+    padding: 24px;
+  }
+  
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 10px 0;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .login-logo {
+    height: 70px;
+    max-width: 100%;
+    object-fit: contain;
+    margin: 0 auto;
+  }
+  
+  .login-main {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    width: 100%;
+  }
+  
+  .login-main h2 {
+    margin-bottom: 24px;
+    color: #2c1e9f;
+    font-weight: 500;
+  }
+  
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+  }
+  
+  .login-form label {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  
+  .login-form input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .login-options {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .login-options a {
+    font-size: 12px;
+    color: #2c1e9f;
+    text-decoration: none;
+  }
+  
+  .login-form button {
+    background-color: #2c1e9f;
+    color: white;
+    padding: 12px;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .login-form button:hover {
+    background-color: #1a136d;
+  }
+  .login-error {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 6px;
+  }
+  
+  /* Registration link styling */
+  .login-register {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  .login-register a {
+    color: #2c1e9f;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .login-register a:hover {
+    text-decoration: underline;
+  }

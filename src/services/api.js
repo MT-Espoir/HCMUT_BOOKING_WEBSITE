@@ -1,5 +1,5 @@
 // Base API URL - change this when backend is available
-const API_BASE_URL = 'https://api.example.com/v1';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 /**
  * Helper function to simulate API delay
@@ -14,30 +14,142 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
  * @param {Object} options - Fetch options
  * @returns {Promise<Object>} - API response
  */
+// src/services/api.js
+export async function loginAPI(account, password) {
+  try {
+    console.log('Login attempt:', { email: account, password: "***" });
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        user: {
+          email: account,
+          password: password
+        } 
+      }),
+      credentials: 'include'
+    });
+    
+    if (!response.ok) {
+      const data = await response.json();
+      console.error('Login failed with status:', response.status);
+      throw new Error(data.error || 'Sai tài khoản hoặc mật khẩu!');
+    }
+    
+    const data = await response.json();
+    console.log('Login successful, token received');
+    
+    // Lưu token vào localStorage
+    localStorage.setItem('token', data.token);
+    
+    try {
+      // Fetch user profile with the token
+      const profileResponse = await fetch(`${API_BASE_URL}/user/profile`, {
+        headers: {
+          'Authorization': `Bearer ${data.token}`
+        }
+      });
+      
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        const userData = {
+          name: profileData.username,
+          email: profileData.email,
+          role: profileData.role,
+          mssv: profileData.mssv,
+          faculty: profileData.faculty
+        };
+        
+        // Lưu thông tin user vào localStorage
+        localStorage.setItem('user', JSON.stringify(userData));
+        
+        return {
+          token: data.token,
+          user: userData
+        };
+      }
+    } catch (profileError) {
+      console.error('Failed to fetch user profile:', profileError);
+    }
+    
+    // Fallback if profile fetch fails
+    const fallbackUser = {
+      name: account,
+      email: account,
+      role: 'student'
+    };
+    
+    // Lưu thông tin fallback user vào localStorage
+    localStorage.setItem('user', JSON.stringify(fallbackUser));
+    
+    return {
+      token: data.token,
+      user: fallbackUser
+    };
+  } catch (error) {
+    console.error('Login failed:', error);
+    throw error;
+  }
+}
+
 async function apiRequest(endpoint, options = {}) {
   try {
-    // When backend is ready, uncomment the following code
-    // const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     // Add auth token if user is logged in
-    //     ...(localStorage.getItem('authToken') && {
-    //       'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-    //     }),
-    //   },
-    //   ...options,
-    // });
+    // Prepare URL and query parameters
+    let url = `${API_BASE_URL}${endpoint}`;
     
-    // if (!response.ok) {
-    //   const error = await response.json();
-    //   throw new Error(error.message || 'Something went wrong');
-    // }
+    // Add query parameters if provided
+    if (options.params) {
+      const queryParams = new URLSearchParams();
+      Object.entries(options.params).forEach(([key, value]) => {
+        queryParams.append(key, value);
+      });
+      url += `?${queryParams.toString()}`;
+      delete options.params;
+    }
+
+    // Lấy token từ localStorage
+    const token = localStorage.getItem('token');
     
-    // return await response.json();
+    // Kiểm tra token có tồn tại không
+    if (!token) {
+      console.warn('No authentication token found, request may fail if endpoint requires authentication');
+    }
     
-    // For now, simulate API delay
-    await delay(500);
-    return { success: true, data: [] };
+    // Chuẩn bị headers
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+    
+    // Make the actual request
+    const response = await fetch(url, {
+      headers: headers,
+      ...options,
+    });
+    
+    // Xử lý các lỗi liên quan đến xác thực
+    if (response.status === 401) {
+      console.error('Authentication failed: Token expired or invalid');
+      // Có thể thực hiện refresh token hoặc logout tại đây
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      throw new Error('Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.');
+    }
+    
+    if (response.status === 403) {
+      console.error('Authorization failed: Insufficient permissions');
+      throw new Error('Forbidden: Admin access required');
+    }
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || data.message || 'Something went wrong');
+    }
+    
+    return data;
   } catch (error) {
     console.error('API request failed:', error);
     throw error;
@@ -55,15 +167,10 @@ async function apiRequest(endpoint, options = {}) {
  */
 export const getRooms = async (filters = {}) => {
   try {
-    // In the future, pass filters to API
-    // return await apiRequest('/rooms', { method: 'GET', params: filters });
-    
-    // For now, return mock data from App.js
-    await delay(500);
-    return { 
-      success: true,
-      data: window.mockRoomData || [] 
-    };
+    return await apiRequest('/room', { 
+      method: 'GET', 
+      params: filters 
+    });
   } catch (error) {
     console.error('Failed to fetch rooms:', error);
     throw error;
@@ -77,21 +184,9 @@ export const getRooms = async (filters = {}) => {
  */
 export const getRoomDetails = async (roomId) => {
   try {
-    // return await apiRequest(`/rooms/${roomId}`, { method: 'GET' });
-    
-    // For now, return mock data
-    await delay(300);
-    const mockData = window.mockRoomData || [];
-    const room = mockData.find(room => room.id === roomId);
-    
-    if (!room) {
-      throw new Error('Room not found');
-    }
-    
-    return {
-      success: true,
-      data: room
-    };
+    return await apiRequest(`/room/${roomId}`, { 
+      method: 'GET' 
+    });
   } catch (error) {
     console.error(`Failed to fetch room ${roomId}:`, error);
     throw error;
@@ -105,24 +200,10 @@ export const getRoomDetails = async (roomId) => {
  */
 export const searchRooms = async (query) => {
   try {
-    // return await apiRequest('/rooms/search', { 
-    //   method: 'GET', 
-    //   params: { query } 
-    // });
-    
-    // For now, search mock data
-    await delay(300);
-    const mockData = window.mockRoomData || [];
-    const results = mockData.filter(room => 
-      room.name.toLowerCase().includes(query.toLowerCase()) ||
-      room.location.toLowerCase().includes(query.toLowerCase()) ||
-      room.description.toLowerCase().includes(query.toLowerCase())
-    );
-    
-    return {
-      success: true,
-      data: results
-    };
+    return await apiRequest('/room/search', { 
+      method: 'GET', 
+      params: { query } 
+    });
   } catch (error) {
     console.error('Failed to search rooms:', error);
     throw error;
@@ -136,34 +217,23 @@ export const searchRooms = async (query) => {
  */
 export const filterRooms = async (filters) => {
   try {
-    // return await apiRequest('/rooms/filter', { 
-    //   method: 'POST', 
-    //   body: JSON.stringify(filters)
-    // });
+    // Handle time range filter
+    if (filters.timeRange) {
+      const timeRangeParts = filters.timeRange.split(' - ');
+      const startHour = parseInt(timeRangeParts[0].replace('h', ''));
+      const endHour = parseInt(timeRangeParts[1].replace('h', ''));
+      
+      filters.startHour = startHour;
+      filters.endHour = endHour;
+      
+      // Remove timeRange as it's not directly used by the backend
+      delete filters.timeRange;
+    }
     
-    // For now, filter mock data
-    await delay(400);
-    const mockData = window.mockRoomData || [];
-    
-    const filteredRooms = mockData.filter(room => {
-      // Apply filters
-      if (filters.size && filters.size.length > 0 && !filters.size.includes(room.size)) {
-        return false;
-      }
-      if (filters.capacity && filters.capacity.length > 0) {
-        const capacities = filters.capacity.map(cap => parseInt(cap));
-        if (!capacities.some(cap => room.capacity >= cap)) {
-          return false;
-        }
-      }
-      // More filters can be added here
-      return true;
+    return await apiRequest('/room', { 
+      method: 'GET', 
+      params: filters 
     });
-    
-    return {
-      success: true,
-      data: filteredRooms
-    };
   } catch (error) {
     console.error('Failed to filter rooms:', error);
     throw error;
@@ -181,23 +251,27 @@ export const filterRooms = async (filters) => {
  */
 export const createBooking = async (bookingData) => {
   try {
-    // return await apiRequest('/bookings', { 
-    //   method: 'POST', 
-    //   body: JSON.stringify(bookingData)
-    // });
+    // Log the original booking data for debugging
+    console.log('Sending booking data:', bookingData);
     
-    // For now, simulate success
-    await delay(700);
+    // Create a clean copy of the booking data to avoid modifying the original
+    const bookingPayload = { ...bookingData };
     
-    return {
-      success: true,
-      data: {
-        id: Math.floor(Math.random() * 1000),
-        ...bookingData,
-        status: 'upcoming',
-        createdAt: new Date().toISOString()
-      }
-    };
+    // In development mode, log timezone information for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Timezone information:', {
+        browserTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        startTimeOriginal: bookingPayload.startTime,
+        endTimeOriginal: bookingPayload.endTime
+      });
+    }
+    
+    // Send the original UTC times without any additional conversion
+    // The backend already expects times in UTC format
+    return await apiRequest('/booking', { 
+      method: 'POST', 
+      body: JSON.stringify(bookingPayload)
+    });
   } catch (error) {
     console.error('Failed to create booking:', error);
     throw error;
@@ -210,44 +284,65 @@ export const createBooking = async (bookingData) => {
  */
 export const getUserBookings = async () => {
   try {
-    // return await apiRequest('/bookings/user', { method: 'GET' });
+    const response = await apiRequest('/booking/user', { method: 'GET' });
     
-    // For now, return mock data
-    await delay(600);
-    const mockBookings = [
-      {
-        id: 1,
-        roomId: 'B1',
-        roomName: 'Phòng B1',
-        checkIn: 'Sunday, April 24, 2025 - 09:00',
-        checkOut: 'Sunday, April 24, 2025 - 10:00',
-        duration: '1 tiếng',
-        status: 'upcoming'
-      },
-      {
-        id: 2,
-        roomId: 'B2',
-        roomName: 'Phòng B2',
-        checkIn: 'Monday, March 19, 2023 - 13:00',
-        checkOut: 'Monday, March 19, 2023 - 15:00',
-        duration: '2 tiếng',
-        status: 'past'
-      },
-      {
-        id: 3,
-        roomId: 'T3',
-        roomName: 'Phòng T3',
-        checkIn: 'Tuesday, February 15, 2023 - 10:00',
-        checkOut: 'Tuesday, February 15, 2023 - 11:30',
-        duration: '1.5 tiếng',
-        status: 'canceled'
-      }
-    ];
+    // Transform the data to match what the frontend expects
+    if (response.success && response.data) {
+      // Map backend field names to what the frontend component expects
+      const transformedData = {
+        success: true,
+        data: response.data.map(booking => {
+          // In development mode, log the booking data for debugging
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Original booking data from API:', booking);
+          }
+          
+          // Xác định đường dẫn hình ảnh dựa trên roomName
+          let roomImage;
+          // Lấy tên phòng từ booking hoặc từ phòng được liên kết
+          const roomName = booking.room_name || booking.roomName || '';
+          
+          // Xác định tòa nhà từ tên phòng
+          if (roomName.includes('B1') || roomName.includes('B 1') || roomName.toLowerCase().includes('b1')) {
+            roomImage = '/uploads/rooms/B1.png';
+          } else if (roomName.includes('H6') || roomName.includes('H 6') || roomName.toLowerCase().includes('h6')) {
+            roomImage = '/uploads/rooms/H6.jpg';
+          } else if (roomName.includes('B') || roomName.toLowerCase().includes('b')) {
+            // Nếu tên phòng chỉ chứa ký tự B
+            roomImage = '/uploads/rooms/B1.png';
+          } else if (roomName.includes('H') || roomName.toLowerCase().includes('h')) {
+            // Nếu tên phòng chỉ chứa ký tự H
+            roomImage = '/uploads/rooms/H6.jpg';
+          } else {
+            // Mặc định sử dụng hình ảnh B1.png
+            roomImage = '/uploads/rooms/B1.png';
+          }
+          
+          // Don't use toLocaleString for datetime as it causes timezone issues
+          // Instead, pass the original ISO strings to the component for correct formatting
+          return {
+            ...booking,
+            // Pass the original ISO strings rather than converting here
+            startTime: booking.start_time || booking.startTime,
+            endTime: booking.end_time || booking.endTime,
+            status: booking.status || (booking.bookingStatus 
+              ? booking.bookingStatus.toLowerCase() === 'confirmed' 
+                ? 'upcoming' 
+                : booking.bookingStatus.toLowerCase() === 'completed'
+                  ? 'past'
+                  : booking.bookingStatus.toLowerCase() === 'cancelled' || booking.bookingStatus.toLowerCase() === 'auto_cancelled'
+                    ? 'canceled'
+                    : 'upcoming'
+              : 'upcoming'),
+            roomImage: roomImage,
+            roomName: roomName || `Phòng ${booking.room_id || 'không xác định'}`
+          };
+        })
+      };
+      return transformedData;
+    }
     
-    return {
-      success: true,
-      data: mockBookings
-    };
+    return response;
   } catch (error) {
     console.error('Failed to fetch user bookings:', error);
     throw error;
@@ -261,41 +356,7 @@ export const getUserBookings = async () => {
  */
 export const getBookingDetails = async (bookingId) => {
   try {
-    // return await apiRequest(`/bookings/${bookingId}`, { method: 'GET' });
-    
-    // For now, find in mock data
-    await delay(300);
-    const mockBookings = [
-      {
-        id: 1,
-        roomId: 'B1',
-        roomName: 'Phòng B1',
-        checkIn: 'Sunday, April 24, 2025 - 09:00',
-        checkOut: 'Sunday, April 24, 2025 - 10:00',
-        duration: '1 tiếng',
-        status: 'upcoming'
-      },
-      {
-        id: 2,
-        roomId: 'B2',
-        roomName: 'Phòng B2',
-        checkIn: 'Monday, March 19, 2023 - 13:00',
-        checkOut: 'Monday, March 19, 2023 - 15:00',
-        duration: '2 tiếng',
-        status: 'past'
-      }
-    ];
-    
-    const booking = mockBookings.find(b => b.id === bookingId);
-    
-    if (!booking) {
-      throw new Error('Booking not found');
-    }
-    
-    return {
-      success: true,
-      data: booking
-    };
+    return await apiRequest(`/booking/${bookingId}`, { method: 'GET' });
   } catch (error) {
     console.error(`Failed to fetch booking ${bookingId}:`, error);
     throw error;
@@ -309,19 +370,7 @@ export const getBookingDetails = async (bookingId) => {
  */
 export const cancelBooking = async (bookingId) => {
   try {
-    // return await apiRequest(`/bookings/${bookingId}/cancel`, { method: 'POST' });
-    
-    // For now, simulate success
-    await delay(500);
-    
-    return {
-      success: true,
-      data: {
-        id: bookingId,
-        status: 'canceled',
-        canceledAt: new Date().toISOString()
-      }
-    };
+    return await apiRequest(`/booking/${bookingId}/cancel`, { method: 'POST' });
   } catch (error) {
     console.error(`Failed to cancel booking ${bookingId}:`, error);
     throw error;
@@ -336,22 +385,10 @@ export const cancelBooking = async (bookingId) => {
  */
 export const changeBookingRoom = async (bookingId, newRoomId) => {
   try {
-    // return await apiRequest(`/bookings/${bookingId}/change-room`, { 
-    //   method: 'POST',
-    //   body: JSON.stringify({ newRoomId })
-    // });
-    
-    // For now, simulate success
-    await delay(600);
-    
-    return {
-      success: true,
-      data: {
-        id: bookingId,
-        roomId: newRoomId,
-        updatedAt: new Date().toISOString()
-      }
-    };
+    return await apiRequest(`/booking/${bookingId}/change-room`, { 
+      method: 'POST',
+      body: JSON.stringify({ newRoomId })
+    });
   } catch (error) {
     console.error(`Failed to change room for booking ${bookingId}:`, error);
     throw error;
@@ -380,6 +417,44 @@ export const deleteBookingHistory = async (bookingId) => {
   }
 };
 
+/**
+ * Start a booking (check in)
+ * @param {number} bookingId - Booking ID
+ * @returns {Promise<Object>} - Updated booking with check-in time
+ */
+export const startBooking = async (bookingId) => {
+  try {
+    return await apiRequest(`/booking/${bookingId}/check-in`, { 
+      method: 'POST',
+      body: JSON.stringify({ 
+        checkInTime: new Date().toISOString() 
+      })
+    });
+  } catch (error) {
+    console.error(`Failed to start booking ${bookingId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Complete a booking (check out)
+ * @param {number} bookingId - Booking ID
+ * @returns {Promise<Object>} - Updated booking with check-out time
+ */
+export const checkOutBooking = async (bookingId) => {
+  try {
+    return await apiRequest(`/booking/${bookingId}/check-out`, { 
+      method: 'POST',
+      body: JSON.stringify({ 
+        checkOutTime: new Date().toISOString() 
+      })
+    });
+  } catch (error) {
+    console.error(`Failed to complete booking ${bookingId}:`, error);
+    throw error;
+  }
+};
+
 // --------------------------------
 // User-related API functions
 // --------------------------------
@@ -391,43 +466,65 @@ export const deleteBookingHistory = async (bookingId) => {
  */
 export const loginUser = async (credentials) => {
   try {
-    // return await apiRequest('/auth/login', {
-    //   method: 'POST',
-    //   body: JSON.stringify(credentials)
-    // });
-    
-    // For now, simulate login
-    await delay(800);
-    
-    // Basic validation
-    if (!credentials.password || credentials.password.length < 6) {
-      throw new Error('Invalid credentials');
-    }
-    
-    const mockUser = {
-      id: 1,
-      firstName: credentials.firstName || 'Test',
-      lastName: credentials.lastName || 'User',
-      email: 'test@example.com',
-      studentId: credentials.studentId || '123456789'
-    };
-    
-    // Store auth token in localStorage (simulated)
-    localStorage.setItem('authToken', 'mock-token-abc123');
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    
-    return {
-      success: true,
-      data: {
-        token: 'mock-token-abc123',
-        user: mockUser
-      }
-    };
+    return await apiRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials)
+    });
   } catch (error) {
     console.error('Login failed:', error);
     throw error;
   }
 };
+
+/**
+ * Register a new user
+ * @param {string} username - Username
+ * @param {string} email - Email
+ * @param {string} password - Password
+ * @param {string} fullName - Full name (optional)
+ * @param {string} phoneNumber - Phone number (optional)
+ * @param {string} faculty - Faculty/Department (optional)
+ * @param {string} mssv - Student ID (optional)
+ * @returns {Promise<Object>} - Registration result
+ */
+export async function registerAPI(username, email, password, fullName = '', phoneNumber = '', faculty = '', mssv = '') {
+  try {
+    console.log('Registration attempt:', { username, email, password: "***" });
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        username,
+        email,
+        password,
+        fullName: fullName || username,
+        phoneNumber,
+        faculty,
+        mssv,
+        role: 'student' // Default role for new registrations
+      }),
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error('Registration failed with status:', response.status);
+      throw new Error(data.error || 'Registration failed');
+    }
+    
+    console.log('Registration successful');
+    return {
+      success: true,
+      message: data.message || 'Registration successful',
+      user: data.user
+    };
+  } catch (error) {
+    console.error('Registration failed:', error);
+    throw error;
+  }
+}
 
 /**
  * Get current user info
@@ -461,11 +558,21 @@ export const getCurrentUser = async () => {
  */
 export const logoutUser = async () => {
   try {
-    // return await apiRequest('/auth/logout', { method: 'POST' });
+    const token = localStorage.getItem('token');
     
-    // For now, just clear localStorage
-    await delay(300);
-    localStorage.removeItem('authToken');
+    if (token) {
+      // Call the actual logout API endpoint
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+    
+    // Clear local storage regardless of API result
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
     
     return {
@@ -474,6 +581,9 @@ export const logoutUser = async () => {
     };
   } catch (error) {
     console.error('Logout failed:', error);
+    // Still clear the local storage even if the API call fails
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     throw error;
   }
 };
@@ -488,6 +598,329 @@ export const initializeMockData = (roomsData) => {
   window.mockRoomData = roomsData;
 };
 
+// --------------------------------
+// Admin-related API functions
+// --------------------------------
+
+/**
+ * Get all users with their active status (Admin only)
+ * @returns {Promise<Array>} - List of users with their status
+ */
+export const getUsersAndTheirActiveStatus = async () => {
+  try {
+    const response = await apiRequest('/admin/user', { method: 'GET' });
+    
+    // Chuyển đổi dữ liệu từ backend để phù hợp với frontend
+    const transformedData = {
+      success: true,
+      data: response.map(user => ({
+        id: user.user_id,
+        name: user.username,
+        email: user.email,
+        role: user.role.toLowerCase(),
+        mssv: user.mssv,
+        faculty: user.faculty,
+        status: user.active ? 'online' : 'offline',
+        lastLogin: user.last_login || null,
+        note: user.notes || '',
+        bookings: [] // Sẽ được điền sau khi lấy thông tin chi tiết
+      }))
+    };
+    
+    return transformedData;
+  } catch (error) {
+    console.error('Failed to fetch users and their status:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get user profile with booking history (Admin only)
+ * @param {string} userId - User ID
+ * @returns {Promise<Object>} - User profile with booking history
+ */
+export const getUserProfile = async (userId) => {
+  try {
+    const userData = await apiRequest(`/admin/user/${userId}`, { method: 'GET' });
+    
+    // Lấy thêm lịch sử đặt phòng của người dùng
+    let bookings = [];
+    try {
+      const bookingData = await apiRequest(`/admin/booking/user/${userId}`, { method: 'GET' });
+      bookings = bookingData.map(booking => {
+        // Lưu trữ thời gian đặt phòng dưới dạng chuỗi ISO để dễ dàng xử lý ở frontend
+        const startTime = booking.start_time ? new Date(booking.start_time) : null;
+        const endTime = booking.end_time ? new Date(booking.end_time) : null;
+        
+        // Format hiển thị ngày tháng
+        let formattedDate = 'Không xác định';
+        let formattedTime = 'Không xác định';
+        
+        try {
+          if (startTime && !isNaN(startTime.getTime())) {
+            // Format ngày tháng
+            const day = startTime.getDate().toString().padStart(2, '0');
+            const month = (startTime.getMonth() + 1).toString().padStart(2, '0');
+            const year = startTime.getFullYear();
+            formattedDate = `${day}/${month}/${year}`;
+            
+            // Format thời gian
+            if (endTime && !isNaN(endTime.getTime())) {
+              const startHours = startTime.getHours().toString().padStart(2, '0');
+              const startMinutes = startTime.getMinutes().toString().padStart(2, '0');
+              const endHours = endTime.getHours().toString().padStart(2, '0');
+              const endMinutes = endTime.getMinutes().toString().padStart(2, '0');
+              
+              formattedTime = `${startHours}:${startMinutes} - ${endHours}:${endMinutes}`;
+            }
+          }
+        } catch (timeError) {
+          console.error('Error formatting time:', timeError);
+        }
+        
+        return {
+          id: booking.booking_id,
+          roomId: booking.room_id || 'Không xác định',
+          roomName: booking.room_name || `Phòng ${booking.room_id || 'không xác định'}`,
+          description: booking.title || booking.purpose || 'Đặt phòng học',
+          time: formattedTime,
+          date: formattedDate,
+          // Truyền thêm dữ liệu thời gian gốc nếu có sẵn
+          startTime: startTime ? startTime.toISOString() : null,
+          endTime: endTime ? endTime.toISOString() : null,
+          image: 'https://picsum.photos/50/50?1' // Placeholder
+        };
+      });
+    } catch (bookingError) {
+      console.error(`Could not fetch bookings for user ${userId}:`, bookingError);
+      // Không làm gián đoạn luồng chính nếu không lấy được lịch sử đặt phòng
+    }
+    
+    // Chuyển đổi dữ liệu từ backend để phù hợp với frontend
+    const transformedData = {
+      success: true,
+      data: {
+        id: userData.user_id,
+        name: userData.username,
+        email: userData.email,
+        role: userData.role.toLowerCase(),
+        mssv: userData.mssv,
+        faculty: userData.faculty,
+        status: userData.status === 'ACTIVE' ? 'verified' : 
+                userData.status === 'RESTRICTED' ? 'rejected' : 'pending',
+        lastLogin: userData.last_login || null,
+        note: userData.notes || '',
+        bookings: bookings
+      }
+    };
+    
+    return transformedData;
+  } catch (error) {
+    console.error(`Failed to fetch user profile ${userId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Update user status (Admin only)
+ * @param {string} userId - User ID
+ * @param {string} status - New status
+ * @returns {Promise<Object>} - Updated user
+ */
+export const updateUserStatus = async (userId, status) => {
+  try {
+    return await apiRequest(`/admin/user/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status })
+    });
+  } catch (error) {
+    console.error(`Failed to update user status ${userId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Get all bookings (Admin only)
+ * @param {Object} filters - Filters for bookings (optional)
+ * @returns {Promise<Array>} - List of bookings
+ */
+export const getAllBookings = async (filters = {}) => {
+  try {
+    return await apiRequest('/admin/booking', {
+      method: 'GET',
+      params: filters
+    });
+  } catch (error) {
+    console.error('Failed to fetch all bookings:', error);
+    throw error;
+  }
+};
+
+/**
+ * Approve or reject a booking (Admin only)
+ * @param {string} bookingId - Booking ID
+ * @param {string} status - New status ('approved' or 'rejected')
+ * @param {string} reason - Reason for rejection (optional)
+ * @returns {Promise<Object>} - Updated booking
+ */
+export const updateBookingStatus = async (bookingId, status, reason = '') => {
+  try {
+    return await apiRequest(`/admin/booking/${bookingId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status, reason })
+    });
+  } catch (error) {
+    console.error(`Failed to update booking status ${bookingId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Get all devices (Admin only)
+ * @returns {Promise<Array>} - List of devices
+ */
+export const getAllDevices = async () => {
+  try {
+    return await apiRequest('/device', { method: 'GET' });
+  } catch (error) {
+    console.error('Failed to fetch all devices:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get devices by room (Admin only)
+ * @param {string} roomId - Room ID
+ * @returns {Promise<Array>} - List of devices in the room
+ */
+export const getDevicesByRoom = async (roomId) => {
+  try {
+    return await apiRequest(`/device/room/${roomId}`, { method: 'GET' });
+  } catch (error) {
+    console.error(`Failed to fetch devices for room ${roomId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Update device status (Admin only)
+ * @param {string} deviceId - Device ID
+ * @param {string} status - New status
+ * @returns {Promise<Object>} - Updated device
+ */
+export const updateDeviceStatus = async (deviceId, status) => {
+  try {
+    return await apiRequest(`/device/${deviceId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ status })
+    });
+  } catch (error) {
+    console.error(`Failed to update device status ${deviceId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Update user role (Admin only)
+ * @param {string} userId - User ID
+ * @param {string} role - New role
+ * @returns {Promise<Object>} - Updated user
+ */
+export const updateUserRole = async (userId, role) => {
+  try {
+    return await apiRequest(`/admin/user/${userId}/role`, {
+      method: 'PUT',
+      body: JSON.stringify({ role })
+    });
+  } catch (error) {
+    console.error(`Failed to update user role ${userId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Get role change history for a user (Admin only)
+ * @param {string} userId - User ID
+ * @returns {Promise<Array>} - History of role changes
+ */
+export const getUserRoleHistory = async (userId) => {
+  try {
+    return await apiRequest(`/admin/user/${userId}/role-history`, { method: 'GET' });
+  } catch (error) {
+    console.error(`Failed to fetch role history for user ${userId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Get users pending verification (Admin only)
+ * @returns {Promise<Array>} - List of users pending verification
+ */
+export const getUsersForVerification = async () => {
+  try {
+    const response = await apiRequest('/admin/user', { method: 'GET' });
+    
+    // Chuyển đổi dữ liệu từ backend để phù hợp với frontend
+    const transformedData = {
+      success: true,
+      data: response.map(user => ({
+        id: user.user_id,
+        name: user.username,
+        email: user.email,
+        role: user.role,
+        mssv: user.mssv,
+        faculty: user.faculty,
+        status: user.status === 'ACTIVE' ? 'verified' : 'pending',
+        lastLogin: user.last_login || null,
+        note: user.notes || ''
+      }))
+    };
+    
+    return transformedData;
+  } catch (error) {
+    console.error('Failed to fetch users for verification:', error);
+    throw error;
+  }
+};
+
+/**
+ * Verify user (Admin only)
+ * @param {string} userId - User ID
+ * @param {string} verificationStatus - New verification status ('verified', 'rejected', 'pending')
+ * @param {string} notes - Verification notes (optional)
+ * @returns {Promise<Object>} - Updated user
+ */
+export const updateUserVerification = async (userId, verificationStatus, notes = '') => {
+  try {
+    // Chuyển đổi trạng thái từ frontend sang backend
+    let backendStatus;
+    switch (verificationStatus) {
+      case 'verified':
+        backendStatus = 'ACTIVE';
+        break;
+      case 'rejected':
+        backendStatus = 'RESTRICTED';
+        break;
+      case 'pending':
+        backendStatus = 'PENDING';
+        break;
+      default:
+        backendStatus = 'PENDING';
+    }
+    
+    return await apiRequest(`/admin/user/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ 
+        status: backendStatus,
+        notes: notes
+      })
+    });
+  } catch (error) {
+    console.error(`Failed to update user verification ${userId}:`, error);
+    throw error;
+  }
+};
+
 export default {
   getRooms,
   getRoomDetails,
@@ -499,8 +932,23 @@ export default {
   cancelBooking,
   changeBookingRoom,
   deleteBookingHistory,
+  startBooking,
+  checkOutBooking,
   loginUser,
+  registerAPI,
   getCurrentUser,
   logoutUser,
-  initializeMockData
+  initializeMockData,
+  getUsersAndTheirActiveStatus,
+  getUserProfile,
+  updateUserStatus,
+  getAllBookings,
+  updateBookingStatus,
+  getAllDevices,
+  getDevicesByRoom,
+  updateDeviceStatus,
+  updateUserRole,
+  getUserRoleHistory,
+  getUsersForVerification,
+  updateUserVerification
 };

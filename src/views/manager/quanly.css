@@ -1,0 +1,403 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+}
+
+body {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+header {
+    background-color: #1976D2;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.quanly-logo-group {
+    display: flex;
+    align-items: center;
+}
+
+.quanly-logo-group img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.quanly-logo-group .quanly-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.quanly-logo-group .quanly-hcmut {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.quanly-logo-group .quanly-booking-room {
+    font-size: 14px;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 16px;
+}
+
+header .quanly-user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+/* Styles for manager header */
+.quanly-manager-header {
+    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+    color: white;
+    padding: 0.8rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.quanly-manager-actions {
+    display: flex;
+    align-items: center;
+}
+
+.quanly-back-button {
+    background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+}
+
+.quanly-back-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(37, 99, 235, 0.4);
+}
+
+.quanly-container {
+    display: flex;
+    margin-top: 90px;
+    min-height: calc(100vh - 90px);
+    padding: 0 20px 20px;
+    gap: 24px;
+}
+
+.quanly-user-list {
+    width: 300px;
+    background-color: #fff;
+    padding: 20px;
+    overflow-y: auto;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 110px);
+}
+
+.quanly-user-list h2 {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #2563EB;
+    font-size: 1.5rem;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e7ff;
+}
+
+.quanly-user-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 8px;
+    gap: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    background-color: #fff;
+    border: 1px solid transparent;
+}
+
+.quanly-user-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    border-color: #e0e7ff;
+}
+
+.quanly-user-item.selected {
+    background-color: #2563EB;
+    color: white;
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+    transform: translateY(-2px);
+}
+
+.quanly-user-item img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+    border: 2px solid #e5e7eb;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.quanly-user-item:hover img,
+.quanly-user-item.selected img {
+    transform: scale(1.1);
+    border-color: #2563EB;
+}
+
+.quanly-user-item.selected img {
+    border-color: #fff;
+}
+
+.quanly-user-item .quanly-info {
+    flex-grow: 1;
+}
+
+.quanly-user-item .quanly-info .quanly-name {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.quanly-user-item.selected .quanly-info .quanly-name {
+    color: white;
+}
+
+.quanly-user-item .quanly-info .quanly-email {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.quanly-user-item.selected .quanly-info .quanly-email {
+    color: rgba(255,255,255,0.8);
+}
+
+.quanly-user-item .quanly-status {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.quanly-user-item .quanly-status.quanly-verified {
+    color: #10B981;
+    border-color: #10B981;
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.quanly-user-item .quanly-status.quanly-unverified {
+    color: #EF4444;
+    border-color: #EF4444;
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.quanly-user-item.selected .quanly-status.quanly-verified {
+    color: #10B981;
+    border-color: #fff;
+    background-color: #fff;
+}
+
+.quanly-user-item.selected .quanly-status.quanly-unverified {
+    color: #EF4444;
+    border-color: #fff;
+    background-color: #fff;
+}
+
+.quanly-user-details {
+    width: 70%;
+    padding: 30px;
+    overflow-y: auto;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    max-height: calc(100vh - 110px);
+}
+
+.quanly-user-details .quanly-header {
+    background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    color: white;
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+}
+
+.quanly-user-details .quanly-header .quanly-name {
+    font-weight: 700;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.quanly-user-details .quanly-header .quanly-email {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.quanly-user-details .quanly-info {
+    background-color: #f9fafb;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.quanly-user-details .quanly-info p {
+    margin: 12px 0;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.quanly-user-details .quanly-info p:first-child {
+    margin-top: 0;
+}
+
+.quanly-user-details .quanly-info p:last-child {
+    margin-bottom: 0;
+}
+
+.quanly-user-details .quanly-info p strong {
+    font-weight: 600;
+    color: #1F2937;
+    min-width: 180px;
+    padding-right: 10px;
+}
+
+.quanly-booking-history h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 20px 0 15px;
+    color: #2563EB;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e0e7ff;
+}
+
+.quanly-booking-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.quanly-booking-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+.quanly-booking-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    margin-right: 15px;
+    object-fit: cover;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.quanly-booking-item .quanly-info {
+    flex-grow: 1;
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+    margin-bottom: 0;
+}
+
+.quanly-booking-item .quanly-info .quanly-room-id {
+    font-weight: 600;
+    font-size: 16px;
+    color: #1F2937;
+}
+
+.quanly-booking-item .quanly-info .quanly-description {
+    font-size: 14px;
+    color: #6B7280;
+}
+
+.quanly-booking-item .quanly-time {
+    padding: 6px 12px;
+    border-radius: 15px;
+    background-color: #E0E7FF;
+    color: #4F46E5;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Cải thiện hiển thị thông tin thời gian trong lịch sử đặt phòng */
+.quanly-booking-time {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-left: auto;
+    text-align: right;
+}
+
+.quanly-date, .quanly-time {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.quanly-icon {
+    color: #2563EB;
+    font-size: 0.9rem;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .quanly-container {
+        flex-direction: column;
+    }
+
+    .quanly-user-list, .quanly-user-details {
+        width: 100%;
+        max-height: none;
+    }
+
+    .quanly-user-list {
+        margin-bottom: 20px;
+    }
+}
