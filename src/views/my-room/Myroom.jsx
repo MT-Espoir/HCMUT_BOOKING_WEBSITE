@@ -101,7 +101,30 @@ const MyRoomPage = () => {
           return booking;
         });
         
-        setBookings(processedBookings);
+        // Sắp xếp booking theo thời gian đặt phòng
+        const sortedBookings = processedBookings.sort((a, b) => {
+          // Định nghĩa thứ tự ưu tiên của các trạng thái
+          const statusPriority = {
+            'active': 0,    // Đang sử dụng: ưu tiên cao nhất
+            'upcoming': 1,  // Sắp diễn ra: ưu tiên thứ hai
+            'past': 2,      // Đã hoàn thành: ưu tiên thấp
+            'canceled': 3   // Đã hủy: ưu tiên thấp nhất
+          };
+          
+          // So sánh theo trạng thái trước
+          const statusDiff = statusPriority[a.status] - statusPriority[b.status];
+          if (statusDiff !== 0) return statusDiff;
+          
+          // Nếu cùng trạng thái, so sánh theo thời gian đặt phòng (booking_time)
+          // Sử dụng a.bookingTime hoặc a.booking_time nếu có
+          const aBookingTime = new Date(a.bookingTime || a.booking_time || a.createdAt || a.startTime || a.checkIn);
+          const bBookingTime = new Date(b.bookingTime || b.booking_time || b.createdAt || b.startTime || b.checkIn);
+          
+          // Đặt phòng cũ hơn sẽ nằm bên dưới (sắp xếp giảm dần theo thời gian đặt)
+          return bBookingTime - aBookingTime;
+        });
+        
+        setBookings(sortedBookings);
       } else {
         setError('Failed to load bookings');
       }

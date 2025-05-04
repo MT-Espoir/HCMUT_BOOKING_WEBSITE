@@ -1,0 +1,5 @@
+-- Add MAINTENANCE status to device enum
+ALTER TABLE device MODIFY COLUMN status ENUM('OK', 'WARNING', 'ERROR', 'OFFLINE', 'MAINTENANCE') DEFAULT 'OK';
+
+-- Make sure the room table also supports MAINTENANCE status
+ALTER TABLE room MODIFY COLUMN status ENUM('AVAILABLE', 'UNAVAILABLE', 'MAINTENANCE') DEFAULT 'AVAILABLE';
