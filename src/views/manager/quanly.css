@@ -386,6 +386,73 @@ header .quanly-user-info img {
     font-size: 0.9rem;
 }
 
+.quanly-status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    margin-top: 5px;
+    background-color: #e5e7eb;
+    color: #4b5563;
+}
+
+.quanly-status-badge:contains('pending') {
+    background-color: #f39c12;
+    color: white;
+}
+
+.quanly-status-badge:contains('confirmed') {
+    background-color: #3498db;
+    color: white;
+}
+
+.quanly-status-badge:contains('completed') {
+    background-color: #10b981;
+    color: white;
+}
+
+.quanly-status-badge:contains('cancelled') {
+    background-color: #ef4444;
+    color: white;
+}
+
+.quanly-booking-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.quanly-confirm-btn,
+.quanly-cancel-btn {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.quanly-confirm-btn {
+    background-color: #2563eb;
+    color: white;
+}
+
+.quanly-confirm-btn:hover {
+    background-color: #1d4ed8;
+}
+
+.quanly-cancel-btn {
+    background-color: #ef4444;
+    color: white;
+}
+
+.quanly-cancel-btn:hover {
+    background-color: #dc2626;
+}
+
 /* Responsive styles */
 @media (max-width: 992px) {
     .quanly-container {

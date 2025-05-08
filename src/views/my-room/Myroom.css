@@ -229,6 +229,10 @@
   background-color: #10b981;
 }
 
+.MR-booking-status.pending {
+  background-color: #f39c12; /* Orange color for pending status */
+}
+
 .MR-booking-details {
   flex-grow: 1;
   padding: 1.25rem;
@@ -325,6 +329,35 @@
   background-color: #f0f7ff;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(37, 99, 235, 0.15);
+}
+
+.MR-action-btn.start-btn.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Add styling for disabled start button when booking is pending */
+.MR-action-btn.start-btn.disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+  opacity: 0.7;
+  position: relative;
+}
+
+.MR-action-btn.start-btn.disabled:hover::after {
+  content: "Chờ quản lý xác nhận";
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4a5568;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  z-index: 10;
 }
 
 /* Nút Đổi phòng: màu xanh dương nhạt và không viền */

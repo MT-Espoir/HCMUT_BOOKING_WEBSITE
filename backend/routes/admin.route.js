@@ -85,16 +85,59 @@ router.get("/booking/user/:userId", async (req, res) => {
   }
 }) //get bookings for a specific user (admin view)
 router.get("/booking/:bookingId", bookingController.getBookingDetails) //view booking detail
-router.put("/booking/:bookingId", (req, res) => {
-  // Admin function to approve or reject booking
-  const { bookingId } = req.params;
-  const { status } = req.body;
-  
-  res.status(200).send({ 
-    message: 'Update booking status functionality to be implemented',
-    bookingId,
-    newStatus: status
-  });
+router.put("/booking/:bookingId", async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const { status } = req.body;
+    
+    if (!status) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Status is required' 
+      });
+    }
+    
+    // Get the booking
+    const booking = await bookingController.getBookingForAdmin(bookingId);
+    
+    if (!booking) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Booking not found' 
+      });
+    }
+    
+    // Update booking status
+    // Convert frontend status naming to backend status naming (if needed)
+    let bookingStatus;
+    switch(status.toLowerCase()) {
+      case 'confirmed':
+        bookingStatus = 'CONFIRMED';
+        break;
+      case 'cancelled':
+      case 'canceled':
+        bookingStatus = 'CANCELLED';
+        break;
+      default:
+        bookingStatus = status.toUpperCase();
+    }
+    
+    booking.bookingStatus = bookingStatus;
+    await booking.update();
+    
+    res.status(200).json({ 
+      success: true, 
+      message: `Booking status updated to ${status} successfully`,
+      data: booking
+    });
+  } catch (error) {
+    console.error('Error updating booking status:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update booking status', 
+      error: error.message 
+    });
+  }
 }) //approve or reject booking status
 
 router.get("/report", reportController.getReport) //get usage report

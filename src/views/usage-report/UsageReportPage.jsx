@@ -5,13 +5,27 @@ import { FaUser } from 'react-icons/fa';
 
 const UsageReportPage = () => {
   const [dateRange, setDateRange] = useState({ start: '14/03/2025', end: '17/03/2025' });
-  const roomName = 'Phòng B1-202';
+  const roomName = '';
 
   const bookings = [
     { id: 1, user: 'Nguyễn Văn A', email: 'email@gamil.com' },
     { id: 2, user: 'Lê Thị B', email: 'email@gamil.com' },
     { id: 3, user: 'Trần Thanh C', email: 'email@gamil.com' },
   ];
+
+  // Booking data for the graph
+  const bookingData = [
+    { date: '14/03', count: 3 },
+    { date: '15/03', count: 5 },
+    { date: '16/03', count: 2 },
+    { date: '17/03', count: 7 },
+    { date: '18/03', count: 4 },
+    { date: '19/03', count: 6 },
+    { date: '20/03', count: 3 },
+  ];
+
+  // Find the maximum value for scaling
+  const maxCount = Math.max(...bookingData.map(item => item.count));
 
   const handleDownload = (format) => {
     alert(`Downloading report in ${format} format...`);
@@ -64,9 +78,31 @@ const UsageReportPage = () => {
 
           <div className="URP-booking-graph">
             <h3>Số lượt đặt phòng</h3>
-            <div className="URP-graph-placeholder">
-              {/* Placeholder for the line graph */}
-              <p>Line graph showing booking frequency from 05/03 to 12/03</p>
+            <div className="URP-graph-container">
+              <div className="URP-y-axis">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="URP-y-label">
+                    {Math.ceil(maxCount * (5 - i) / 5)}
+                  </div>
+                ))}
+                <div className="URP-y-label">0</div>
+              </div>
+              <div className="URP-graph">
+                {bookingData.map((item, index) => (
+                  <div key={index} className="URP-bar-container">
+                    <div 
+                      className="URP-bar" 
+                      style={{ 
+                        height: `${(item.count / maxCount) * 100}%`,
+                        backgroundColor: `rgb(79, 129, ${150 + index * 15})`
+                      }}
+                    >
+                      <span className="URP-bar-value">{item.count}</span>
+                    </div>
+                    <div className="URP-x-label">{item.date}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

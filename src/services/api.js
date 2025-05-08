@@ -332,7 +332,9 @@ export const getUserBookings = async () => {
                   ? 'past'
                   : booking.bookingStatus.toLowerCase() === 'cancelled' || booking.bookingStatus.toLowerCase() === 'auto_cancelled'
                     ? 'canceled'
-                    : 'upcoming'
+                    : booking.bookingStatus.toLowerCase() === 'pending'
+                      ? 'pending'
+                      : 'upcoming'
               : 'upcoming'),
             roomImage: roomImage,
             roomName: roomName || `Phòng ${booking.room_id || 'không xác định'}`
@@ -647,48 +649,69 @@ export const getUserProfile = async (userId) => {
     let bookings = [];
     try {
       const bookingData = await apiRequest(`/admin/booking/user/${userId}`, { method: 'GET' });
+      
+      // Debug để xem dữ liệu thô từ API
+      console.log("Debug - raw booking data from API:", bookingData);
+      
       bookings = bookingData.map(booking => {
-        // Lưu trữ thời gian đặt phòng dưới dạng chuỗi ISO để dễ dàng xử lý ở frontend
-        const startTime = booking.start_time ? new Date(booking.start_time) : null;
-        const endTime = booking.end_time ? new Date(booking.end_time) : null;
+        // Lưu trữ thời gian đặt phòng
+        const startTime = booking.start_time || booking.startTime;
+        const endTime = booking.end_time || booking.endTime;
         
         // Format hiển thị ngày tháng
         let formattedDate = 'Không xác định';
         let formattedTime = 'Không xác định';
         
         try {
-          if (startTime && !isNaN(startTime.getTime())) {
-            // Format ngày tháng
-            const day = startTime.getDate().toString().padStart(2, '0');
-            const month = (startTime.getMonth() + 1).toString().padStart(2, '0');
-            const year = startTime.getFullYear();
-            formattedDate = `${day}/${month}/${year}`;
-            
-            // Format thời gian
-            if (endTime && !isNaN(endTime.getTime())) {
-              const startHours = startTime.getHours().toString().padStart(2, '0');
-              const startMinutes = startTime.getMinutes().toString().padStart(2, '0');
-              const endHours = endTime.getHours().toString().padStart(2, '0');
-              const endMinutes = endTime.getMinutes().toString().padStart(2, '0');
+          if (startTime) {
+            const startDate = new Date(startTime);
+            if (!isNaN(startDate.getTime())) {
+              // Format ngày tháng
+              const day = startDate.getDate().toString().padStart(2, '0');
+              const month = (startDate.getMonth() + 1).toString().padStart(2, '0');
+              const year = startDate.getFullYear();
+              formattedDate = `${day}/${month}/${year}`;
               
-              formattedTime = `${startHours}:${startMinutes} - ${endHours}:${endMinutes}`;
+              // Format thời gian
+              if (endTime) {
+                const endDate = new Date(endTime);
+                if (!isNaN(endDate.getTime())) {
+                  const startHours = startDate.getHours().toString().padStart(2, '0');
+                  const startMinutes = startDate.getMinutes().toString().padStart(2, '0');
+                  const endHours = endDate.getHours().toString().padStart(2, '0');
+                  const endMinutes = endDate.getMinutes().toString().padStart(2, '0');
+                  
+                  formattedTime = `${startHours}:${startMinutes} - ${endHours}:${endMinutes}`;
+                }
+              }
             }
           }
         } catch (timeError) {
           console.error('Error formatting time:', timeError);
         }
         
+        // Chuẩn hóa trạng thái booking từ database sang định dạng frontend
+        let bookingStatus = booking.status || booking.booking_status;
+        
+        // Chuyển đổi trạng thái từ backend (chữ hoa) sang frontend (chữ thường)
+        if (bookingStatus) {
+          bookingStatus = bookingStatus.toLowerCase();
+          console.log("Debug - normalized booking status:", bookingStatus); // Debug để xem trạng thái đã chuẩn hóa
+        }
+        
         return {
-          id: booking.booking_id,
-          roomId: booking.room_id || 'Không xác định',
-          roomName: booking.room_name || `Phòng ${booking.room_id || 'không xác định'}`,
+          id: booking.booking_id || booking.id,
+          roomId: booking.room_id || booking.roomId || 'Không xác định',
+          roomName: booking.room_name || booking.roomName || `Phòng ${booking.room_id || booking.roomId || 'không xác định'}`,
+          title: booking.title || booking.purpose || 'Đặt phòng học',
           description: booking.title || booking.purpose || 'Đặt phòng học',
           time: formattedTime,
           date: formattedDate,
           // Truyền thêm dữ liệu thời gian gốc nếu có sẵn
-          startTime: startTime ? startTime.toISOString() : null,
-          endTime: endTime ? endTime.toISOString() : null,
-          image: 'https://picsum.photos/50/50?1' // Placeholder
+          startTime: startTime,
+          endTime: endTime,
+          status: bookingStatus,
+          booking_status: bookingStatus
         };
       });
     } catch (bookingError) {
@@ -763,11 +786,11 @@ export const getAllBookings = async (filters = {}) => {
  * @param {string} reason - Reason for rejection (optional)
  * @returns {Promise<Object>} - Updated booking
  */
-export const updateBookingStatus = async (bookingId, status, reason = '') => {
+export const updateBookingStatus = async (bookingId, status) => {
   try {
     return await apiRequest(`/admin/booking/${bookingId}`, {
       method: 'PUT',
-      body: JSON.stringify({ status, reason })
+      body: JSON.stringify({ status })
     });
   } catch (error) {
     console.error(`Failed to update booking status ${bookingId}:`, error);

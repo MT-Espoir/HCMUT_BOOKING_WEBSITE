@@ -71,16 +71,36 @@ const MyRoomPage = () => {
               return { ...booking, status: 'active' };
             }
             
-            if (lowerCaseStatus === 'pending' || lowerCaseStatus === 'confirmed') {
-              // Kiểm tra thêm logic thời gian dưới đây
-            } else {
-              console.log(`Unknown booking status from API: ${apiStatus}`);
+            if (lowerCaseStatus === 'pending') {
+              return { ...booking, status: 'pending' };
             }
+            
+            if (lowerCaseStatus === 'confirmed') {
+              // Nếu đã được xác nhận, kiểm tra thời gian để chuyển sang trạng thái upcoming
+              // Kiểm tra nếu đã quá 10 phút từ thời gian bắt đầu mà chưa check-in -> tự động hủy
+              const tenMinutesAfterStart = new Date(startTime);
+              tenMinutesAfterStart.setMinutes(tenMinutesAfterStart.getMinutes() + 10);
+              
+              if (now > tenMinutesAfterStart) {
+                // Tạm thời chỉ cập nhật UI, trong thực tế sẽ gọi API hủy đơn
+                return { ...booking, status: 'canceled', autoCanceled: true };
+              }
+              
+              // Booking đã được xác nhận và vẫn còn hạn
+              return { ...booking, status: 'upcoming' };
+            }
+            
+            console.log(`Unknown booking status from API: ${apiStatus}`);
           }
           
           // Tiếp tục logic xử lý dựa trên thời gian nếu status API không rõ ràng
           if (endTime < now && booking.status !== 'canceled') {
             return { ...booking, status: 'past' };
+          }
+          
+          // Kiểm tra trạng thái PENDING từ API và chuyển sang trạng thái UI tương ứng
+          if (apiStatus && apiStatus.toLowerCase() === 'pending') {
+            return { ...booking, status: 'pending' };
           }
           
           // Kiểm tra nếu đã qua 10 phút từ thời gian bắt đầu mà chưa check-in -> tự động hủy
@@ -240,11 +260,18 @@ const MyRoomPage = () => {
 
   const getStatusLabel = (status) => {
     switch (status) {
-      case 'upcoming': return 'Sắp diễn ra';
-      case 'active': return 'Đang sử dụng';
-      case 'past': return 'Đã hoàn thành';
-      case 'canceled': return 'Đã hủy';
-      default: return '';
+      case 'active':
+        return 'Đang sử dụng';
+      case 'upcoming':
+        return 'Sắp diễn ra';
+      case 'past':
+        return 'Đã hoàn thành';
+      case 'canceled':
+        return 'Đã hủy';
+      case 'pending':
+        return 'Chờ xác nhận';
+      default:
+        return 'Không xác định';
     }
   };
 
@@ -422,7 +449,11 @@ const MyRoomPage = () => {
                       {showButtons ? (
                         <>
                           {!isActive && (
-                            <button className="MR-action-btn start-btn" onClick={() => handleStartBooking(booking.id)}>
+                            <button 
+                              className={`MR-action-btn start-btn ${booking.status === 'pending' ? 'disabled' : ''}`} 
+                              onClick={() => booking.status !== 'pending' ? handleStartBooking(booking.id) : null}
+                              disabled={booking.status === 'pending'}
+                            >
                               Bắt đầu
                             </button>
                           )}

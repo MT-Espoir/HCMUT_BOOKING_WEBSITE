@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './quanly.css';
 import Headermanager from '../../components/common/Headermanager';
 import { FaUserAlt, FaCalendar, FaClock } from "react-icons/fa";
-import { getUsersAndTheirActiveStatus, getUserProfile, updateUserStatus } from '../../services/api';
+import { getUsersAndTheirActiveStatus, getUserProfile, updateUserStatus, updateBookingStatus } from '../../services/api';
 
 const QuanLy = () => {
     const navigate = useNavigate();
@@ -14,9 +14,40 @@ const QuanLy = () => {
     const [selectedUserIndex, setSelectedUserIndex] = useState(0);
     const [selectedUser, setSelectedUser] = useState(null);
 
+    // Determine room image based on room name
+    const getRoomImage = (roomName) => {
+        if (!roomName) return '/uploads/rooms/B1.png';
+        
+        // Extract building info from room name
+        const roomNameLower = roomName.toLowerCase();
+        if (roomNameLower.includes('b1')) {
+            return '/uploads/rooms/B1.png';
+        } else if (roomNameLower.includes('h3')) {
+            return '/uploads/rooms/H3.png';
+        } else if (roomNameLower.includes('h6')) {
+            return '/uploads/rooms/H6.jpg';
+        } else if (roomNameLower.includes('b')) {
+            return '/uploads/rooms/B1.png';
+        } else if (roomNameLower.includes('h')) {
+            return '/uploads/rooms/H3.png';
+        }
+        
+        return '/uploads/rooms/B1.png';
+    };
+
     // Hàm chuẩn hóa dữ liệu booking để đảm bảo tính nhất quán 
     const standardizeBookingData = (booking) => {
         console.log('Original booking before standardization:', booking);
+         
+        // Lấy trạng thái đúng từ dữ liệu booking
+        let bookingStatus = booking.status || booking.booking_status;
+        
+        // Chuẩn hóa trạng thái nếu có
+        if (bookingStatus) {
+            bookingStatus = bookingStatus.toLowerCase();
+        } else {
+            bookingStatus = 'pending'; // Mặc định nếu không có trạng thái
+        }
         
         // Dựa theo cách xử lý của Myroom.jsx
         const standardizedBooking = {
@@ -29,8 +60,8 @@ const QuanLy = () => {
             endTime: booking.endTime || booking.end_time || booking.checkOut,
             roomName: booking.roomName || booking.room_name || `Phòng ${booking.roomId || booking.room_id || "không xác định"}`,
             duration: booking.duration,
-            // Thêm các trạng thái theo myroom
-            status: booking.status || booking.booking_status || 'pending',
+            // Gán trạng thái đã được chuẩn hóa
+            status: bookingStatus,
         };
 
         // Debug log trong môi trường development
@@ -193,6 +224,38 @@ const QuanLy = () => {
         }
     };
 
+    const handleBookingConfirmation = async (bookingId, newStatus) => {
+        try {
+            setLoading(true);
+            
+            // Call the API to update booking status
+            const response = await updateBookingStatus(bookingId, newStatus);
+            
+            if (response.success) {
+                // Tải lại thông tin người dùng để cập nhật lại danh sách booking
+                if (selectedUser) {
+                    // Đợi một khoảng thời gian ngắn để đảm bảo cập nhật backend đã hoàn tất
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    // Tải lại thông tin người dùng
+                    const refreshedUserData = await getUserProfile(selectedUser.id);
+                    if (refreshedUserData.success) {
+                        setSelectedUser(refreshedUserData.data);
+                    }
+                }
+                
+                alert(`Đã ${newStatus === 'confirmed' ? 'xác nhận' : 'hủy'} đặt phòng thành công!`);
+            } else {
+                alert(`Không thể ${newStatus === 'confirmed' ? 'xác nhận' : 'hủy'} đặt phòng. ${response.message || 'Vui lòng thử lại sau.'}`);
+            }
+        } catch (error) {
+            console.error(`Error updating booking status for ID ${bookingId}:`, error);
+            alert(`Không thể ${newStatus === 'confirmed' ? 'xác nhận' : 'hủy'} đặt phòng. Vui lòng thử lại sau.`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (loading && users.length === 0) {
         return (
             <div>
@@ -266,10 +329,17 @@ const QuanLy = () => {
                                             const standardizedBooking = standardizeBookingData(booking);
                                             return (
                                                 <div className="quanly-booking-item" key={standardizedBooking.id || index}>
-                                                    <img src={standardizedBooking.image || standardizedBooking.roomImage || 'https://picsum.photos/50/50?1'} alt="Room" />
+                                                    <img 
+                                                        src={`http://localhost:5000${getRoomImage(standardizedBooking.roomName)}`} 
+                                                        alt="Room"
+                                                        onError={(e) => {
+                                                            e.target.src = require('../../assets/room-main.png');
+                                                        }}
+                                                    />
                                                     <div className="quanly-info">
-                                                        <div className="quanly-room-id">Phòng {standardizedBooking.roomId || standardizedBooking.roomName || "Không xác định"}</div>
+                                                        <div className="quanly-room-id">{standardizedBooking.roomName || `Phòng ${standardizedBooking.roomId || "không xác định"}`}</div>
                                                         <div className="quanly-description">{standardizedBooking.title}</div>
+                                                        <div className="quanly-status-badge">{standardizedBooking.status}</div>
                                                     </div>
                                                     <div className="quanly-booking-time">
                                                         <div className="quanly-date">
@@ -282,6 +352,29 @@ const QuanLy = () => {
                                                                 formatTimeRange(standardizedBooking.startTime, standardizedBooking.endTime) : 
                                                                 standardizedBooking.time || 'Không có thông tin'}
                                                         </div>
+                                                        {standardizedBooking.status && 
+                                                         standardizedBooking.status.toLowerCase() === 'pending' && (
+                                                            <div className="quanly-booking-actions">
+                                                                <button 
+                                                                    className="quanly-confirm-btn"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleBookingConfirmation(standardizedBooking.id, 'confirmed');
+                                                                    }}
+                                                                >
+                                                                    Xác nhận
+                                                                </button>
+                                                                <button 
+                                                                    className="quanly-cancel-btn"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleBookingConfirmation(standardizedBooking.id, 'cancelled');
+                                                                    }}
+                                                                >
+                                                                    Hủy
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             );

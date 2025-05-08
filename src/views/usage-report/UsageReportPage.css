@@ -9,177 +9,231 @@
 
 /* Main page container */
 .URP-usage-report-page {
-  font-family: 'Inter', 'Roboto', sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
-  background-color: #f8f9fa;
-  min-height: 100vh;
-  /* Thêm padding-top để tránh nội dung bị header che khuất */
-  padding-top: 90px;
+  margin: 0;
+  padding: 0;
 }
 
 /* Main Content Styles */
 .URP-main-content {
   max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 2rem;
+  margin: 30px auto;
+  padding: 0 20px;
 }
 
 .URP-page-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  /* Đổi màu chữ sang xanh dương */
-  color: #2563EB;
-  margin-bottom: 2rem;
+  color: #2c5282;
+  font-size: 28px;
+  margin-bottom: 20px;
+  font-weight: 600;
 }
 
 /* Report Filter Styles */
 .URP-report-filter {
-  margin-bottom: 2rem;
+  background-color: #f7fafc;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 25px;
 }
 
 .URP-date-range {
   display: flex;
-  gap: 1rem;
   align-items: center;
   flex-wrap: wrap;
+  gap: 15px;
 }
 
 .URP-date-box {
-  background-color: white;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
 }
 
 .URP-date-box label {
-  font-size: 0.9rem;
-  color: #4b5563;
-  display: block;
-  margin-bottom: 0.5rem;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #4a5568;
 }
 
 .URP-date-box input {
-  border: none;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #1f2937;
-  background: none;
-  width: 100%;
-  pointer-events: none;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  width: 120px;
+  font-size: 14px;
 }
 
 .URP-room-info {
-  background-color: white;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  font-size: 1.2rem;
   font-weight: 600;
-  color: #1f2937;
+  padding: 8px 15px;
+  background-color: #2c5282;
+  color: white;
+  border-radius: 4px;
+  margin-left: auto;
 }
 
 /* Report Content Styles */
 .URP-report-content {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 25px;
+  margin-bottom: 30px;
 }
 
-.URP-user-list {
-  flex: 1;
+.URP-user-list, .URP-booking-graph {
   background-color: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
-.URP-user-list h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #1f2937;
+.URP-user-list h3, .URP-booking-graph h3 {
+  color: #2c5282;
+  font-size: 18px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .URP-user-item {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.URP-user-item:last-child {
-  border-bottom: none;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f4f8;
 }
 
 .URP-user-icon {
-  font-size: 1.5rem;
-  color: #2563EB;
+  font-size: 24px;
+  color: #4a5568;
+  margin-right: 15px;
 }
 
 .URP-user-details {
-  flex-grow: 1;
+  flex: 1;
 }
 
 .URP-user-name {
-  font-weight: 500;
-  color: #1f2937;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0 0 4px 0;
 }
 
 .URP-user-email {
-  font-size: 0.9rem;
-  color: #4b5563;
+  color: #718096;
+  font-size: 14px;
+  margin: 0;
 }
 
-.URP-booking-graph {
-  flex: 1;
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.URP-booking-graph h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #1f2937;
-}
-
-.URP-graph-placeholder {
-  height: 200px;
+/* Graph Styling */
+.URP-graph-container {
   display: flex;
+  height: 300px;
+  margin-top: 20px;
+  padding-bottom: 30px;
+}
+
+.URP-y-axis {
+  width: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: 10px;
+  border-right: 1px solid #e2e8f0;
+}
+
+.URP-y-label {
+  color: #718096;
+  font-size: 12px;
+  text-align: right;
+  height: 20px;
+  line-height: 20px;
+}
+
+.URP-graph {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding-left: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  height: 250px;
+}
+
+.URP-bar-container {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  border: 1px dashed #d1d5db;
-  border-radius: 8px;
-  color: #4b5563;
+  width: 40px;
+}
+
+.URP-bar {
+  width: 30px;
+  border-radius: 4px 4px 0 0;
+  background-color: #4299e1;
+  position: relative;
+  transition: height 0.3s ease;
+  min-height: 5px;
+}
+
+.URP-bar-value {
+  position: absolute;
+  top: -20px;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #4a5568;
+}
+
+.URP-x-label {
+  margin-top: 10px;
+  color: #718096;
+  font-size: 12px;
+  text-align: center;
 }
 
 /* Report Actions Styles */
 .URP-report-actions {
   display: flex;
-  gap: 1rem;
   justify-content: flex-end;
+  gap: 15px;
 }
 
 .URP-action-btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  border: none;
+  transition: background-color 0.2s ease;
 }
 
 .URP-download-btn {
-  background-color: #facc15;
-  color: #1f2937;
+  display: flex;
+  align-items: center;
+  background-color: #2c5282;
+  color: white;
 }
 
 .URP-download-btn:hover {
-  background-color: #eab308;
+  background-color: #1a365d;
+}
+
+.URP-download-btn.pdf {
+  background-color: #e53e3e;
+}
+
+.URP-download-btn.pdf:hover {
+  background-color: #c53030;
+}
+
+.URP-download-btn.excel {
+  background-color: #2f855a;
+}
+
+.URP-download-btn.excel:hover {
+  background-color: #276749;
 }
 
 /* Responsive Styles */
@@ -205,10 +259,5 @@
 
   .URP-action-btn {
     width: 100%;
-  }
-  
-  /* Tăng khoảng cách trên đỉnh trang khi ở chế độ responsive */
-  .URP-usage-report-page {
-    padding-top: 120px;
   }
 }

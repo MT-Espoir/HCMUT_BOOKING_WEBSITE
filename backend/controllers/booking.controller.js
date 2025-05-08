@@ -371,6 +371,20 @@ const getUserBookingsForAdmin = async (req, res, userIdParam = null) => {
     }
 };
 
+/**
+ * Get booking by ID for admin operations
+ * @param {number} bookingId - Booking ID
+ * @returns {Promise<Booking|null>} - Booking object or null if not found
+ */
+const getBookingForAdmin = async (bookingId) => {
+    try {
+        return await Booking.findBookingById(bookingId);
+    } catch (err) {
+        console.error(`Error fetching booking ${bookingId} for admin:`, err);
+        throw err;
+    }
+};
+
 module.exports = {
     getUserBookings,
     getBookingDetails,
@@ -380,5 +394,6 @@ module.exports = {
     checkInBooking,
     checkOutBooking,
     deleteBookingHistory,
-    getUserBookingsForAdmin
+    getUserBookingsForAdmin,
+    getBookingForAdmin
 };
