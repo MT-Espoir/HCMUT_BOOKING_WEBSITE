@@ -32,12 +32,30 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(limiter);
+
+// Cấu hình CORS chính xác để hỗ trợ preflight requests
 app.use(cors({
-  origin: (origin, callback) => {
-    callback(null, true);
-  },
-  credentials: true
+  origin: '*', // Cho phép tất cả origins hoặc bạn có thể chỉ định cụ thể ['http://localhost:3000']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Cho phép các phương thức HTTP
+  allowedHeaders: ['Content-Type', 'Authorization'], // Cho phép các headers
+  credentials: true, // Cho phép credentials
+  optionsSuccessStatus: 200 // Trả về status 200 cho OPTIONS request
 }));
+
+// Thiết lập headers CORS thủ công để đảm bảo tương thích
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*'); // Hoặc origin cụ thể
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Xử lý preflight request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  next();
+});
 
 // Phục vụ thư mục uploads như một thư mục tĩnh
 const path = require('path');

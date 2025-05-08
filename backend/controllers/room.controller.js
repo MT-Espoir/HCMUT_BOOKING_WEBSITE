@@ -13,7 +13,8 @@ const getRooms = async (req, res) => {
             building: req.query.building,
             floor: req.query.floor,
             roomType: req.query.roomType,
-            date: req.query.date // Lấy ngày từ query params
+            date: req.query.date, // Lấy ngày từ query params
+            excludeBookingId: req.query.excludeBookingId // Thêm ID booking cần loại trừ
         };
         
         // Thêm thời gian vào filters nếu có (quan trọng để kiểm tra chồng chéo thời gian)
@@ -21,6 +22,10 @@ const getRooms = async (req, res) => {
             filters.startTime = req.query.startTime;
             filters.endTime = req.query.endTime;
             console.log(`Filtering with time range: ${filters.startTime} - ${filters.endTime}`);
+            
+            if (filters.excludeBookingId) {
+                console.log(`Excluding booking ID: ${filters.excludeBookingId} from availability check`);
+            }
         }
         
         // Get all rooms matching basic filters

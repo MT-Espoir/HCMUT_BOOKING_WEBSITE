@@ -5,16 +5,16 @@ class Room {
         this.id = id;
         this.name = name;
         this.location = location;
-        this.floor = floor;
-        this.building = building;
-        this.capacity = capacity;
-        this.area = area;
-        this.roomType = roomType;
-        this.roomImage = roomImage;
-        this.description = description;
-        this.facilities = facilities;
-        this.openingHours = openingHours;
-        this.status = status || 'AVAILABLE';
+        this.floor = this.floor;
+        this.building = this.building;
+        this.capacity = this.capacity;
+        this.area = this.area;
+        this.roomType = this.roomType;
+        this.roomImage = this.roomImage;
+        this.description = this.description;
+        this.facilities = this.facilities;
+        this.openingHours = this.openingHours;
+        this.status = this.status || 'AVAILABLE';
     }
 
     /**
@@ -186,15 +186,31 @@ class Room {
             }
             
             // Cải thiện date filter để chỉ lọc theo chồng chéo thời gian, không lọc theo ngày
-            if (filters.date && filters.startTime && filters.endTime) {
-                // Chuẩn hóa datetime
-                const fullStartTime = `${filters.date}T${filters.startTime}`;
-                const fullEndTime = `${filters.date}T${filters.endTime}`;
+            if ((filters.date && filters.startTime && filters.endTime) || 
+                (filters.startTime && filters.endTime)) {
                 
-                query += `
+                // Chuẩn hóa datetime
+                let fullStartTime = filters.startTime;
+                let fullEndTime = filters.endTime;
+                
+                if (filters.date) {
+                    fullStartTime = `${filters.date}T${filters.startTime}`;
+                    fullEndTime = `${filters.date}T${filters.endTime}`;
+                }
+                
+                let bookingOverlapQuery = `
                     AND room_id NOT IN (
                         SELECT room_id FROM booking
                         WHERE booking_status IN ('PENDING', 'CONFIRMED', 'CHECKED_IN')
+                `;
+                
+                // Nếu có excludeBookingId, thêm điều kiện để loại trừ booking hiện tại
+                if (filters.excludeBookingId) {
+                    bookingOverlapQuery += ` AND booking_id != ? `;
+                    params.push(filters.excludeBookingId);
+                }
+                
+                bookingOverlapQuery += `
                         AND (
                             (start_time < ? AND end_time > ?) OR
                             (start_time < ? AND end_time > ?) OR
@@ -202,11 +218,19 @@ class Room {
                         )
                     )
                 `;
+                
+                query += bookingOverlapQuery;
+                
                 params.push(
                     fullEndTime, fullStartTime,      // Kiểm tra booking kết thúc sau khi thời gian mới bắt đầu
                     fullStartTime, fullStartTime,    // Kiểm tra booking bắt đầu trước khi thời gian mới kết thúc
                     fullStartTime, fullEndTime       // Kiểm tra booking nằm hoàn toàn trong khoảng thời gian mới
                 );
+                
+                console.log("Using time filter with overlap check");
+                if (filters.excludeBookingId) {
+                    console.log(`Excluding booking ID: ${filters.excludeBookingId} from availability check`);
+                }
             } 
             // Nếu chỉ có date mà không có startTime, endTime (backwards compatibility)
             else if (filters.date) {
@@ -216,8 +240,15 @@ class Room {
                         SELECT room_id FROM booking
                         WHERE DATE(start_time) = DATE(?)
                         AND booking_status IN ('PENDING', 'CONFIRMED', 'CHECKED_IN')
-                    )
                 `;
+                
+                // Nếu có excludeBookingId, thêm điều kiện để loại trừ booking hiện tại
+                if (filters.excludeBookingId) {
+                    query += ` AND booking_id != ? `;
+                    params.push(filters.excludeBookingId);
+                }
+                
+                query += `)`;
                 params.push(filters.date);
             }
             
@@ -301,14 +332,37 @@ class Room {
     static isWithinOpeningHours(openingHours, startTime, endTime) {
         try {
             // Kiểm tra tham số đầu vào
-            if (!openingHours || !startTime || !endTime) {
-                console.log('Missing parameters in isWithinOpeningHours, defaulting to available');
+            if (!startTime || !endTime) {
+                console.log('Missing startTime or endTime in isWithinOpeningHours, defaulting to available');
+                return true;
+            }
+            
+            // Nếu không có thông tin giờ mở cửa, mặc định phòng khả dụng
+            if (!openingHours) {
+                console.log('No opening hours defined for room, defaulting to available');
+                return true;
+            }
+
+            // Nếu openingHours là một chuỗi rỗng, mặc định phòng khả dụng
+            if (typeof openingHours === 'string' && openingHours.trim() === '') {
+                console.log('Empty opening hours string, defaulting to available');
                 return true;
             }
 
             // Parse opening hours if needed
-            const timeRanges = typeof openingHours === 'string' ? 
-                JSON.parse(openingHours) : openingHours;
+            let timeRanges;
+            try {
+                timeRanges = typeof openingHours === 'string' ? JSON.parse(openingHours) : openingHours;
+            } catch (parseError) {
+                console.log('Error parsing opening hours, defaulting to available:', parseError);
+                return true;
+            }
+            
+            // Trường hợp không có dữ liệu sau khi parse
+            if (!timeRanges || (Array.isArray(timeRanges) && timeRanges.length === 0)) {
+                console.log('No valid opening hours data, defaulting to available');
+                return true;
+            }
             
             // Xử lý chuỗi thời gian
             // Trích xuất giờ từ tham số đầu vào, hỗ trợ nhiều định dạng thời gian
@@ -319,20 +373,52 @@ class Room {
             
             // Định dạng hàm để trích xuất thời gian từ các dạng chuỗi khác nhau
             const extractTimeComponents = (timeString) => {
+                // Support Date object input
+                if (timeString instanceof Date) {
+                    const hours = timeString.getUTCHours();
+                    const minutes = timeString.getUTCMinutes();
+                    console.log(`Parsed Date object to hours:minutes = ${hours}:${minutes}`);
+                    return { hour: hours, minute: minutes };
+                }
                 if (typeof timeString !== 'string') {
                     console.error('Invalid time string format:', timeString);
                     return { hour: 0, minute: 0 };
                 }
                 
-                // Trường hợp ISO string: "2025-05-03T17:00:00" hoặc "2025-05-03 17:00:00"
+                // Xử lý ISO datetime bằng regex trước tiên cho các định dạng phổ biến
+                // Hỗ trợ định dạng ISO với Z (UTC) như: 2025-05-09T11:00:00.000Z
+                const isoWithZPattern = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?Z/;
+                const isoWithZMatch = timeString.match(isoWithZPattern);
+                
+                if (isoWithZMatch) {
+                    const hours = parseInt(isoWithZMatch[4], 10);
+                    const minutes = parseInt(isoWithZMatch[5], 10);
+                    console.log(`Parsed ISO with Z: ${timeString} to hours:minutes = ${hours}:${minutes}`);
+                    return { hour: hours, minute: minutes };
+                }
+                
+                // Backup: Sử dụng Date object để xử lý
+                try {
+                    const date = new Date(timeString);
+                    if (!isNaN(date.getTime())) {
+                        const hours = date.getUTCHours();
+                        const minutes = date.getUTCMinutes();
+                        console.log(`Successfully parsed ISO datetime ${timeString} to UTC hours:minutes = ${hours}:${minutes}`);
+                        return { hour: hours, minute: minutes };
+                    }
+                } catch (dateError) {
+                    console.error('Error parsing date object:', dateError);
+                }
+                
+                // Phương án dự phòng: sử dụng regex để phân tích chuỗi ISO
                 const isoPattern = /(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/;
                 const isoMatch = timeString.match(isoPattern);
                 
                 if (isoMatch) {
-                    return { 
-                        hour: parseInt(isoMatch[4], 10), 
-                        minute: parseInt(isoMatch[5], 10) 
-                    };
+                    const hours = parseInt(isoMatch[4], 10);
+                    const minutes = parseInt(isoMatch[5], 10);
+                    console.log(`Parsed ISO string ${timeString} to hours:minutes = ${hours}:${minutes}`);
+                    return { hour: hours, minute: minutes };
                 }
                 
                 // Trường hợp chỉ có giờ: "17:00" hoặc "17:00:00"
@@ -340,10 +426,10 @@ class Room {
                 const timeMatch = timeString.match(timePattern);
                 
                 if (timeMatch) {
-                    return { 
-                        hour: parseInt(timeMatch[1], 10), 
-                        minute: parseInt(timeMatch[2], 10) 
-                    };
+                    const hours = parseInt(timeMatch[1], 10);
+                    const minutes = parseInt(timeMatch[2], 10);
+                    console.log(`Parsed time string ${timeString} to hours:minutes = ${hours}:${minutes}`);
+                    return { hour: hours, minute: minutes };
                 }
                 
                 console.error('Unrecognized time format:', timeString);
@@ -374,14 +460,33 @@ class Room {
             
             // Kiểm tra các khung giờ hoạt động
             if (Array.isArray(timeRanges)) {
+                // Phòng khả dụng 24/7 nếu không có chi tiết về giờ mở cửa
+                if (timeRanges.length === 0) {
+                    console.log('No time ranges specified, assuming room is available 24/7');
+                    return true;
+                }
+                
                 for (const range of timeRanges) {
                     if (!range.start || !range.end) {
                         console.log('Invalid range format:', range);
                         continue;
                     }
                     
-                    const [rangeStartHour, rangeStartMinute] = range.start.split(':').map(Number);
-                    const [rangeEndHour, rangeEndMinute] = range.end.split(':').map(Number);
+                    // Chuẩn hoá giờ mở cửa và đóng cửa
+                    let rangeStartHour, rangeStartMinute, rangeEndHour, rangeEndMinute;
+                    
+                    try {
+                        [rangeStartHour, rangeStartMinute] = range.start.split(':').map(Number);
+                        [rangeEndHour, rangeEndMinute] = range.end.split(':').map(Number);
+                    } catch (error) {
+                        console.log('Error parsing time range, skipping:', error);
+                        continue;
+                    }
+                    
+                    if (isNaN(rangeStartHour) || isNaN(rangeStartMinute) || isNaN(rangeEndHour) || isNaN(rangeEndMinute)) {
+                        console.log('Invalid time format in range:', range);
+                        continue;
+                    }
                     
                     console.log(`Comparing with opening hours: ${rangeStartHour}:${rangeStartMinute} - ${rangeEndHour}:${rangeEndMinute}`);
                     
@@ -402,24 +507,6 @@ class Room {
                         (requestEndHour < rangeEndHour) || 
                         (requestEndHour === rangeEndHour && requestEndMinute <= rangeEndMinute)
                     );
-                    
-                    // Log chi tiết hơn nếu là phòng B1-101
-                    if (typeof room === 'object' && room && room.name && room.name.includes('B1-101')) {
-                        console.log(`B1-101 Time check details:
-                        - Request time: ${requestStartHour}:${requestStartMinute} - ${requestEndHour}:${requestEndMinute}
-                        - Opening hours: ${rangeStartHour}:${rangeStartMinute} - ${rangeEndHour}:${rangeEndMinute}
-                        - Start in range: ${startInRange}
-                        - End in range: ${endInRange}
-                        - Conditions:
-                            start > rangeStart: ${requestStartHour > rangeStartHour}
-                            start = rangeStart & minutes in range: ${requestStartHour === rangeStartHour && requestStartMinute >= rangeStartMinute}
-                            start < rangeEnd: ${requestStartHour < rangeEndHour}
-                            start = rangeEnd & minutes in range: ${requestStartHour === rangeEndHour && requestStartMinute <= rangeEndMinute}
-                            end > rangeStart: ${requestEndHour > rangeStartHour}
-                            end = rangeStart & minutes in range: ${requestEndHour === rangeStartHour && requestEndMinute >= rangeStartMinute}
-                            end < rangeEnd: ${requestEndHour < rangeEndHour}
-                            end = rangeEnd & minutes in range: ${requestEndHour === rangeEndHour && requestEndMinute <= rangeEndMinute}`);
-                    }
                     
                     console.log(`Start time in range: ${startInRange}, End time in range: ${endInRange}`);
                     
@@ -463,18 +550,33 @@ class Room {
                         return '00:00'; // Fallback
                     }
                     
-                    if (dateTimeStr.includes('T')) {
+                    // Xử lý định dạng ISO datetime với Date object
+                    try {
                         const date = new Date(dateTimeStr);
-                        if (isNaN(date.getTime())) {
-                            console.error('Invalid date:', dateTimeStr);
-                            return '00:00'; // Fallback
+                        if (!isNaN(date.getTime())) {
+                            console.log(`Successfully parsed ${dateTimeStr} to time: ${date.getUTCHours()}:${date.getUTCMinutes()}`);
+                            return `${date.getUTCHours().toString().padStart(2, '0')}:${date.getUTCMinutes().toString().padStart(2, '0')}`;
                         }
-                        
-                        // Sử dụng giờ địa phương thay vì UTC+7 để tránh phức tạp
-                        const hours = date.getHours();
-                        const minutes = date.getMinutes();
-                        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                    } catch (err) {
+                        console.error('Error parsing date in extractTimeOnly:', err);
                     }
+                    
+                    // Nếu có dấu T hoặc dấu - là ISO format
+                    if (dateTimeStr.includes('T') || (dateTimeStr.includes('-') && dateTimeStr.includes(':'))) {
+                        const match = dateTimeStr.match(/(\d{2}):(\d{2})/);
+                        if (match) {
+                            return `${match[1]}:${match[2]}`;
+                        }
+                    }
+                    
+                    // Nếu là định dạng chỉ có thời gian (HH:MM)
+                    if (dateTimeStr.includes(':')) {
+                        const parts = dateTimeStr.split(':');
+                        const hours = parts[0].padStart(2, '0');
+                        const minutes = (parts[1] || '00').padStart(2, '0');
+                        return `${hours}:${minutes}`;
+                    }
+                    
                     return dateTimeStr;
                 } catch (e) {
                     console.error('Error in extractTimeOnly:', e);
@@ -532,9 +634,10 @@ class Room {
      * @param {number|string} roomId - Room ID
      * @param {string} startTime - Start date and time
      * @param {string} endTime - End date and time
+     * @param {number|string} excludeBookingId - Booking ID to exclude from check (optional)
      * @returns {Promise<boolean>} - True if room is available, false otherwise
      */
-    static async checkAvailability(roomId, startTime, endTime) {
+    static async checkAvailability(roomId, startTime, endTime, excludeBookingId = null) {
         try {
             // First check if the requested time is in the past
             const now = new Date();
@@ -564,7 +667,8 @@ class Room {
             console.log(`Checking availability for room ${roomId}:`, {
                 requestedStartTime: startTime,
                 requestedEndTime: endTime,
-                roomStatus: room.status
+                roomStatus: room.status,
+                excludeBookingId: excludeBookingId
             });
             
             // Check if the requested time falls within opening hours
@@ -576,10 +680,21 @@ class Room {
             
             // Check if there are any overlapping bookings
             // Chỉ kiểm tra chồng chéo thời gian một cách chính xác
-            const bookingQuery = `
+            let bookingQuery = `
                 SELECT * FROM booking
                 WHERE room_id = ?
                   AND booking_status IN ('PENDING', 'CONFIRMED', 'CHECKED_IN')
+            `;
+            
+            const queryParams = [roomId];
+            
+            // Nếu có excludeBookingId, thêm điều kiện loại trừ booking hiện tại
+            if (excludeBookingId) {
+                bookingQuery += ` AND booking_id != ?`;
+                queryParams.push(excludeBookingId);
+            }
+            
+            bookingQuery += `
                   AND (
                       (start_time < ? AND end_time > ?) OR  /* Booking kết thúc sau khi yêu cầu mới bắt đầu */
                       (start_time < ? AND end_time > ?) OR  /* Booking bắt đầu trước khi yêu cầu mới kết thúc */
@@ -587,12 +702,14 @@ class Room {
                   );
             `;
             
-            const [bookingRows] = await db.execute(bookingQuery, [
-                roomId,
+            // Thêm các tham số cho điều kiện chồng chéo thời gian
+            queryParams.push(
                 startTime, startTime,  /* Kiểm tra trường hợp 1: booking hiện tại kết thúc sau khi booking mới bắt đầu */
                 endTime, endTime,      /* Kiểm tra trường hợp 2: booking hiện tại bắt đầu trước khi booking mới kết thúc */
                 startTime, endTime     /* Kiểm tra trường hợp 3: booking hiện tại hoàn toàn nằm trong booking mới */
-            ]);
+            );
+            
+            const [bookingRows] = await db.execute(bookingQuery, queryParams);
             
             if (bookingRows.length > 0) {
                 console.log(`Room ${roomId} is not available - overlapping bookings found:`, 

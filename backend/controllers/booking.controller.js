@@ -191,8 +191,13 @@ const changeBookingRoom = async (req, res) => {
             return res.status(400).send({ error: 'Only pending or confirmed bookings can be modified' });
         }
         
-        // Validate new room availability
-        const isAvailable = await Room.checkAvailability(newRoomId, booking.startTime, booking.endTime);
+        // Validate new room availability, loại trừ booking hiện tại khỏi việc kiểm tra chồng chéo
+        const isAvailable = await Room.checkAvailability(
+            newRoomId, 
+            booking.startTime, 
+            booking.endTime, 
+            bookingId // Truyền bookingId để loại trừ trong việc kiểm tra
+        );
         
         if (!isAvailable) {
             return res.status(400).send({ error: 'New room is not available for the selected time period' });

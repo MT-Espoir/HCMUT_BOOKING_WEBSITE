@@ -545,3 +545,47 @@
   background-color: rgba(255, 255, 255, 0.2);
   pointer-events: none;
 }
+
+/* Results header - giống với RoomSearchPage */
+.changeroom-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  background-color: #f9fafb;
+  padding: 12px 15px;
+  border-radius: 8px;
+}
+
+.changeroom-availability-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4b5563;
+  font-size: 14px;
+  background-color: #e6f7ff;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.changeroom-info-icon {
+  color: #3b82f6;
+}
+
+/* Facility tags */
+.changeroom-facility-tag {
+  display: inline-block;
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.changeroom-room-features {
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
