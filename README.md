@@ -190,16 +190,6 @@ We welcome contributions from HCMUT students and faculty! Please follow these st
 5. Push to the branch (`git push origin feature/amazing-feature`)
 6. Open a Pull Request
 
-## 👥 Project Team
-
-This project is developed by students in the Software Engineering course at HCMUT for the 2024-2025 academic year:
-
-- **Project Lead**: [Student Name]
-- **Frontend Developers**: [Student Names]
-- **Backend Developers**: [Student Names]
-- **UI/UX Designers**: [Student Names]
-- **QA Engineers**: [Student Names]
-
 ## 📜 License
 
 All rights reserved. This project is developed for educational purposes at Ho Chi Minh City University of Technology.
