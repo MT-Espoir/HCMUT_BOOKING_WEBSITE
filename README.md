@@ -151,12 +151,14 @@ room-booking-system/
 <table>
   <tr>
     <td><img src="docs/images/screencapture-localhost-3000-home-2025-05-08-15_19_28.png" alt="Login Screen"/></td>
-    <td><img src="docs/images/screencapture-localhost-3000-about-2025-05-08-15_20_08.png" alt = "About"/></td>
     <td><img src="docs/images/screencapture-localhost-3000-room-search-2025-05-08-15_27_56.png" alt="Room Search"/></td>
   </tr>
   <tr>
     <td><img src="docs/images/screencapture-localhost-3000-myroom-2025-05-08-15_22_24.png" alt="Booking Form"/></td>
     <td><img src="docs/images/screencapture-localhost-3000-manager-device-quanlythietbipage-2025-05-08-15_22_57.png" alt="Admin Dashboard"/></td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/screencapture-localhost-3000-about-2025-05-08-15_20_08.png" alt = "About"/></td>
   </tr>
 </table>
 </div>
@@ -188,23 +190,15 @@ We welcome contributions from HCMUT students and faculty! Please follow these st
 5. Push to the branch (`git push origin feature/amazing-feature`)
 6. Open a Pull Request
 
-## 👥 Project Team
-
-This project is developed by students in the Software Engineering course at HCMUT for the 2024-2025 academic year:
-
-- **Project Lead**: [Student Name]
-- **Frontend Developers**: [Student Names]
-- **Backend Developers**: [Student Names]
-- **UI/UX Designers**: [Student Names]
-- **QA Engineers**: [Student Names]
-
 ## 📜 License
 
 All rights reserved. This project is developed for educational purposes at Ho Chi Minh City University of Technology.
 
 ## 📞 Support
 
-For support, please contact the development team at [email@hcmut.edu.vn](mailto:email@hcmut.edu.vn) or open an issue on GitHub.
+For support, please contact the development team at [minh.trannhat2911@hcmut.edu.vn](mailto:minh.trannhat2911@hcmut.edu.vn) or open an issue on GitHub.
+
+Personal contact: [minhtran.abc.work@gmail.com](mailto:minhtran.abc.work@gmail.com)
 
 ---
 
