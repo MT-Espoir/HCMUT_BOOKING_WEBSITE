@@ -196,7 +196,9 @@ All rights reserved. This project is developed for educational purposes at Ho Ch
 
 ## 📞 Support
 
-For support, please contact the development team at [email@hcmut.edu.vn](mailto:email@hcmut.edu.vn) or open an issue on GitHub.
+For support, please contact the development team at [minh.trannhat2911@hcmut.edu.vn](mailto:minh.trannhat2911@hcmut.edu.vn) or open an issue on GitHub.
+
+Personal contact: [Trần Nhật Minh](mailto:minhtran.abc.work@gmail.com)
 
 ---
 
