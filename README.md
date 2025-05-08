@@ -151,12 +151,12 @@ room-booking-system/
 <table>
   <tr>
     <td><img src="docs/images/screencapture-localhost-3000-home-2025-05-08-15_19_28.png" alt="Login Screen"/></td>
-    <td><img src="doc/images/screencapture-localhost-3000-about-2025-05-08-15_20_08.png" alt = "About"/></td>
+    <td><img src="docs/images/screencapture-localhost-3000-about-2025-05-08-15_20_08.png" alt = "About"/></td>
     <td><img src="docs/images/screencapture-localhost-3000-room-search-2025-05-08-15_27_56.png" alt="Room Search"/></td>
   </tr>
   <tr>
     <td><img src="docs/images/screencapture-localhost-3000-myroom-2025-05-08-15_22_24.png" alt="Booking Form"/></td>
-    <td><img src="docs/images/docs/images/screencapture-localhost-3000-manager-device-quanlythietbipage-2025-05-08-15_22_57.png" alt="Admin Dashboard"/></td>
+    <td><img src="docs/images/screencapture-localhost-3000-manager-device-quanlythietbipage-2025-05-08-15_22_57.png" alt="Admin Dashboard"/></td>
   </tr>
 </table>
 </div>
