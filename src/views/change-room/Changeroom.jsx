@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './Changeroom.css';
 import Header from '../../components/common/Header';
-import { FaSearch, FaCalendar, FaUser, FaRulerCombined, FaExclamationTriangle, FaArrowLeft } from 'react-icons/fa';
+import { FaSearch, FaCalendar, FaUser, FaRulerCombined, FaExclamationTriangle, FaArrowLeft, FaBuilding, FaClock, FaUsers, FaRegClock } from 'react-icons/fa';
 import { getRooms, getBookingDetails, changeBookingRoom } from '../../services/api';
 
 const ChangeRoomPage = () => {
@@ -22,12 +22,18 @@ const ChangeRoomPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [rooms, setRooms] = useState([]);
   const [filters, setFilters] = useState({
-    size: [],
     capacity: [],
-    amenities: [],
     timeRange: [],
-    duration: []
+    duration: [],
+    building: []
   });
+  const [showUnavailableRooms, setShowUnavailableRooms] = useState(true);
+
+  // Các tùy chọn filter giống với RoomSearchPage
+  const buildingOptions = ['B1', 'H2', 'H3', 'H6'];
+  const timeRangeOptions = ['7h - 9h', '9h - 11h', '11h - 13h', '13h - 15h', '15h - 17h', '17h - 19h', '19h - 21h'];
+  const capacityOptions = [2, 5, 7];
+  const durationOptions = ['1 tiếng', '2 tiếng', '3 tiếng', '4 tiếng'];
 
   // Format thời gian theo định dạng UTC+0 (không thêm offset múi giờ địa phương)
   const formatTime = (isoTimeString) => {
@@ -126,12 +132,15 @@ const ChangeRoomPage = () => {
   // Lọc phòng dựa trên từ khóa tìm kiếm và bộ lọc
   const filteredRooms = rooms.filter(room => {
     // Lọc theo từ khóa tìm kiếm
-    if (searchQuery && !room.name?.toLowerCase().includes(searchQuery.toLowerCase())) {
+    if (searchQuery && !room.name?.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !room.location?.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !room.description?.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !room.building?.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
     
-    // Lọc theo kích thước
-    if (filters.size.length > 0 && !filters.size.includes(room.size)) {
+    // Lọc theo tòa nhà
+    if (filters.building.length > 0 && !filters.building.includes(room.building)) {
       return false;
     }
     
@@ -139,33 +148,12 @@ const ChangeRoomPage = () => {
     if (filters.capacity.length > 0) {
       let capacityMatch = false;
       for (const cap of filters.capacity) {
-        if (room.capacity === parseInt(cap) || room.capacity >= parseInt(cap)) {
+        if (room.capacity >= parseInt(cap)) {
           capacityMatch = true;
           break;
         }
       }
       if (!capacityMatch) return false;
-    }
-    
-    // Lọc theo tiện ích
-    if (filters.amenities.length > 0) {
-      if (!room.facilities) return false;
-      
-      // Chuyển đổi facilities thành chuỗi để dễ kiểm tra
-      const facilitiesString = typeof room.facilities === 'string' 
-        ? room.facilities.toLowerCase() 
-        : Array.isArray(room.facilities) 
-          ? room.facilities.join(',').toLowerCase() 
-          : '';
-          
-      let amenitiesMatch = false;
-      for (const amenity of filters.amenities) {
-        if (facilitiesString.includes(amenity.toLowerCase())) {
-          amenitiesMatch = true;
-          break;
-        }
-      }
-      if (!amenitiesMatch) return false;
     }
     
     // Loại trừ phòng hiện tại khỏi kết quả
@@ -175,6 +163,11 @@ const ChangeRoomPage = () => {
     
     return true;
   });
+
+  // Hiển thị phòng dựa theo filter khả dụng như trong RoomSearchPage
+  const displayedRooms = filters.timeRange.length > 0 && !showUnavailableRooms
+    ? filteredRooms.filter(room => room.isAvailableForTimeRange !== false)
+    : filteredRooms;
   
   // Xử lý yêu cầu đổi phòng
   const handleChangeRoom = async (newRoomId) => {
@@ -305,112 +298,93 @@ const ChangeRoomPage = () => {
           <div className="changeroom-content">
             <aside className="changeroom-sidebar">
               <div className="changeroom-search-bar">
+                <FaSearch className="changeroom-search-icon" />
                 <input
                   type="text"
-                  placeholder="Tìm kiếm theo tên phòng"
+                  placeholder="Tìm phòng theo tên, vị trí..."
                   value={searchQuery}
                   onChange={handleSearchChange}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
                   className="changeroom-search-input"
                 />
-                <button onClick={handleSearchSubmit} className="changeroom-search-button">
-                  <FaSearch />
-                </button>
               </div>
 
               <h4>Bộ lọc</h4>
 
               <div className="changeroom-filter-group">
-                <h5>Cỡ số</h5>
-                <label className="changeroom-filter-option">
+                <h5><FaCalendar /> Ngày</h5>
+                <div className="changeroom-date-selector">
                   <input 
-                    type="checkbox" 
-                    onChange={() => handleFilterChange('size', 1)}
-                    checked={filters.size.includes(1)}
+                    type="date"
+                    value={currentBooking ? new Date(currentBooking.startTime).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+                    disabled
+                    className="changeroom-date-input"
                   />
-                  <span>1 người</span>
-                  <span className="changeroom-count">{rooms.filter(r => r.size === 1).length}</span>
-                </label>
-                <label className="changeroom-filter-option">
-                  <input 
-                    type="checkbox" 
-                    onChange={() => handleFilterChange('size', 2)}
-                    checked={filters.size.includes(2)}
-                  />
-                  <span>2 người</span>
-                  <span className="changeroom-count">{rooms.filter(r => r.size === 2).length}</span>
-                </label>
+                </div>
               </div>
 
               <div className="changeroom-filter-group">
-                <h5>Khoảng giờ</h5>
-                {['7h - 9h', '9h - 11h', '11h - 13h', '13h - 15h', '15h - 17h'].map((timeRange, index) => (
-                  <label key={index} className="changeroom-filter-option">
+                <h5><FaBuilding /> Tòa nhà</h5>
+                {buildingOptions.map((building) => (
+                  <label key={building}>
                     <input 
                       type="checkbox" 
-                      onChange={() => handleFilterChange('timeRange', timeRange)}
-                      checked={filters.timeRange.includes(timeRange)}
-                    />
-                    <span>{timeRange}</span>
+                      onChange={() => handleFilterChange('building', building)} 
+                      checked={filters.building?.includes(building)}
+                    /> {building}
                   </label>
                 ))}
               </div>
 
               <div className="changeroom-filter-group">
-                <h5>Sức chứa tối đa</h5>
-                {[50, 100, 150, 200, 250].map((c) => (
-                  <label key={c} className="changeroom-filter-option">
+                <h5><FaClock /> Khoảng giờ</h5>
+                {timeRangeOptions.map((t) => (
+                  <label key={t}>
+                    <input 
+                      type="checkbox"
+                      onChange={() => handleFilterChange('timeRange', t)} 
+                      checked={filters.timeRange?.includes(t)}
+                    /> {t}
+                  </label>
+                ))}
+                
+                {filters.timeRange.length > 0 && (
+                  <div className="changeroom-availability-toggle">
+                    <label>
+                      <input 
+                        type="checkbox"
+                        checked={showUnavailableRooms}
+                        onChange={() => setShowUnavailableRooms(!showUnavailableRooms)}
+                      /> Hiển thị cả phòng không khả dụng
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              <div className="changeroom-filter-group">
+                <h5><FaUsers /> Số lượng người</h5>
+                {capacityOptions.map((c) => (
+                  <label key={c}>
                     <input 
                       type="checkbox" 
                       onChange={() => handleFilterChange('capacity', c)} 
-                      checked={filters.capacity.includes(c)}
-                    />
-                    <span>{c}</span>
-                    <span className="changeroom-count">{rooms.filter(r => r.capacity >= c).length}</span>
+                      checked={filters.capacity?.includes(c)}
+                    /> {c} người
                   </label>
                 ))}
               </div>
 
               <div className="changeroom-filter-group">
-                <h5>Thời gian sử dụng</h5>
-                {['1 tiếng', '2 tiếng', '3 tiếng', '4 tiếng'].map((duration, index) => (
-                  <label key={index} className="changeroom-filter-option">
+                <h5><FaRegClock /> Thời lượng sử dụng</h5>
+                {durationOptions.map((d) => (
+                  <label key={d}>
                     <input 
                       type="checkbox" 
-                      onChange={() => handleFilterChange('duration', duration)}
-                      checked={filters.duration.includes(duration)}
-                    />
-                    <span>{duration}</span>
+                      onChange={() => handleFilterChange('duration', d)} 
+                      checked={filters.duration?.includes(d)}
+                    /> {d}
                   </label>
                 ))}
-              </div>
-
-              <div className="changeroom-filter-group">
-                <h5>Tiện ích</h5>
-                <label className="changeroom-filter-option">
-                  <input 
-                    type="checkbox" 
-                    onChange={() => handleFilterChange('amenities', 'projector')}
-                    checked={filters.amenities.includes('projector')}
-                  />
-                  <span>Máy chiếu</span>
-                </label>
-                <label className="changeroom-filter-option">
-                  <input 
-                    type="checkbox" 
-                    onChange={() => handleFilterChange('amenities', 'aircon')}
-                    checked={filters.amenities.includes('aircon')}
-                  />
-                  <span>Máy lạnh</span>
-                </label>
-                <label className="changeroom-filter-option">
-                  <input 
-                    type="checkbox" 
-                    onChange={() => handleFilterChange('amenities', 'whiteboard')}
-                    checked={filters.amenities.includes('whiteboard')}
-                  />
-                  <span>Bảng trắng</span>
-                </label>
               </div>
             </aside>
 
@@ -428,7 +402,7 @@ const ChangeRoomPage = () => {
                 </div>
               ) : (
                 <div className="changeroom-room-grid">
-                  {filteredRooms.map((room) => (
+                  {displayedRooms.map((room) => (
                     <div key={room.id} className="changeroom-room-card-modern">
                       <img 
                         src={
