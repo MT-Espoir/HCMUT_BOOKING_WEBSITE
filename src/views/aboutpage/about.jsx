@@ -376,9 +376,9 @@ const About = () => {
               <div className="Afooter-col">
                 <h4>Liên kết nhanh</h4>
                 <ul>
-                  <li><a href="/">Trang chủ</a></li>
+                  <li><a href="/home">Trang chủ</a></li>
                   <li><a href="/about" className="Aactive">Giới thiệu</a></li>
-                  <li><a href="/search">Tìm phòng</a></li>
+                  <li><a href="/room-search">Tìm phòng</a></li>
                   <li><a href="/guide">Hướng dẫn</a></li>
                 </ul>
               </div>

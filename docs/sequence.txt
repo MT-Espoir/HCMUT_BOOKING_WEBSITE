@@ -1,0 +1,207 @@
+# ROOM BOOKING SYSTEM SEQUENCE DIAGRAMS
+
+This document outlines the key sequence diagrams that should be created for the room booking system application.
+
+## 1. User Authentication Sequence Diagrams
+
+### 1.1 User Login
+**Actors/Components**: User (Student/Admin/Manager/Technician), React UI, Express Server, MySQL Database
+**Flow**:
+1. User enters credentials on login page
+2. React UI sends login request to Express Server
+3. Express Server validates credentials against MySQL Database
+4. Express Server generates authentication token
+5. Express Server returns token and user information
+6. React UI stores token in localStorage
+7. React UI redirects user to appropriate dashboard
+
+### 1.2 User Registration
+**Actors/Components**: Guest, React UI, Express Server, MySQL Database
+**Flow**:
+1. Guest enters registration information
+2. React UI validates input format
+3. React UI sends registration request to Express Server
+4. Express Server checks if user already exists
+5. Express Server creates new user in MySQL Database
+6. Express Server returns success response
+7. React UI redirects to login page
+
+### 1.3 User Logout
+**Actors/Components**: User, React UI, Express Server
+**Flow**:
+1. User clicks logout
+2. React UI sends logout request to Express Server
+3. Express Server invalidates user token
+4. React UI clears localStorage
+5. React UI redirects to guest home page
+
+## 2. Room Booking Sequence Diagrams
+
+### 2.1 Room Search & Booking
+**Actors/Components**: Student, React UI, Express Server, MySQL Database
+**Flow**:
+1. Student sets search filters (date, time, capacity)
+2. React UI sends search request to Express Server
+3. Express Server queries MySQL Database for matching rooms
+4. Express Server returns available rooms
+5. Student selects a room
+6. Student enters booking details
+7. React UI sends booking request to Express Server
+8. Express Server validates room availability
+9. Express Server creates booking record in MySQL Database
+10. Express Server returns booking confirmation
+11. React UI displays success message
+
+### 2.2 View My Bookings
+**Actors/Components**: Student, React UI, Express Server, MySQL Database
+**Flow**:
+1. Student navigates to "My Room" page
+2. React UI requests user bookings from Express Server
+3. Express Server queries MySQL Database for user's bookings
+4. Express Server transforms booking data
+5. Express Server returns bookings list
+6. React UI displays bookings categorized by status
+
+### 2.3 Cancel Booking
+**Actors/Components**: Student, React UI, Express Server, MySQL Database
+**Flow**:
+1. Student selects booking to cancel
+2. React UI displays confirmation dialog
+3. Student confirms cancellation
+4. React UI sends cancellation request to Express Server
+5. Express Server updates booking status in MySQL Database
+6. Express Server returns success response
+7. React UI updates booking list
+
+### 2.4 Check In / Check Out
+**Actors/Components**: Student, React UI, Express Server, MySQL Database
+**Flow**:
+1. Student arrives at room
+2. Student accesses booking on mobile device
+3. Student initiates check-in process
+4. React UI sends check-in request with current time
+5. Express Server validates check-in time window
+6. Express Server updates booking status in MySQL Database
+7. Express Server returns updated booking
+8. React UI displays check-in confirmation
+9. (Later) Student initiates check-out
+10. React UI sends check-out request
+11. Express Server records check-out time
+12. Express Server updates booking status to COMPLETED
+
+## 3. Admin Sequence Diagrams
+
+### 3.1 User Role Management
+**Actors/Components**: Admin, React UI, Express Server, MySQL Database
+**Flow**:
+1. Admin navigates to system permissions page
+2. React UI requests user list from Express Server
+3. Express Server queries MySQL Database for all users
+4. Express Server returns users grouped by role
+5. React UI displays users by role categories
+6. Admin selects user to modify
+7. Admin chooses new role
+8. React UI sends role update request to Express Server
+9. Express Server updates user role in MySQL Database
+10. Express Server creates role history record
+11. Express Server returns success response
+12. React UI updates displayed user roles
+
+### 3.2 Room Management
+**Actors/Components**: Admin, React UI, Express Server, MySQL Database
+**Flow**:
+1. Admin navigates to room management page
+2. React UI requests rooms from Express Server
+3. Express Server queries MySQL Database for all rooms
+4. Express Server returns room list
+5. Admin modifies room properties or adds new room
+6. React UI sends room update request to Express Server
+7. Express Server updates room in MySQL Database
+8. Express Server returns updated room list
+9. React UI refreshes room display
+
+### 3.3 Device Management
+**Actors/Components**: Admin, React UI, Express Server, MySQL Database, IoT Devices
+**Flow**:
+1. Admin navigates to device management page
+2. React UI requests devices from Express Server
+3. Express Server queries MySQL Database for all devices
+4. Express Server returns device list grouped by room
+5. Admin selects device to update
+6. Admin changes device status
+7. React UI sends device update request to Express Server
+8. Express Server updates device status in MySQL Database
+9. Express Server checks impact on room status
+10. Express Server updates room status if needed
+11. Express Server sends update to IoT Devices (if applicable)
+12. Express Server returns success response
+13. React UI updates device display
+
+## 4. Verification Sequence Diagrams
+
+### 4.1 User Verification Process
+**Actors/Components**: Admin, Student, React UI, Express Server, MySQL Database
+**Flow**:
+1. Student completes registration
+2. Student account marked as "pending verification"
+3. Admin navigates to verification page
+4. React UI requests users pending verification
+5. Express Server queries MySQL Database for pending users
+6. Express Server returns pending users list
+7. Admin reviews user information
+8. Admin approves or rejects verification
+9. React UI sends verification decision to Express Server
+10. Express Server updates user status in MySQL Database
+11. Express Server sends notification to Student
+12. React UI updates verification display
+
+## 5. Notification Sequence Diagrams
+
+### 5.1 Notification Delivery
+**Actors/Components**: System, User, React UI, Express Server, MySQL Database, Redis Cache
+**Flow**:
+1. System event triggers notification (booking confirmation, reminder, etc.)
+2. Express Server creates notification record in MySQL Database
+3. Express Server caches notification in Redis
+4. User logs in or refreshes page
+5. React UI requests notifications from Express Server
+6. Express Server retrieves notifications from Redis/MySQL Database
+7. Express Server returns unread notifications
+8. React UI displays notification count and items
+9. User opens notification panel
+10. React UI marks notifications as read
+11. Express Server updates notification status in MySQL Database
+
+## 6. Report Generation Sequence Diagrams
+
+### 6.1 Usage Report Generation
+**Actors/Components**: Admin, React UI, Express Server, MySQL Database
+**Flow**:
+1. Admin navigates to reports page
+2. Admin selects report parameters
+3. React UI sends report request to Express Server
+4. Express Server queries MySQL Database for booking data
+5. Express Server aggregates and processes data
+6. Express Server returns report data
+7. React UI generates charts and tables
+8. Admin views or exports report
+
+## Notes for Implementation:
+
+1. Each sequence diagram should include:
+   - Timeline for each actor/component
+   - Message exchanges with direction arrows
+   - Response types (synchronous/asynchronous)
+   - Alternative flows where applicable
+
+2. Important technical details to include:
+   - JWT token handling for authenticated requests
+   - Error handling paths
+   - Data validation steps
+   - Data transformation between React UI and Express Server
+
+3. Tools for creating sequence diagrams:
+   - PlantUML
+   - Draw.io
+   - Lucidchart
+   - Mermaid (for Markdown-based diagrams)

@@ -1,0 +1,168 @@
+# THUYẾT TRÌNH VỀ KIẾN TRÚC HỆ THỐNG ĐẶT PHÒNG HỌC
+
+## 1. GIỚI THIỆU TỔNG QUAN
+
+### 1.1. Mục đích của hệ thống
+- Hệ thống đặt phòng học là giải pháp hiện đại giúp sinh viên và giảng viên dễ dàng tìm kiếm, đặt và quản lý việc sử dụng phòng học
+- Tối ưu hóa việc sử dụng tài nguyên phòng học của trường
+- Giảm thiểu quy trình hành chính, giấy tờ thủ công trong việc đặt phòng
+
+### 1.2. Ứng dụng của hệ thống
+- Sinh viên có thể đặt phòng cho hoạt động nhóm, ôn thi
+- Giảng viên có thể đặt phòng cho các buổi giảng dạy, hội thảo
+- Quản trị viên có thể theo dõi, quản lý và phê duyệt các yêu cầu đặt phòng
+- Giám sát thiết bị, tình trạng của phòng học trong toàn trường
+
+## 2. KIẾN TRÚC TỔNG THỂ
+
+Hệ thống Room Booking được xây dựng theo kiến trúc **Multi-tier Architecture** (Kiến trúc nhiều tầng) với các tầng chính sau:
+
+### 2.1. Kiến trúc phân tầng (Layered Architecture)
+Hệ thống được thiết kế theo mô hình 5 tầng:
+
+1. **Tầng Presentation (Giao diện người dùng)**
+   - Xây dựng bằng React.js
+   - Giao diện trực quan, thân thiện với người dùng
+   - Responsive design, hỗ trợ nhiều thiết bị
+
+2. **Tầng Application (Dịch vụ ứng dụng)**
+   - Sử dụng Node.js và Express.js
+   - Xử lý yêu cầu HTTP và phản hồi
+   - Cung cấp API cho frontend
+
+3. **Tầng Domain (Miền nghiệp vụ)**
+   - Chứa các model nghiệp vụ: User, Room, Booking, Device, Notification
+   - Xử lý logic nghiệp vụ và quy tắc
+
+4. **Tầng Data (Dữ liệu)**
+   - MySQL: Lưu trữ dữ liệu bền vững
+   - Redis: Cache dữ liệu để tăng hiệu suất
+
+5. **Tầng Infrastructure (Hạ tầng)**
+   - Lưu trữ file (hình ảnh phòng học)
+   - Scripts SQL, công cụ migration
+   - Pipeline CI/CD
+
+### 2.2. Luồng dữ liệu trong hệ thống
+1. Người dùng tương tác với React UI → gửi request HTTP(S)
+2. Express server xử lý request, định tuyến đến Router phù hợp
+3. Router áp dụng middleware xác thực, phân quyền
+4. Controller gọi phương thức của model hoặc service
+5. Model thực thi truy vấn SQL thông qua connect_db.js hoặc connect_redis.js
+6. Dữ liệu được trả về Controller → Controller định dạng và trả về JSON
+7. Frontend cập nhật UI dựa trên phản hồi từ API
+
+## 3. MÔ HÌNH MVC TRONG HỆ THỐNG
+
+Hệ thống áp dụng mô hình MVC (Model-View-Controller) để tổ chức mã nguồn:
+
+### 3.1. Model (Mô hình)
+- Được định nghĩa trong thư mục `backend/models/`
+- Đại diện cho cấu trúc dữ liệu, ràng buộc và logic nghiệp vụ
+- Ví dụ: user.model.js, room.model.js, booking.model.js, device.model.js
+- Cung cấp các phương thức CRUD và phương thức đặc thù cho từng đối tượng
+
+### 3.2. View (Giao diện)
+- Được triển khai qua React components trong thư mục `src/views/`
+- Hiển thị dữ liệu và tương tác với người dùng
+- Sử dụng các context (AuthContext) để quản lý trạng thái toàn cục
+- Các thành phần chung được tái sử dụng từ thư mục `src/components/`
+
+### 3.3. Controller (Điều khiển)
+- Định nghĩa trong thư mục `backend/controllers/`
+- Xử lý các request từ client và trả về response
+- Gọi đến các model để thực hiện nghiệp vụ
+- Xử lý lỗi và định dạng dữ liệu trả về
+- Ví dụ: booking.controller.js, user.controller.js, room.controller.js
+
+## 4. CÁC THÀNH PHẦN CHÍNH TRONG HỆ THỐNG
+
+### 4.1. Frontend Components
+- **Views**: Các trang chính của ứng dụng (auth, room-search, my-room, etc.)
+- **Components**: Các thành phần UI tái sử dụng (Header, NotificationPanel)
+- **Context**: Quản lý trạng thái toàn cục (AuthContext)
+- **Routes**: Định tuyến và bảo vệ các route (PrivateRoute)
+- **Services**: Giao tiếp với backend API (api.js)
+
+### 4.2. Backend Components
+- **Routes**: Định nghĩa các endpoint API (booking.route.js, room.route.js)
+- **Controllers**: Xử lý logic request/response (booking.controller.js)
+- **Models**: Định nghĩa cấu trúc dữ liệu và truy vấn (booking.model.js)
+- **Middleware**: Xác thực và phân quyền (authenticate.js, authorize.js)
+- **Config**: Kết nối cơ sở dữ liệu và cache (connect_db.js, connect_redis.js)
+
+### 4.3. Database Schema
+- Cơ sở dữ liệu quan hệ (MySQL) với các bảng chính:
+  - Users: Thông tin người dùng, vai trò
+  - Rooms: Thông tin phòng học, sức chứa, trang thiết bị
+  - Bookings: Lưu trữ thông tin đặt phòng, thời gian, trạng thái
+  - Devices: Quản lý thiết bị trong phòng học
+  - Notifications: Thông báo hệ thống
+
+## 5. BẢO MẬT VÀ PHÂN QUYỀN
+
+### 5.1. Xác thực người dùng
+- Sử dụng JWT (JSON Web Token) cho việc xác thực
+- Token được lưu trong localStorage
+- Middleware xác thực (authenticate.js) kiểm tra token cho mỗi request
+
+### 5.2. Phân quyền (RBAC)
+- Hệ thống phân quyền dựa trên vai trò (Role-Based Access Control)
+- Các vai trò: Student, Admin, Manager, Technician
+- Middleware phân quyền (authorize.js) kiểm tra quyền truy cập
+
+### 5.3. Bảo mật dữ liệu
+- Mã hóa mật khẩu với bcrypt
+- Kiểm tra và lọc dữ liệu đầu vào để ngăn chặn SQL Injection, XSS
+- HTTPS cho mọi giao tiếp client-server
+
+## 6. KHẢ NĂNG MỞ RỘNG VÀ TỐI ƯU
+
+### 6.1. Horizontal Scaling
+- Frontend/Backend stateless: Có thể nhân rộng theo chiều ngang
+- Cân bằng tải để phân phối request
+
+### 6.2. Caching Strategy
+- Redis cache giảm tải cho database
+- Lưu trữ session, giới hạn tỷ lệ request, và cache dữ liệu truy vấn thường xuyên
+
+### 6.3. Monitoring & Logging
+- Ghi log cấu trúc với Winston/Morgan
+- Theo dõi hiệu suất với Prometheus và Grafana
+- Cảnh báo cho các vấn đề về tỷ lệ lỗi, độ trễ, dung lượng đĩa
+
+## 7. QUY TRÌNH PHÁT TRIỂN & TRIỂN KHAI
+
+### 7.1. CI/CD Pipeline
+- Kiểm soát phiên bản với Git (main/develop/feature branches)
+- Tích hợp liên tục với GitHub Actions
+- Kiểm thử tự động: Jest (frontend), Mocha/Chai (backend)
+
+### 7.2. Deployment Strategy
+- Docker containers cho backend
+- Static hosting cho frontend
+- Database backup và replication
+
+## 8. TỔNG KẾT VÀ HƯỚNG PHÁT TRIỂN
+
+### 8.1. Ưu điểm của kiến trúc
+- Mô-đun hóa cao, dễ bảo trì và mở rộng
+- Phân tách rõ ràng giữa các tầng
+- Bảo mật đa lớp
+- Khả năng mở rộng theo chiều ngang
+
+### 8.2. Hướng phát triển tương lai
+- Tích hợp với hệ thống học tập LMS của trường
+- Thêm tính năng thông báo realtime với WebSockets
+- Mobile app cho sinh viên và giảng viên
+- Tích hợp AI để đề xuất phòng phù hợp
+
+## 9. DEMO VÀ TRÌNH DIỄN
+
+1. Luồng đặt phòng từ góc độ sinh viên
+2. Quản lý đặt phòng từ góc độ admin
+3. Báo cáo sử dụng phòng học
+
+---
+
+*Hệ thống đặt phòng học là một ứng dụng hiện đại, được xây dựng với kiến trúc nhiều tầng, sử dụng mô hình MVC và các công nghệ tiên tiến nhất hiện nay. Hệ thống không chỉ giải quyết bài toán đặt phòng mà còn tối ưu hóa việc sử dụng tài nguyên phòng học của nhà trường.*

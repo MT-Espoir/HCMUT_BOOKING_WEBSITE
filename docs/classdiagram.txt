@@ -1,0 +1,268 @@
+# ROOM BOOKING SYSTEM CLASS DIAGRAM
+
+## Database Models (Backend)
+
+### User
+- **Properties**
+  - user_id: int (PRIMARY KEY)
+  - username: string
+  - email: string 
+  - password: string
+  - mssv: string (UNIQUE)
+  - role: enum ['STUDENT', 'ADMIN', 'TECHNICIAN', 'MANAGER'] 
+  - faculty: string
+  - created_at: timestamp
+  - status: enum ['ACTIVE', 'RESTRICTED', 'BANNED']
+  - last_login: timestamp
+- **Methods**
+  - signup()
+  - findUserById(userId)
+  - findUserByEmail(email)
+  - userAlreadyExists(email)
+  - hasMatchingPassword(hashedPassword)
+  - updateUserInformation()
+  - updatePassword()
+  - deleteUser()
+  - getAllUser()
+
+### Room
+- **Properties**
+  - id: int (PRIMARY KEY)
+  - name: string
+  - location: string
+  - floor: string
+  - building: string
+  - capacity: int
+  - area: float
+  - roomType: enum ['STUDY', 'MEETING', etc.]
+  - roomImage: string (path)
+  - description: string
+  - facilities: JSON/Array
+  - openingHours: JSON/string
+  - status: enum ['AVAILABLE', 'UNAVAILABLE', 'MAINTENANCE']
+- **Methods**
+  - save()
+  - update()
+  - findRoomById(id)
+  - findAll(filters)
+  - searchByKeyword(keyword)
+  - isWithinOpeningHours(openingHours, startTime, endTime)
+  - isTimeInRange(startTime, endTime, rangeStart, rangeEnd)
+  - checkAvailability(roomId, startTime, endTime)
+  - getAvailableRooms(startTime, endTime, filters)
+  - updateRoomStatusBasedOnDevices(roomId)
+
+### Booking
+- **Properties**
+  - id: int (PRIMARY KEY)
+  - userId: int (FK to User)
+  - roomId: int (FK to Room)
+  - title: string
+  - purpose: string
+  - attendeesCount: int
+  - startTime: datetime
+  - endTime: datetime
+  - duration: int (minutes)
+  - bookingStatus: enum ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'COMPLETED', 'CANCELLED', 'AUTO_CANCELLED']
+  - checkInTime: datetime
+  - checkOutTime: datetime
+  - notes: string
+- **Methods**
+  - save()
+  - update()
+  - findBookingById(id)
+  - findBookingsByUserId(userId)
+  - cancel()
+  - checkIn()
+  - checkOut()
+  - delete(id)
+
+### Device
+- **Properties**
+  - device_id: int (PRIMARY KEY)
+  - room_id: int (FK to Room)
+  - device_type: enum ['PROJECTOR', 'FAN', 'AIR_CONDITIONER']
+  - mac_address: string (UNIQUE)
+  - status: enum ['OK', 'WARNING', 'ERROR', 'OFFLINE', 'MAINTENANCE']
+- **Methods**
+  - createDevice(room_id, device_type, mac_address, status)
+  - updateDevice(device_id, room_id, device_type, status)
+  - deleteDevice(device_id)
+  - findDeviceById(device_id)
+  - findAllDeviceOfRoom(room_id)
+  - getAllDevices()
+  - getDeviceList()
+
+### Notification
+- **Properties**
+  - noti_id: int (PRIMARY KEY)
+  - user_id: int (FK to User)
+  - type: enum ['REMINDER', 'ALERT', 'SYSTEM', 'REPORT']
+  - description: string
+  - sent_at: timestamp
+  - read: boolean
+- **Methods**
+  - createNotification()
+  - updateNotiStatus()
+  - findNotificationById(noti_id)
+  - findAllNotificationsByUser(user_id)
+  - findUnreadNotificationsByUser(user_id)
+
+## Frontend Components
+
+### Views
+- **Auth**
+  - LoginPage
+  - RegisterPage
+- **Student Views**
+  - MainPage
+  - RoomSearchPage
+  - ConfirmBookingPage
+  - CheckingPage
+  - MyRoomPage
+  - ChangeRoomPage
+- **Admin Views**
+  - QuanLy (Manager Dashboard)
+  - QuanLyThietBi (Device Management)
+  - QuanLyThietBiPage (Device Management Page)
+  - QuanLyQuyenHeThong (System Permissions)
+  - UsageReportPage
+  - UserVerificationPage
+
+### API Services
+- **Methods**
+  - getRooms
+  - getRoomDetails
+  - searchRooms
+  - filterRooms
+  - createBooking
+  - getUserBookings
+  - getBookingDetails
+  - cancelBooking
+  - changeBookingRoom
+  - deleteBookingHistory
+  - startBooking
+  - checkOutBooking
+  - loginUser
+  - registerAPI
+  - getCurrentUser
+  - logoutUser
+  - getUsersAndTheirActiveStatus
+  - getUserProfile
+  - updateUserStatus
+  - getAllBookings
+  - updateBookingStatus
+  - getAllDevices
+  - getDevicesByRoom
+  - updateDeviceStatus
+  - updateUserRole
+  - getUserRoleHistory
+  - getUsersForVerification
+  - updateUserVerification
+
+## Routes and Controllers
+
+### Backend Routes
+- **Auth Routes**
+  - /api/auth/login
+  - /api/auth/register
+- **User Routes**
+  - /api/user/profile
+  - /api/user/update-profile
+  - /api/user/change-password
+  - /api/user/notification
+- **Booking Routes**
+  - /api/booking/user
+  - /api/booking/:bookingId
+  - /api/booking/:bookingId/cancel
+  - /api/booking/:bookingId/change-room
+  - /api/booking/:bookingId/check-in
+  - /api/booking/:bookingId/check-out
+- **Room Routes**
+  - /api/room
+  - /api/room/search
+  - /api/room/:roomId
+  - /api/room/:roomId/availability
+- **Admin Routes**
+  - /api/admin/room
+  - /api/admin/room/:roomId/device
+  - /api/admin/room/:roomId/usage
+  - /api/admin/notification/send
+  - /api/admin/user
+  - /api/admin/booking
+  - /api/admin/report
+- **Student Routes**
+  - /api/student/room
+  - /api/student/booking
+- **Device Routes**
+  - /api/device
+  - /api/device/room/:roomId
+
+### Frontend Routes
+- **Public Routes**
+  - / (Guest Main Page)
+  - /login
+  - /register
+  - /about
+- **Protected Routes**
+  - /home (Authenticated User Home)
+  - /room-search
+  - /confirm-booking
+  - /checking
+  - /myroom
+  - /changeroom/:bookingId
+  - /manager
+  - /manager-device
+  - /manager-system
+  - /usage-report
+  - /user-verification
+
+## Relationships
+
+1. **One-to-Many**:
+   - User to Booking (One user can have many bookings)
+   - Room to Booking (One room can have many bookings)
+   - Room to Device (One room can have many devices)
+   - User to Notification (One user can have many notifications)
+
+2. **Dependencies**:
+   - Room status depends on Device status
+   - Booking availability depends on Room availability and status
+   - User authorization depends on User role
+
+## Data Flow
+
+1. **User Authentication Flow**:
+   - User registers/logs in → Backend validates → Token generated → User authenticated
+
+2. **Room Booking Flow**:
+   - User searches for rooms → Filter available rooms → Select room → Create booking → Receive confirmation
+
+3. **Room Management Flow**:
+   - Admin adds/updates room → Set properties and devices → Room becomes available for booking
+
+4. **Device Management Flow**:
+   - Admin associates devices with rooms → Update device status → Room status affected
+
+5. **Notification Flow**:
+   - System/Admin sends notification → Notification stored in database → User receives notification
+
+6. **Check-in/Check-out Flow**:
+   - User arrives at room → Check-in → Use room → Check-out → Booking marked as completed
+
+## Validation Rules
+
+1. **Room Availability**:
+   - Must check if room is not booked for requested time
+   - Must verify room is within operating hours
+   - Must verify room status is AVAILABLE
+
+2. **Booking Status Transitions**:
+   - PENDING → CONFIRMED → CHECKED_IN → COMPLETED
+   - PENDING → CANCELLED
+   - CONFIRMED → CANCELLED
+
+3. **User Authorization**:
+   - Student can only manage their own bookings
+   - Admin can manage all rooms and bookings
+   - Role-specific permissions enforced by middleware

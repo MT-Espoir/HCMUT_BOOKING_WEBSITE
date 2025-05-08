@@ -16,6 +16,13 @@ const QuanLyThietBi = () => {
     const [devices, setDevices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    // State cho popup đặt lịch bảo trì
+    const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
+    const [maintenanceData, setMaintenanceData] = useState({
+        date: '',
+        time: '',
+        description: ''
+    });
     
     const navigate = useNavigate();
     const location = useLocation();
@@ -178,6 +185,51 @@ const QuanLyThietBi = () => {
         );
     }
 
+    // Hàm xử lý hiển thị modal đặt lịch bảo trì
+    const handleMaintenanceSchedule = () => {
+        // Set default date to tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const formattedDate = tomorrow.toISOString().split('T')[0];
+        
+        setMaintenanceData({
+            date: formattedDate,
+            time: '09:00',
+            description: ''
+        });
+        
+        setShowMaintenanceModal(true);
+    };
+    
+    // Hàm đóng modal
+    const handleCloseMaintenanceModal = () => {
+        setShowMaintenanceModal(false);
+    };
+    
+    // Hàm xử lý thay đổi dữ liệu trong form
+    const handleMaintenanceDataChange = (e) => {
+        const { name, value } = e.target;
+        setMaintenanceData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+    
+    // Hàm xử lý khi submit form
+    const handleSubmitMaintenance = () => {
+        // Đây là phiên bản hardcode, không cần gọi API thực tế
+        console.log('Maintenance scheduled:', {
+            room: roomData,
+            ...maintenanceData
+        });
+        
+        // Thông báo thành công
+        alert(`Đã đặt lịch bảo trì thành công cho phòng ${roomData.name} vào ngày ${maintenanceData.date} lúc ${maintenanceData.time}`);
+        
+        // Đóng modal
+        handleCloseMaintenanceModal();
+    };
+
     return (
         <div>
             <Headermanager />
@@ -223,7 +275,7 @@ const QuanLyThietBi = () => {
                                       roomData.room_type === 'LECTURE' ? 'Phòng thuyết trình' : 'Khác'}</div>
                             </div>
                         </div>
-                        <button className="MD-repair-btn" onClick={bookRepair}>Đặt lịch sửa</button>
+                        <button className="MD-repair-btn" onClick={handleMaintenanceSchedule}>Đặt lịch sửa</button>
                     </div>
                     
                     <div className="MD-equipment-list">
@@ -264,6 +316,50 @@ const QuanLyThietBi = () => {
                     </div>
                 </div>
             </div>
+            
+            {/* Maintenance Modal */}
+            {showMaintenanceModal && (
+                <div className="MD-maintenance-modal">
+                    <div className="MD-modal-content">
+                        <h2>Đặt lịch bảo trì</h2>
+                        <div className="MD-modal-field">
+                            <label>Phòng:</label>
+                            <span>{roomData.name} ({roomData.id || roomId})</span>
+                        </div>
+                        <div className="MD-modal-field">
+                            <label>Ngày:</label>
+                            <input 
+                                type="date" 
+                                name="date" 
+                                value={maintenanceData.date} 
+                                onChange={handleMaintenanceDataChange} 
+                            />
+                        </div>
+                        <div className="MD-modal-field">
+                            <label>Thời gian:</label>
+                            <input 
+                                type="time" 
+                                name="time" 
+                                value={maintenanceData.time} 
+                                onChange={handleMaintenanceDataChange} 
+                            />
+                        </div>
+                        <div className="MD-modal-field">
+                            <label>Mô tả:</label>
+                            <textarea 
+                                name="description" 
+                                value={maintenanceData.description} 
+                                onChange={handleMaintenanceDataChange} 
+                                placeholder="Mô tả vấn đề cần bảo trì"
+                            />
+                        </div>
+                        <div className="MD-modal-actions">
+                            <button onClick={handleSubmitMaintenance}>Xác nhận</button>
+                            <button onClick={handleCloseMaintenanceModal}>Hủy</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

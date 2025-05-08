@@ -66,4 +66,133 @@
     object-fit: cover;
     border-radius: 6px;
   }
+
+/* Contenedor para todas las secciones */
+.Acontainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Estilos del Footer */
+.Afooter {
+  background-color: #222;
+  color: white;
+  padding: 30px 0 10px;
+  margin-top: 50px;
+}
+
+.Afooter-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.Afooter-logo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.Afooter-logo img {
+  height: 100px;
+  width: auto;
+}
+
+.Afooter-name h3 {
+  font-size: 1.1rem;
+  margin: 0 0 5px 0;
+}
+
+.Afooter-name p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.Afooter-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.Afooter-col {
+  min-width: 160px;
+}
+
+.Afooter-col h4 {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.Afooter-col h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: #34a853;
+}
+
+.Afooter-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.Afooter-col ul li {
+  margin-bottom: 10px;
+}
+
+.Afooter-col a {
+  color: #ccc;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.Afooter-col a:hover {
+  color: white;
+}
+
+.Afooter-col a.Aactive {
+  color: white;
+  font-weight: 500;
+}
+
+.Afooter-bottom {
+  border-top: 1px solid #444;
+  padding-top: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.Afooter-bottom p {
+  margin: 5px 0;
+}
+
+.Afooter-bottom a {
+  color: #ccc;
+  text-decoration: none;
+}
+
+.Afooter-bottom a:hover {
+  text-decoration: underline;
+  color: white;
+}
+
+/* Estilos responsivos para el Footer */
+@media (max-width: 768px) {
+  .Afooter-content {
+    flex-direction: column;
+  }
   
+  .Afooter-links {
+    margin-top: 30px;
+  }
+}

@@ -96,6 +96,92 @@ def find_nodejs_process():
             pass
     return None
 
+def is_backend_running():
+    """Check if the backend server is running."""
+    return find_nodejs_process() is not None
+
+def start_backend(backend_dir):
+    """Start backend server and return the process."""
+    print("\nĐang khởi động backend server...")
+    
+    if os.name == 'nt':  # Windows
+        backend_cmd = f'cd "{backend_dir}" && npm run server'
+    else:  # Linux/Mac
+        backend_cmd = f'cd "{backend_dir}" && npm run server'
+    
+    try:
+        # Start the new process
+        process = subprocess.Popen(backend_cmd, shell=True)
+        # Wait a moment to ensure the process started correctly
+        time.sleep(2)
+        
+        # Verify the process actually started
+        if process.poll() is None:  # None means the process is still running
+            return process
+        else:
+            print(f"Backend không khởi động được. Mã lỗi: {process.returncode}")
+            return None
+    except Exception as e:
+        print(f"Lỗi khi khởi động backend: {e}")
+        return None
+
+def monitor_backend():
+    """Monitor backend and automatically restart it if it goes down."""
+    print("Bắt đầu giám sát backend...")
+    
+    # Check if Docker is running
+    print("Kiểm tra Docker...")
+    if not check_docker_running():
+        print("Docker không chạy. Vui lòng khởi động Docker và thử lại.")
+        return
+    
+    # Start Redis container
+    print("Kiểm tra và khởi động Redis...")
+    if not start_redis_container():
+        print("Không thể khởi động Redis. Ứng dụng sẽ không thể hoạt động đúng.")
+        choice = input("Bạn có muốn tiếp tục mà không có Redis không? (y/n): ")
+        if choice.lower() != 'y':
+            return
+    
+    # Get the base directory
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    backend_dir = os.path.join(base_dir, 'backend')
+    
+    # Start backend initially
+    process = start_backend(backend_dir)
+    if not process:
+        print("Không thể khởi động backend. Vui lòng kiểm tra lỗi và thử lại.")
+        return
+
+    print(f"Backend đang chạy với PID: {process.pid}")
+    print("Đang giám sát backend. Nhấn Ctrl+C để dừng giám sát.")
+    
+    try:
+        # Monitor the backend
+        while True:
+            # Check if backend is still running
+            if not is_backend_running():
+                print("\nPhát hiện backend đã tắt. Đang khởi động lại...")
+                process = start_backend(backend_dir)
+                if process:
+                    print(f"Backend đã được khởi động lại với PID: {process.pid}")
+                else:
+                    print("Không thể khởi động lại backend. Đang thử lại sau 10 giây...")
+            
+            # Wait before next check
+            time.sleep(5)
+            
+    except KeyboardInterrupt:
+        print("\nĐang dừng giám sát và tắt backend...")
+        if is_backend_running():
+            pid = find_nodejs_process()
+            if pid:
+                if os.name == 'nt':  # Windows
+                    subprocess.run(f"taskkill /F /PID {pid}", shell=True)
+                else:
+                    os.kill(pid, signal.SIGTERM)
+        print("Backend đã được dừng. Giám sát kết thúc.")
+
 def restart_backend():
     """Kill the existing Node.js server process and start a new one."""
     print("Looking for running backend server...")
@@ -135,31 +221,30 @@ def restart_backend():
     else:
         print("No running backend server found.")
     
-    # Start a new server
-    print("\nStarting new backend server...")
+    # Start a new server using the shared function
+    process = start_backend(backend_dir)
     
-    if os.name == 'nt':  # Windows
-        backend_cmd = f'cd "{backend_dir}" && npm run server'
-    else:  # Linux/Mac
-        backend_cmd = f'cd "{backend_dir}" && npm run server'
-    
-    # Start the new process
-    process = subprocess.Popen(backend_cmd, shell=True)
-    
-    print(f"Backend server restarted with PID: {process.pid}")
-    print("Backend server is now running. Press Ctrl+C to exit.")
-    
-    try:
-        # Keep the terminal open
-        process.wait()
-    except KeyboardInterrupt:
-        print("\nStopping backend server...")
-        if os.name == 'nt':  # Windows
-            subprocess.run(f"taskkill /F /PID {process.pid}", shell=True)
-        else:
-            process.send_signal(signal.SIGTERM)
+    if process:
+        print(f"Backend server restarted with PID: {process.pid}")
+        print("Backend server is now running. Press Ctrl+C to exit.")
+        
+        try:
+            # Keep the terminal open
             process.wait()
-        print("Backend server stopped.")
+        except KeyboardInterrupt:
+            print("\nStopping backend server...")
+            if os.name == 'nt':  # Windows
+                subprocess.run(f"taskkill /F /PID {process.pid}", shell=True)
+            else:
+                process.send_signal(signal.SIGTERM)
+                process.wait()
+            print("Backend server stopped.")
 
 if __name__ == "__main__":
-    restart_backend()
+    if len(sys.argv) > 1 and sys.argv[1] == '--monitor':
+        monitor_backend()
+    else:
+        restart_backend()
+        print("\nĐể bật chế độ giám sát tự động (tự động kết nối lại khi backend tắt),")
+        print("vui lòng chạy lại script với tham số --monitor:")
+        print("python reload_backend.py --monitor")

@@ -35,6 +35,15 @@ const QuanLyThietBiPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // State cho popup đặt lịch bảo trì
+  const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [maintenanceData, setMaintenanceData] = useState({
+    date: '',
+    time: '',
+    description: ''
+  });
+  
   // Fetch rooms, devices and organize by building/floor
   useEffect(() => {
     const fetchData = async () => {
@@ -201,17 +210,29 @@ const QuanLyThietBiPage = () => {
   const selectFloor = (floorId) => {
     setSelectedFloor(floorId);
     
-    // Extract building and floor from floorId (e.g., "A1" -> building "A", floor "1")
+    // Giả sử floorId có format là: [tòa nhà][số tầng] (ví dụ: "B11" cho tòa B1 tầng 1)
+    // Để đảm bảo xử lý đúng, chúng ta cần kiểm tra format của floorId
+    
     if (floorId && floorId.length >= 2) {
-      const buildingId = floorId.charAt(0);
-      const floorNumber = floorId.substring(1);
-      
-      // Update filters to match the selected floor
-      setFilters(prevFilters => ({
-        ...prevFilters,
-        building: buildingId,
-        floor: floorNumber
-      }));
+      // Tìm trong danh sách buildings để biết chính xác floorId thuộc tòa nhà và tầng nào
+      for (const building of buildings) {
+        const floor = building.floors.find(f => f.id === floorId);
+        if (floor) {
+          console.log(`Đã tìm thấy tầng: ${floor.name} thuộc tòa nhà ${building.name}`);
+          
+          // Cập nhật filters để khớp với tòa nhà và tầng đã chọn
+          setFilters(prevFilters => ({
+            ...prevFilters,
+            building: building.id,
+            // Lấy phần số từ tên tầng (Tầng X -> X)
+            floor: floor.name.replace('Tầng ', '')
+          }));
+          
+          // Log để kiểm tra giá trị filter
+          console.log(`Đã cập nhật filter: building=${building.id}, floor=${floor.name.replace('Tầng ', '')}`);
+          break;
+        }
+      }
     }
   };
 
@@ -230,17 +251,47 @@ const QuanLyThietBiPage = () => {
     navigate(`/manager-device/quanlythietbi?room=${roomId}`);
   };
   
-  const handleScheduleMaintenance = async (roomId, status) => {
-    try {
-      // In a real implementation, you would call an API to schedule maintenance
-      // For now, we'll just change the status of the room
-      alert(`Đặt lịch ${status === 'maintenance' ? 'bảo trì' : 'sửa chữa'} cho phòng ${roomId}`);
-      
-      // You would then refresh the data to show the updated status
-    } catch (error) {
-      console.error(`Error scheduling maintenance for room ${roomId}:`, error);
-      alert('Không thể đặt lịch bảo trì. Vui lòng thử lại sau.');
-    }
+  const handleScheduleMaintenance = (room) => {
+    setSelectedRoom(room);
+    setShowMaintenanceModal(true);
+    
+    // Set default date to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const formattedDate = tomorrow.toISOString().split('T')[0];
+    
+    setMaintenanceData({
+      date: formattedDate,
+      time: '09:00',
+      description: ''
+    });
+  };
+  
+  const handleCloseMaintenanceModal = () => {
+    setShowMaintenanceModal(false);
+    setSelectedRoom(null);
+  };
+  
+  const handleMaintenanceDataChange = (e) => {
+    const { name, value } = e.target;
+    setMaintenanceData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
+  const handleSubmitMaintenance = () => {
+    // Đây là phiên bản hardcode, không cần gọi API thực tế
+    console.log('Maintenance scheduled:', {
+      room: selectedRoom,
+      ...maintenanceData
+    });
+    
+    // Thông báo thành công
+    alert(`Đã đặt lịch bảo trì thành công cho phòng ${selectedRoom.name} vào ngày ${maintenanceData.date} lúc ${maintenanceData.time}`);
+    
+    // Đóng modal
+    handleCloseMaintenanceModal();
   };
 
   // Filter rooms based on search and filter criteria
@@ -506,10 +557,7 @@ const QuanLyThietBiPage = () => {
                         </button>
                         <button 
                           className="DMP-action-button schedule"
-                          onClick={() => handleScheduleMaintenance(
-                            room.id, 
-                            room.status === 'issue' ? 'maintenance' : 'issue'
-                          )}
+                          onClick={() => handleScheduleMaintenance(room)}
                         >
                           {room.status === 'issue' ? 'Đặt bảo trì' : 'Kiểm tra'}
                         </button>
@@ -571,10 +619,7 @@ const QuanLyThietBiPage = () => {
                       </button>
                       <button 
                         className="DMP-action-button schedule"
-                        onClick={() => handleScheduleMaintenance(
-                          room.id, 
-                          room.status === 'issue' ? 'maintenance' : 'issue'
-                        )}
+                        onClick={() => handleScheduleMaintenance(room)}
                       >
                         {room.status === 'issue' ? 'Đặt bảo trì' : 'Kiểm tra thiết bị'}
                       </button>
@@ -613,6 +658,49 @@ const QuanLyThietBiPage = () => {
           </div>
         </div>
       </div>
+      
+      {/* Maintenance Modal */}
+      {showMaintenanceModal && (
+        <div className="DMP-maintenance-modal">
+          <div className="DMP-modal-content">
+            <h2>Đặt lịch bảo trì</h2>
+            <div className="DMP-modal-field">
+              <label>Phòng:</label>
+              <span>{selectedRoom.name} ({selectedRoom.id})</span>
+            </div>
+            <div className="DMP-modal-field">
+              <label>Ngày:</label>
+              <input 
+                type="date" 
+                name="date" 
+                value={maintenanceData.date} 
+                onChange={handleMaintenanceDataChange} 
+              />
+            </div>
+            <div className="DMP-modal-field">
+              <label>Thời gian:</label>
+              <input 
+                type="time" 
+                name="time" 
+                value={maintenanceData.time} 
+                onChange={handleMaintenanceDataChange} 
+              />
+            </div>
+            <div className="DMP-modal-field">
+              <label>Mô tả:</label>
+              <textarea 
+                name="description" 
+                value={maintenanceData.description} 
+                onChange={handleMaintenanceDataChange} 
+              />
+            </div>
+            <div className="DMP-modal-actions">
+              <button onClick={handleSubmitMaintenance}>Xác nhận</button>
+              <button onClick={handleCloseMaintenanceModal}>Hủy</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

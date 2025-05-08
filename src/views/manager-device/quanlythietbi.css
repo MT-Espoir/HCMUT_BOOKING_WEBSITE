@@ -362,3 +362,88 @@ header .MD-user-info img {
     background-color: #607d8b;
     color: white;
 }
+
+/* CSS cho Modal Đặt Lịch Bảo Trì */
+.MD-maintenance-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.MD-modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.MD-modal-content h2 {
+  margin-top: 0;
+  color: #205375;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.MD-modal-field {
+  margin-bottom: 15px;
+}
+
+.MD-modal-field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.MD-modal-field input,
+.MD-modal-field textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.MD-modal-field textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.MD-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.MD-modal-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.MD-modal-actions button:first-child {
+  background-color: #205375;
+  color: white;
+}
+
+.MD-modal-actions button:last-child {
+  background-color: #eee;
+  color: #333;
+}
+
+.MD-modal-actions button:hover {
+  opacity: 0.9;
+}
