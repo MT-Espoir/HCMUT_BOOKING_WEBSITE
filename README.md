@@ -19,7 +19,7 @@ The **HCMUT Room Booking System** is a modern web application designed to stream
 
 <div align="center">
   
-![Homepage Preview](docs/images/screencapture-localhost-3000-home-2025-05-08-15_19_28.png)
+![Homepage Preview](website/src/components/assests/Brand-icon.png)
 
 </div>
 
